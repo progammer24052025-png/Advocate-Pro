@@ -816,15 +816,75 @@ async function viewCase(id) {
     ${c.notes?`<div class="card mb-4" style="padding:14px;"><div class="text-xs text-muted mb-2">📝 NOTES</div><div style="white-space:pre-wrap;font-size:.875rem;">${c.notes}</div></div>`:''}
     <div class="card mb-4" style="padding:14px;">
       <div class="flex items-center justify-between mb-3">
-        <div class="text-xs text-muted">📌 TASKS &amp; REMINDERS</div>
+        <div class="text-xs text-muted"> TASKS &amp; REMINDERS</div>
         <button class="btn btn-primary btn-sm" onclick="addTask(${id})">+ Add Task</button>
       </div>
       <div id="taskList-${id}">${renderTasks(c.tasks||[])}</div>
+    </div>
+    <div class="card mb-4" style="padding:14px;" id="caseDocsSection">
+      <div class="flex items-center justify-between mb-3">
+        <div class="text-xs text-muted">📄 LINKED DOCUMENTS</div>
+        <a href="documents.html" class="btn btn-secondary btn-sm" style="text-decoration:none;">+ Create Document</a>
+      </div>
+      <div id="caseDocsList-${id}">Loading documents…</div>
     </div>
     ${c.docsNeeded?`<div class="card" style="padding:14px;"><div class="text-xs text-muted mb-2">📂 DOCUMENTS NEEDED</div><div style="white-space:pre-wrap;font-size:.875rem;">${c.docsNeeded}</div></div>`:''}`;
   document.getElementById('viewEditBtn').onclick = () => { closeModal('viewModal'); editCase(id); };
   document.getElementById('viewFeesBtn').onclick = () => { closeModal('viewModal'); openFeesModal(id); };
   document.getElementById('viewModal').classList.add('active');
+  
+  // Load documents linked to this case
+  loadCaseDocuments(id);
+}
+
+async function loadCaseDocuments(caseId) {
+  const container = document.getElementById(`caseDocsList-${caseId}`);
+  if (!container) return;
+  
+  try {
+    const allDocs = await dbGetAll(STORES.DOCUMENTS);
+    const caseDocs = allDocs.filter(d => d.caseId === caseId);
+    
+    if (!caseDocs.length) {
+      container.innerHTML = '<div class="text-sm text-muted" style="padding:12px;text-align:center;">No documents linked to this case yet.<br><a href="documents.html" style="color:var(--gold);text-decoration:none;margin-top:8px;display:inline-block;">Create a document →</a></div>';
+      return;
+    }
+    
+    const sorted = [...caseDocs].sort((a,b) => (b.createdAt||'').localeCompare(a.createdAt||''));
+    container.innerHTML = sorted.map(doc => `
+      <div style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:8px;background:var(--bg-secondary);margin-bottom:8px;border:1px solid var(--border);">
+        <div style="font-size:1.5rem;"></div>
+        <div style="flex:1;min-width:0;">
+          <div class="font-bold text-sm" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${doc.name}</div>
+          <div class="text-xs text-muted mt-1">${doc.templateName || 'Custom'} · ${new Date(doc.createdAt).toLocaleDateString('en-IN')}</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="viewCaseDoc(${doc.id})" title="View">️</button>
+        <button class="btn btn-secondary btn-sm" onclick="downloadCaseDoc(${doc.id})" title="Download Word">📥</button>
+      </div>
+    `).join('');
+  } catch(e) {
+    container.innerHTML = '<div class="text-sm text-muted">Error loading documents.</div>';
+  }
+}
+
+async function viewCaseDoc(docId) {
+  const doc = await dbGet(STORES.DOCUMENTS, docId);
+  if (!doc) return;
+  
+  // Open in documents.html view modal via URL hash
+  window.location.href = `documents.html#view-${docId}`;
+}
+
+async function downloadCaseDoc(docId) {
+  const doc = await dbGet(STORES.DOCUMENTS, docId);
+  if (!doc) return;
+  
+  // Use WordExporter if available, otherwise open documents.html
+  if (typeof WordExporter !== 'undefined') {
+    WordExporter.download(doc.content, doc.name);
+  } else {
+    window.location.href = `documents.html#download-${docId}`;
+  }
 }
 
 // ── Print ──────────────────────────────────────────────────────────

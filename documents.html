@@ -179,11 +179,11 @@
             <div class="card mt-4" style="padding:14px; background:var(--bg-secondary); border-color:rgba(201,162,39,.2);">
               <div class="text-xs font-bold text-muted mb-2">EXAMPLE — PLACEHOLDERS IN TEMPLATE:</div>
               <div style="font-family:monospace; font-size:.85rem; color:var(--gold); line-height:1.9;">
-                ભ-ઇ-ઇ-ઇ: {{TENANT_NAME}}<br>
-                ભ-ઇ-ઇ-ઇ: ₹{{RENT_AMOUNT}}<br>
-                ઇ-ઇ-ઇ-ઇ: {{START_DATE}}<br>
-                ઇ-ઇ-ઇ-ઇ: {{CITY}}<br>
-                ઇ-ઇ-ઇ-ઇ: {{LANDLORD_ADDRESS}}
+                ભાડૂત: {{TENANT_NAME}}<br>
+                માસિક ભાડું: ₹{{RENT_AMOUNT}}<br>
+                શરૂ તારીખ: {{START_DATE}}<br>
+                શહેર: {{CITY}}<br>
+                મકાનનું સરનામું: {{LANDLORD_ADDRESS}}
               </div>
             </div>
           </div>
@@ -286,6 +286,14 @@
                 </select>
               </div>
             </div>
+            <!-- Case Linking -->
+            <div class="form-group mb-4" style="background:var(--bg-secondary);padding:12px;border-radius:var(--radius);border:1px solid var(--border);">
+              <label class="form-label"> Link to Case (Optional)</label>
+              <select class="form-control" id="wizCaseSelect" style="width:100%;">
+                <option value="">— No Case (Standalone Document) —</option>
+              </select>
+              <div class="text-xs text-muted mt-1">Link this document to a case for easy access</div>
+            </div>
             <div id="wizFieldsForm"></div>
             <div class="mic-status" id="wizMicStatus"></div>
             <div class="flex gap-3 mt-6">
@@ -360,86 +368,86 @@ const showToast = showAdvToast;
 // ── Built-in Templates ─────────────────────────────────────────────
 const BUILTIN = [
   {
-    id:'bhada-karar', name:'Bhada Karar', nameGu:'ભ-ઇ-ઇ-ઇ (Rent Agreement)',
+    id:'bhada-karar', name:'Bhada Karar', nameGu:'ભાડા કરાર (Rent Agreement)',
     icon:'🏠', desc:'Residential / Commercial Rent Agreement', category:'Rent / Lease',
     fields:[
       { id:'DATE',               label:'Agreement Date',            type:'date',     required:true  },
-      { id:'CITY',               label:'City / Place (ઇ-ઇ-ઇ)',       type:'text',     required:true,  placeholder:'e.g. Ahmedabad / Surat' },
-      { id:'LANDLORD_NAME',      label:'Landlord Name (ઇ-ઇ-ઇ-ઇ-ઇ)', type:'text',     required:true,  placeholder:'Full name' },
+      { id:'CITY',               label:'City / Place (ગુજરાતી)',       type:'text',     required:true,  placeholder:'e.g. Ahmedabad / Surat' },
+      { id:'LANDLORD_NAME',      label:'Landlord Name (માલિકનું નામ)', type:'text',     required:true,  placeholder:'Full name' },
       { id:'LANDLORD_AGE',       label:'Landlord Age',              type:'number',   required:true,  placeholder:'e.g. 52' },
       { id:'LANDLORD_OCCUPATION',label:'Landlord Occupation',       type:'text',     required:false, placeholder:'Business / Service' },
       { id:'LANDLORD_ADDRESS',   label:'Landlord Address',          type:'textarea', required:true,  placeholder:'Full address' },
-      { id:'TENANT_NAME',        label:'Tenant Name (ઇ-ઇ-ઇ-ઇ)',    type:'text',     required:true,  placeholder:'Full name' },
+      { id:'TENANT_NAME',        label:'Tenant Name (ભાડૂતનું નામ)',    type:'text',     required:true,  placeholder:'Full name' },
       { id:'TENANT_AGE',         label:'Tenant Age',                type:'number',   required:true,  placeholder:'e.g. 30' },
       { id:'TENANT_OCCUPATION',  label:'Tenant Occupation',         type:'text',     required:false, placeholder:'Business / Service' },
       { id:'TENANT_ADDRESS',     label:'Tenant Permanent Address',  type:'textarea', required:true,  placeholder:'Permanent address' },
-      { id:'PROPERTY_ADDRESS',   label:'Property Address (ઇ-ઇ-ઇ-ઇ)', type:'textarea', required:true, placeholder:'Full property address to be rented' },
+      { id:'PROPERTY_ADDRESS',   label:'Property Address (મકાનનું સરનામું)', type:'textarea', required:true, placeholder:'Full property address to be rented' },
       { id:'START_DATE',         label:'Tenancy Start Date',        type:'date',     required:true  },
-      { id:'DURATION',           label:'Duration (ઇ-ઇ-ઇ)',          type:'text',     required:true,  placeholder:'e.g. 11 Months / ૧૧ ઇ-ઇ-ઇ-ઇ' },
+      { id:'DURATION',           label:'Duration (સમયગાળો)',          type:'text',     required:true,  placeholder:'e.g. 11 Months / ૧૧ મહિના' },
       { id:'END_DATE',           label:'Tenancy End Date',          type:'date',     required:true  },
       { id:'RENT_AMOUNT',        label:'Monthly Rent (₹)',          type:'number',   required:true,  placeholder:'e.g. 15000' },
       { id:'RENT_AMOUNT_WORDS',  label:'Rent in Words',             type:'text',     required:true,  placeholder:'e.g. Fifteen Thousand Only' },
       { id:'RENT_DUE_DATE',      label:'Rent Due Date (day of month)',type:'text',   required:true,  placeholder:'e.g. 5th of each month' },
       { id:'DEPOSIT_AMOUNT',     label:'Security Deposit (₹)',      type:'number',   required:true,  placeholder:'e.g. 30000' },
       { id:'DEPOSIT_AMOUNT_WORDS',label:'Deposit in Words',         type:'text',     required:true,  placeholder:'e.g. Thirty Thousand Only' },
-      { id:'NOTICE_PERIOD',      label:'Notice Period',             type:'text',     required:true,  placeholder:'e.g. 1 Month / ૧ ઇ-ઇ-ઇ' },
+      { id:'NOTICE_PERIOD',      label:'Notice Period',             type:'text',     required:true,  placeholder:'e.g. 1 Month / ૧ મહિનો' },
       { id:'WITNESS1_NAME',      label:'Witness 1 Name',            type:'text',     required:false, placeholder:'Optional' },
       { id:'WITNESS2_NAME',      label:'Witness 2 Name',            type:'text',     required:false, placeholder:'Optional' },
     ],
-    content: `ભ-ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ (LEAVE AND LICENSE AGREEMENT)
+    content: `ભાડા કરાર (LEAVE AND LICENSE AGREEMENT)
 ${'━'.repeat(55)}
 
-આ ઇ-ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ {{DATE}} ઇ-ઇ ઇ-ઇ-ઇ {{CITY}} ઇ-ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ ઇ-ઇ:
+આ ભાડા કરાર {{DATE}} ના રોજ {{CITY}} ખાતે થયેલ છે:
 
 ${'━'.repeat(55)}
-★ પ્રથમ પક્ષ (ઇ-ઇ-ઇ-ઇ / Licensor):
+★ પ્રથમ પક્ષ (માલિક / Licensor):
 ${'━'.repeat(55)}
-   ઇ-ઇ-ઇ      : {{LANDLORD_NAME}}
-   ઇ-ઇ.ઇ.     : {{LANDLORD_AGE}} ઇ-ઇ-ઇ
-   ઇ-ઇ-ઇ-ઇ    : {{LANDLORD_OCCUPATION}}
-   ઇ-ઇ-ઇ-ઇ-ઇ  : {{LANDLORD_ADDRESS}}
-
-${'━'.repeat(55)}
-★ ઇ-ઇ-ઇ-ઇ ઇ-ઇ-ઇ (ઇ-ઇ-ઇ-ઇ / Licensee):
-${'━'.repeat(55)}
-   ઇ-ઇ-ઇ      : {{TENANT_NAME}}
-   ઇ-ઇ.ઇ.     : {{TENANT_AGE}} ઇ-ઇ-ઇ
-   ઇ-ઇ-ઇ-ઇ    : {{TENANT_OCCUPATION}}
-   ઇ-ઇ-ઇ-ઇ-ઇ  : {{TENANT_ADDRESS}}
-
-ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ (ઇ-ઇ-ઇ-ઇ) {{PROPERTY_ADDRESS}} ઇ-ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ-ઇ ઇ-ઇ.
+   નામ      : {{LANDLORD_NAME}}
+   ઉંમર     : {{LANDLORD_AGE}} વર્ષ
+   વ્યવસાય  : {{LANDLORD_OCCUPATION}}
+   સરનામું  : {{LANDLORD_ADDRESS}}
 
 ${'━'.repeat(55)}
-ઇ-ઇ-ઇ-ઇ (TERMS & CONDITIONS)
+★ દ્વિતીય પક્ષ (ભાડૂત / Licensee):
 ${'━'.repeat(55)}
+   નામ      : {{TENANT_NAME}}
+   ઉંમર     : {{TENANT_AGE}} વર્ષ
+   વ્યવસાય  : {{TENANT_OCCUPATION}}
+   સરનામું  : {{TENANT_ADDRESS}}
 
-૧. ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ (Tenancy Period):
-   {{START_DATE}} ઇ-ઇ ઇ-ઇ-ઇ {{END_DATE}} ઇ-ઇ-ઇ, {{DURATION}} ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ.
-
-૨. ઇ-ઇ-ઇ ઇ-ઇ-ઇ (Monthly Rent):
-   ઇ-ઇ-ઇ ₹{{RENT_AMOUNT}}/- ({{RENT_AMOUNT_WORDS}}) ઇ-ઇ-ઇ-ઇ
-   ઇ-ઇ-ઇ {{RENT_DUE_DATE}} ઇ-ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ-ઇ.
-
-૩. ઇ-ઇ-ઇ-ઇ-ઇ (Security Deposit):
-   ₹{{DEPOSIT_AMOUNT}}/- ({{DEPOSIT_AMOUNT_WORDS}}) ઇ-ઇ-ઇ-ઇ
-   ઇ-ઇ-ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ-ઇ.
-
-૪. ઇ-ઇ-ઇ-ઇ (Notice Period):
-   {{NOTICE_PERIOD}} ઇ-ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ-ઇ.
+ભાડા માટે આપેલ મકાન: {{PROPERTY_ADDRESS}} ખાતે આવેલ છે.
 
 ${'━'.repeat(55)}
-ઇ-ઇ-ઇ-ઇ-ઇ (SIGNATURES):
+શરતો (TERMS & CONDITIONS)
+${'━'.repeat(55)}
 
-ઇ-ઇ-ઇ-ઇ: {{LANDLORD_NAME}}          ઇ-ઇ-ઇ-ઇ: {{TENANT_NAME}}
+૧. ભાડાનો સમયગાળો (Tenancy Period):
+   {{START_DATE}} થી {{END_DATE}} સુધી, {{DURATION}} નો સમયગાળો.
 
-ઇ-ઇ-ઇ-ઇ ૧: {{WITNESS1_NAME}}        ઇ-ઇ-ઇ-ઇ ૨: {{WITNESS2_NAME}}
+૨. માસિક ભાડું (Monthly Rent):
+   માસિક ₹{{RENT_AMOUNT}}/- ({{RENT_AMOUNT_WORDS}}) ભાડું રહેશે.
+   દર મહિનાના {{RENT_DUE_DATE}} ના રોજ ભાડું ચૂકવવું.
 
-ઇ-ઇ-ઇ: {{DATE}}     ઇ-ઇ-ઇ-ઇ: {{CITY}}
+૩. જામીન રકમ (Security Deposit):
+   ₹{{DEPOSIT_AMOUNT}}/- ({{DEPOSIT_AMOUNT_WORDS}}) જામીન રકમ.
+   જામીન રકમ ભાડાના સમયગાળા પૂરો થયે પાછી મળશે.
+
+૪. નોટિસ પિરિયડ (Notice Period):
+   {{NOTICE_PERIOD}} પહેલાં લેખિત નોટિસ આપવી.
+
+${'━'.repeat(55)}
+સહીઓ (SIGNATURES):
+
+માલિક: {{LANDLORD_NAME}}          ભાડૂત: {{TENANT_NAME}}
+
+સાક્ષી ૧: {{WITNESS1_NAME}}        સાક્ષી ૨: {{WITNESS2_NAME}}
+
+તારીખ: {{DATE}}     સ્થળ: {{CITY}}
 ${'━'.repeat(55)}
 `
   },
   {
-    id:'mukhtyarnamu', name:'Mukhtyarnamu', nameGu:'ઇ-ઇ-ઇ-ઇ-ઇ-ઇ-ઇ-ઇ (Power of Attorney)',
+    id:'mukhtyarnamu', name:'Mukhtyarnamu', nameGu:'મુખત્યારનામું (Power of Attorney)',
     icon:'📋', desc:'Power of Attorney — General or Specific', category:'Power of Attorney',
     fields:[
       { id:'DATE',              label:'Date',                    type:'date',     required:true },
@@ -455,7 +463,7 @@ ${'━'.repeat(55)}
       { id:'POWERS_GRANTED',   label:'Powers Granted',          type:'textarea', required:true,  placeholder:'List all powers being granted…' },
       { id:'STAMP_VALUE',      label:'Stamp Duty (₹)',           type:'number',   required:false, placeholder:'e.g. 500' },
     ],
-    content:`ઇ-ઇ-ઇ-ઇ-ઇ-ઇ-ઇ-ઇ (POWER OF ATTORNEY)
+    content:`મુખત્યારનામું (POWER OF ATTORNEY)
 ${'━'.repeat(55)}
 
 Date: {{DATE}}   Place: {{CITY}}
@@ -498,7 +506,7 @@ ${'━'.repeat(55)}
 `
   },
   {
-    id:'legal-notice', name:'Legal Notice', nameGu:'ઇ-ઇ-ઇ-ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ-ઇ (Legal Notice)',
+    id:'legal-notice', name:'Legal Notice', nameGu:'કાનૂની નોટિસ (Legal Notice)',
     icon:'⚖️', desc:'Formal Legal Notice from Advocate to Opposite Party', category:'Legal Notice',
     fields:[
       { id:'DATE',              label:'Notice Date',             type:'date',     required:true },
@@ -559,7 +567,7 @@ ${'━'.repeat(65)}
 `
   },
   {
-    id:'halfnamu', name:'Halfnamu', nameGu:'ઇ-ઇ-ઇ-ઇ-ઇ-ઇ-ઇ-ઇ (Affidavit)',
+    id:'halfnamu', name:'Halfnamu', nameGu:'હલફનામું (Affidavit)',
     icon:'🔏', desc:'Sworn Affidavit before Notary / Court', category:'Affidavit',
     fields:[
       { id:'DATE',          label:'Date',                  type:'date',     required:true },
@@ -603,7 +611,7 @@ ${'━'.repeat(55)}
 `
   },
   {
-    id:'bhagidari', name:'Bhagidari Karar', nameGu:'ઇ-ઇ-ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ (Partnership Deed)',
+    id:'bhagidari', name:'Bhagidari Karar', nameGu:'ભાગીદારી કરાર (Partnership Deed)',
     icon:'🤝', desc:'Partnership Agreement between two or more partners', category:'Partnership',
     fields:[
       { id:'DATE',             label:'Date',                 type:'date',   required:true },
@@ -659,7 +667,7 @@ ${'━'.repeat(55)}
 `
   },
   {
-    id:'vechan-khat', name:'Vechan Khat', nameGu:'ઇ-ઇ-ઇ-ઇ-ઇ ઇ-ઇ-ઇ (Sale Deed)',
+    id:'vechan-khat', name:'Vechan Khat', nameGu:'વેચાણ ખત (Sale Deed)',
     icon:'🏘️', desc:'Property Sale Deed / Vechan Dastavej', category:'Sale / Purchase',
     fields:[
       { id:'DATE',              label:'Date of Deed',          type:'date',     required:true },
@@ -714,7 +722,7 @@ ${'━'.repeat(55)}
 `
   },
   {
-    id:'faragati', name:'Faragati', nameGu:'ઇ-ઇ-ઇ-ઇ-ઇ-ઇ (Release Deed)',
+    id:'faragati', name:'Faragati', nameGu:'ફરગતી (Release Deed)',
     icon:'📝', desc:'Release Deed / No Claim Certificate', category:'Other',
     fields:[
       { id:'DATE',           label:'Date',                              type:'date',     required:true },
@@ -1353,7 +1361,7 @@ function showTab(tab) {
 function renderTemplateGrids() {
   const builtinGrid = document.getElementById('builtinGrid');
   builtinGrid.innerHTML = BUILTIN.map(t => `
-    <div class="tmpl-card" onclick="openWizard('${t.id}','builtin')">
+    <div class="tmpl-card" onclick="openWizard('${t.id}','builtin')" style="cursor:pointer;">
       <span class="tmpl-badge tmpl-badge-builtin">Built-in</span>
       <div class="tmpl-icon">${t.icon}</div>
       <div class="tmpl-name">${t.name}</div>
@@ -1396,6 +1404,9 @@ async function openWizard(templateId, type) {
   document.getElementById('wizSubtitle').textContent = activeTemplate.nameGu || activeTemplate.desc || activeTemplate.detectedType || '';
   document.getElementById('docSaveName').value       = activeTemplate.name + ' — ' + new Date().toLocaleDateString('en-IN');
 
+  // Populate case selector
+  await populateCaseSelector();
+
   // Build field form
   buildFieldsForm(activeTemplate.fields || []);
   goToStep(1);
@@ -1404,8 +1415,27 @@ async function openWizard(templateId, type) {
   updateLivePreview();
 }
 
+async function populateCaseSelector() {
+  const select = document.getElementById('wizCaseSelect');
+  if (!select) return;
+  select.innerHTML = '<option value="">— No Case (Standalone Document) —</option>';
+  try {
+    const cases = await dbGetAll(STORES.CASES);
+    const sorted = [...cases].sort((a,b) => (b.createdAt||'').localeCompare(a.createdAt||''));
+    for (const c of sorted) {
+      const opt = document.createElement('option');
+      opt.value = c.id;
+      opt.textContent = `${c.caseNumber || 'Case'} — ${c.caseTitle || c.clientName || 'Untitled'}`;
+      select.appendChild(opt);
+    }
+  } catch(e) {
+    console.warn('Could not load cases:', e);
+  }
+}
+
 function buildFieldsForm(fields) {
-  const form = document.getElementById('wizardFieldsForm');
+  const form = document.getElementById('wizFieldsForm');
+  if (!form) { console.warn('wizFieldsForm element not found'); return; }
   form.innerHTML = fields.map(f => {
     let input;
     if (f.type==='textarea') {
@@ -1513,14 +1543,15 @@ function goToStep(step) {
 async function saveCurrentDoc() {
   currentDocContent = buildDocument();
   const name = document.getElementById('docSaveName').value.trim() || activeTemplate.name;
+  const caseId = document.getElementById('wizCaseSelect')?.value || null;
   const data = {};
   (activeTemplate.fields||[]).forEach(f => { const el=document.getElementById(`wf-${f.id}`); if(el) data[f.id]=el.value; });
   await dbAdd(STORES.DOCUMENTS, {
     name, templateId:activeTemplate.id, templateName:activeTemplate.name,
-    content:currentDocContent, data,
+    content:currentDocContent, data, caseId: caseId ? parseInt(caseId) : null,
   });
   clearDraft();
-  showToast('Document saved!','success');
+  showToast('Document saved!' + (caseId ? ' Linked to case.' : ''), 'success');
   const docs = await dbGetAll(STORES.DOCUMENTS);
   document.getElementById('navDocCount').textContent = docs.length;
 }
@@ -1549,20 +1580,32 @@ async function loadSavedDocs() {
     return;
   }
   const sorted = [...docs].sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));
-  container.innerHTML = sorted.map(doc => `
+  
+  // Fetch all cases for linking info
+  let casesMap = {};
+  try {
+    const cases = await dbGetAll(STORES.CASES);
+    cases.forEach(c => { casesMap[c.id] = c; });
+  } catch(e) {}
+  
+  container.innerHTML = sorted.map(doc => {
+    const linkedCase = doc.caseId ? casesMap[doc.caseId] : null;
+    const caseInfo = linkedCase ? `<span style="color:var(--gold);">📁 ${linkedCase.caseNumber || 'Case'}</span> · ` : '';
+    return `
     <div class="doc-item">
       <div class="doc-icon-box">📄</div>
       <div style="flex:1;min-width:0;">
         <div class="font-bold text-sm">${doc.name}</div>
-        <div class="text-xs text-muted mt-1">Based on: ${doc.templateName||'—'} &nbsp;·&nbsp; Created: ${new Date(doc.createdAt).toLocaleDateString('en-IN')}</div>
+        <div class="text-xs text-muted mt-1">${caseInfo}Based on: ${doc.templateName||'—'} · Created: ${new Date(doc.createdAt).toLocaleDateString('en-IN')}</div>
       </div>
       <div class="flex gap-2 flex-wrap">
-        <button class="btn btn-ghost btn-sm"    onclick="viewSavedDoc(${doc.id})">👁️ View</button>
-        <button class="btn btn-secondary btn-sm" onclick="printSavedDoc(${doc.id})">🖨️ Print</button>
-        <button class="btn btn-primary btn-sm"  onclick="exportSavedDocWord(${doc.id})">📥 Word</button>
-        <button class="btn btn-danger btn-sm"   onclick="deleteSavedDoc(${doc.id})">🗑️</button>
+        <button class="btn btn-ghost btn-sm"    onclick="viewSavedDoc(${doc.id})">️ View</button>
+        <button class="btn btn-secondary btn-sm" onclick="printSavedDoc(${doc.id})">️ Print</button>
+        <button class="btn btn-primary btn-sm"  onclick="exportSavedDocWord(${doc.id})"> Word</button>
+        <button class="btn btn-danger btn-sm"   onclick="deleteSavedDoc(${doc.id})">️</button>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 async function viewSavedDoc(id) {
@@ -1728,6 +1771,20 @@ async function init() {
   renderTemplateGrids();
   const docs = await dbGetAll(STORES.DOCUMENTS);
   document.getElementById('navDocCount').textContent = docs.length;
+  
+  // Handle URL hash for viewing/downloading documents from case-library
+  const hash = window.location.hash;
+  if (hash.startsWith('#view-')) {
+    const docId = parseInt(hash.replace('#view-', ''));
+    if (docId) {
+      setTimeout(() => viewSavedDoc(docId), 500);
+    }
+  } else if (hash.startsWith('#download-')) {
+    const docId = parseInt(hash.replace('#download-', ''));
+    if (docId) {
+      setTimeout(() => exportSavedDocWord(docId), 500);
+    }
+  }
 }
 init();
 
