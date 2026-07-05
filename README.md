@@ -1,84 +1,105 @@
-# ગુજરાતી વૉઇસ ટુ ટેક્સ્ટ - Gujarati Voice to Text Converter
+# ⚖️ Advocate Pro — Legal Management Platform
 
-A beautiful web application that converts Gujarati speech to text with Gujarati font support.
+A professional, offline-first legal management platform for Gujarati advocates. Manage cases, fees, hearings, and legal documents with voice support and PWA capabilities.
 
-## Features
+## 🚀 Quick Start
 
-- 🎤 **Real-time Speech Recognition** - Converts Gujarati voice to text in real-time
-- 🔤 **Gujarati Font Support** - Uses Noto Sans Gujarati font (Lohit Gujarati compatible)
-- 📋 **Copy to Clipboard** - Easy copy functionality for transcribed text
-- ✏️ **Editable Text** - Directly edit the transcribed text
-- 🎨 **Modern UI** - Beautiful, responsive design
-- ⌨️ **Keyboard Shortcuts** - Quick access to common functions
+1. **Open** `index.html` in Chrome, Edge, or Safari
+2. **Install as PWA** — Click "Install App" in browser menu for native-app experience
+3. **Start managing cases** — No server or internet required after first load
 
-## How to Use
+## ✨ Features
 
-1. **Open the Application**
-   - Simply open `index.html` in a modern web browser (Chrome, Edge, or Safari recommended)
+### Core Case Management
+- 📁 **Case Library** — Full CRUD for cases with 25+ fields
+- 🔍 **Global Search** — Press `Ctrl+K` to search across cases & documents
+- 👥 **Client Linking** — Click any client name to see all their cases
+- 📊 **Dashboard** — Stats, activity feed, status breakdown widget
+- 📅 **Hearing Calendar** — Monthly view with hearing tracking
+- 💰 **Fees Tracker** — Agreed/received/pending with payment history
+- 🧾 **Receipt Generator** — Print-ready A5 fee receipts
+- 📌 **Tasks & Reminders** — Dated to-do items per case
+- 📋 **Duplicate Case** — Quick clone for similar cases
+- 🖨️ **Case Brief** — Formatted A4 printable case summary
 
-2. **Grant Microphone Permission**
-   - When prompted, allow the browser to access your microphone
+### Documents
+- 📜 **Legal Templates** — 12 pre-built Gujarati legal document templates
+- ️ **Wizard Builder** — Step-by-step document creation
+- 💾 **Auto-Save Drafts** — Never lose work, drafts persist in localStorage
+- 📄 **Save & Export** — Save to IndexedDB, export as .docx
 
-3. **Start Recording**
-   - Click the "વૉઇસ રેકોર્ડિંગ શરૂ કરો" (Start Voice Recording) button
-   - Begin speaking in Gujarati
+### Voice & Navigation
+- 🎤 **Gujarati Voice Input** — Speak field values in Gujarati
+- 🗣️ **Voice Navigation** — Floating mic button for voice commands
+- ⌨️ **Keyboard Shortcuts** — `Ctrl+K` search, `Escape` close modals
 
-4. **View Transcription**
-   - Your speech will be converted to text in real-time
-   - The text appears in the output area below
+### Data & Export
+- 📊 **Excel Export/Import** — Full case data as .xlsx
+-  **JSON Backup/Restore** — Complete data backup
+- 🖨️ **Print Lists** — Case list, calendar, individual cases
 
-5. **Stop Recording**
-   - Click the "રોકો" (Stop) button when finished
+### PWA & Offline
+- 📱 **Installable** — Add to home screen on mobile/desktop
+- 🔔 **Push Notifications** — Hearing reminders via browser notifications
+- 🌐 **Offline Support** — Service worker caches all assets
+- 🌓 **Dark/Light Theme** — Toggle with persistence
 
-6. **Copy Text**
-   - Click "કૉપી કરો" (Copy) to copy the transcribed text to clipboard
+## 🛠️ Tech Stack
 
-7. **Clear Text**
-   - Click "સાફ કરો" (Clear) to clear the text output
+- **Frontend**: Pure HTML/CSS/JavaScript (no frameworks)
+- **Database**: IndexedDB (5 stores: cases, fees, payments, templates, documents)
+- **PWA**: Service Worker + Web App Manifest
+- **Fonts**: Noto Sans Gujarati, Inter, Playfair Display
+- **Voice**: Web Speech API (gu-IN locale)
+- **Export**: SheetJS (Excel), custom DOCX generator
 
-## Browser Compatibility
+## 📂 Project Structure
 
-- ✅ Google Chrome (Recommended)
-- ✅ Microsoft Edge
+```
+Advocate-Pro/
+├── index.html          # Landing page
+├── case-library.html   # Main case management
+├── documents.html      # Legal document templates
+├── shared.css          # Design system & themes
+├── shared.js           # Voice engine, utilities, global search
+├── db.js               # IndexedDB wrapper
+├── sw.js               # Service worker (offline + notifications)
+├── manifest.json       # PWA manifest
+└── logo.png            # App icon & favicon
+```
+
+## 🎯 Usage Tips
+
+### Voice Commands
+Click the 🎤 button (bottom-right) and say:
+- "Open cases" / "Show fees" / "Calendar"
+- "Add case" / "Search" / "Export"
+
+### Keyboard Shortcuts
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+K` | Open global search |
+| `Escape` | Close any modal |
+| `Ctrl+Enter` | Start/stop voice recording |
+
+### Data Backup
+1. Click "Full JSON Backup" in sidebar
+2. Store the downloaded file safely
+3. Use "Restore JSON Backup" to recover
+
+## 🌐 Browser Support
+
+- ✅ Chrome / Edge (Recommended)
 - ✅ Safari (macOS/iOS)
-- ❌ Firefox (Limited support for Web Speech API)
+- ️ Firefox (Limited voice support)
 
-## Keyboard Shortcuts
+##  Privacy
 
-- `Ctrl/Cmd + Enter` - Start/Stop recording
-- `Ctrl/Cmd + C` - Copy text to clipboard
+- **100% local** — All data stored in browser IndexedDB
+- **No server** — Nothing sent to external services
+- **No tracking** — No analytics or cookies
+- **Offline-first** — Works without internet after first load
 
-## Technical Details
+## 📝 License
 
-- **Language**: Gujarati (gu-IN)
-- **Font**: Noto Sans Gujarati (Lohit Gujarati compatible)
-- **API**: Web Speech API (SpeechRecognition)
-- **No Server Required**: Works entirely in the browser
-
-## Notes
-
-- Requires an active internet connection for the best recognition accuracy
-- Microphone access permission is required
-- Works best in a quiet environment
-- The app uses continuous recognition, so it will keep listening until you stop it
-
-## Troubleshooting
-
-**Microphone not working?**
-- Check browser permissions for microphone access
-- Ensure your microphone is connected and working
-- Try refreshing the page
-
-**Recognition not accurate?**
-- Speak clearly and at a moderate pace
-- Reduce background noise
-- Ensure stable internet connection
-
-**Browser not supported?**
-- Use Chrome, Edge, or Safari for best results
-- Firefox has limited Web Speech API support
-
-## License
-
-Free to use and modify.
-
+Free to use and modify for personal practice.
