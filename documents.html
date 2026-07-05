@@ -759,6 +759,571 @@ Date: {{DATE}}   Place: {{CITY}}
 ${'━'.repeat(55)}
 `
   },
+  {
+    id:'vakalatnama', name:'Vakalatnama', nameGu:'વકાલતનામું (Vakalatnama)',
+    icon:'️', desc:'Court Representation Authority — Gujarat High Court Format', category:'Court Filing',
+    fields:[
+      { id:'COURT_NAME',     label:'Court Name',              type:'text',     required:true,  placeholder:'e.g. Hon\'ble High Court of Gujarat at Ahmedabad' },
+      { id:'CASE_NUMBER',    label:'Case Number / Year',      type:'text',     required:true,  placeholder:'e.g. Civil Suit No. 123 of 2025' },
+      { id:'CLIENT_NAME',    label:'Client Name',             type:'text',     required:true,  placeholder:'Full name of client' },
+      { id:'CLIENT_ADDRESS', label:'Client Address',          type:'textarea', required:true },
+      { id:'ADVOCATE_NAME',  label:'Advocate Name',           type:'text',     required:true,  placeholder:'Name of advocate being appointed' },
+      { id:'ADVOCATE_ENROLL',label:'Advocate Enrollment No.', type:'text',     required:true,  placeholder:'e.g. G/1234/2020' },
+      { id:'OPP_PARTY',      label:'Opposing Party Name',     type:'text',     required:false, placeholder:'Name of opposite party' },
+      { id:'SIGN_DATE',      label:'Date of Signing',         type:'date',     required:true },
+      { id:'SIGN_PLACE',     label:'Place of Signing',        type:'text',     required:true,  placeholder:'e.g. Ahmedabad' },
+    ],
+    content:`IN THE ${'{COURT_NAME}'.toUpperCase()}
+
+${'{CASE_NUMBER}'.toUpperCase()}
+
+${'{CLIENT_NAME}'.toUpperCase()}
+... Plaintiff / Petitioner / Appellant
+
+VERSUS
+
+${'{OPP_PARTY}'.toUpperCase() || '...'}
+... Defendant / Respondent
+
+${'━'.repeat(55)}
+VAKALATNAMA
+${'━'.repeat(55)}
+
+I/We, ${'{CLIENT_NAME}'}, son/daughter/wife of ___________,
+resident of ${'{CLIENT_ADDRESS}'},
+
+do hereby appoint, nominate and constitute
+${'{ADVOCATE_NAME}'} (Enrollment No. ${'{ADVOCATE_ENROLL}'}),
+Advocate, High Court of Gujarat,
+
+to act, appear and plead in the above-noted case
+in this Hon'ble Court or in any other Court in which
+the same may be tried or heard, and also in the
+Appellate Court, and to do all acts, deeds, and things
+as may be necessary in connection therewith.
+
+${'━'.repeat(55)}
+DECLARATION:
+${'━'.repeat(55)}
+1. I/We agree to pay the agreed fees to the Advocate.
+2. I/We shall not hold the Advocate responsible for
+   any adverse decision or outcome of the case.
+3. I/We agree to ratify all acts done by the Advocate
+   in pursuance of this Authority.
+4. I/We have not engaged any other Advocate for this
+   matter, or if engaged, hereby revoke such engagement.
+
+${'━'.repeat(55)}
+SIGNATURES:
+${'━'.repeat(55)}
+
+Client: _________________       Advocate: _________________
+${'{CLIENT_NAME}'}                  ${'{ADVOCATE_NAME}'}
+
+Date: ${'{SIGN_DATE}'}
+Place: ${'{SIGN_PLACE}'}
+
+${'━'.repeat(55)}
+ACCEPTANCE BY ADVOCATE:
+${'━'.repeat(55)}
+I accept the Vakalatnama and agree to represent
+the above-named client in the said matter.
+
+Advocate Signature: _________________
+Date: ${'{SIGN_DATE}'}
+${'━'.repeat(55)}
+`
+  },
+  {
+    id:'plaint', name:'Plaint (Civil Suit)', nameGu:'પ્લેઇન્ટ (દીવાની દાવો)',
+    icon:'📄', desc:'Civil Suit Plaint — Order VII CPC Format', category:'Court Filing',
+    fields:[
+      { id:'COURT_NAME',     label:'Court Name',              type:'text',     required:true,  placeholder:'e.g. Civil Judge Senior Division, Ahmedabad' },
+      { id:'SUIT_NUMBER',    label:'Suit Number (if known)',  type:'text',     required:false, placeholder:'Leave blank if new filing' },
+      { id:'PLAINTIFF_NAME', label:'Plaintiff Name',          type:'text',     required:true },
+      { id:'PLAINTIFF_ADDR', label:'Plaintiff Address',       type:'textarea', required:true },
+      { id:'DEFENDANT_NAME', label:'Defendant Name',          type:'text',     required:true },
+      { id:'DEFENDANT_ADDR', label:'Defendant Address',       type:'textarea', required:true },
+      { id:'SUIT_TITLE',     label:'Nature of Suit',          type:'text',     required:true,  placeholder:'e.g. Suit for Recovery of Money / Specific Performance' },
+      { id:'SUIT_VALUE',     label:'Suit Value (₹)',          type:'number',   required:true },
+      { id:'CAUSE_ACTION',   label:'Cause of Action (facts)', type:'textarea', required:true,  placeholder:'Describe facts giving rise to the suit' },
+      { id:'JURISDICTION',   label:'Jurisdiction Facts',      type:'textarea', required:true,  placeholder:'Why this court has jurisdiction' },
+      { id:'LIMITATION',     label:'Limitation Facts',        type:'textarea', required:false, placeholder:'When cause of action arose' },
+      { id:'RELIEF_CLAIMED', label:'Relief Claimed',          type:'textarea', required:true,  placeholder:'What you are asking the court to order' },
+      { id:'VERIF_DATE',     label:'Verification Date',       type:'date',     required:true },
+      { id:'VERIF_PLACE',    label:'Verification Place',      type:'text',     required:true },
+    ],
+    content:`IN THE COURT OF ${'{COURT_NAME}'.toUpperCase()}
+
+${'{SUIT_NUMBER}' ? 'Civil Suit No. ' + '{SUIT_NUMBER}' + ' of 20__' : 'Civil Suit of 20__'}
+
+${'━'.repeat(55)}
+${'{PLAINTIFF_NAME}'.toUpperCase()}
+${'{PLAINTIFF_ADDR}'}
+... PLAINTIFF
+
+VERSUS
+
+${'{DEFENDANT_NAME}'.toUpperCase()}
+${'{DEFENDANT_ADDR}'}
+... DEFENDANT
+${'━'.repeat(55)}
+
+SUIT FOR: ${'{SUIT_TITLE}'}
+SUIT VALUE: ₹${'{SUIT_VALUE}'}
+
+${'━'.repeat(55)}
+PLAINT
+${'━'.repeat(55)}
+
+The Plaintiff respectfully submits as under:
+
+1. That the Plaintiff is a resident of the above-mentioned
+   address and is entitled to file this suit.
+
+2. That the Defendant is a resident of the above-mentioned
+   address and is amenable to the jurisdiction of this
+   Hon'ble Court.
+
+3. CAUSE OF ACTION:
+   ${'{CAUSE_ACTION}'}
+
+4. JURISDICTION:
+   ${'{JURISDICTION}'}
+
+5. LIMITATION:
+   ${'{LIMITATION}' || 'The suit is filed within the period of limitation.'}
+
+6. That the Plaintiff has not filed any other suit or
+   proceeding in any Court of law in respect of the
+   same subject matter.
+
+7. That the cause of action arose on the dates mentioned
+   in paragraph 3 above.
+
+${'━'.repeat(55)}
+PRAYER / RELIEF CLAIMED:
+${'━'.repeat(55)}
+${'{RELIEF_CLAIMED}'}
+
+Along with costs of this suit and any other relief
+that this Hon'ble Court may deem fit and proper.
+
+${'━'.repeat(55)}
+VERIFICATION:
+${'━'.repeat(55)}
+I, ${'{PLAINTIFF_NAME}'}, the Plaintiff above-named,
+do hereby verify that the contents of paragraphs
+1 to 7 are true and correct to the best of my
+knowledge and belief, and no part of it is false.
+
+Verified at ${'{VERIF_PLACE}'}
+on this ${'{VERIF_DATE}'}.
+
+
+_________________________
+PLAINTIFF
+
+_________________________
+ADVOCATE FOR PLAINTIFF
+${'━'.repeat(55)}
+`
+  },
+  {
+    id:'written-statement', name:'Written Statement', nameGu:'લિખિત જવાબ (Written Statement)',
+    icon:'📋', desc:'Defense Reply to Plaint — Order VIII CPC Format', category:'Court Filing',
+    fields:[
+      { id:'COURT_NAME',      label:'Court Name',              type:'text',     required:true },
+      { id:'CASE_NUMBER',     label:'Case / Suit Number',      type:'text',     required:true },
+      { id:'PLAINTIFF_NAME',  label:'Plaintiff Name',          type:'text',     required:true },
+      { id:'DEFENDANT_NAME',  label:'Defendant Name',          type:'text',     required:true },
+      { id:'DEFENDANT_ADDR',  label:'Defendant Address',       type:'textarea', required:true },
+      { id:'FILING_DATE',     label:'Date of Filing',          type:'date',     required:true },
+      { id:'PARA_ADMIT',      label:'Paragraphs Admitted',     type:'textarea', required:true,  placeholder:'e.g. Paras 1, 2, 4 are admitted' },
+      { id:'PARA_DENY',       label:'Paragraphs Denied',       type:'textarea', required:true,  placeholder:'e.g. Paras 3, 5, 6 are denied' },
+      { id:'DEFENSE',         label:'Defense / Objections',    type:'textarea', required:true,  placeholder:'Your defense against the plaint' },
+      { id:'PRELIM_OBJ',      label:'Preliminary Objections',  type:'textarea', required:false, placeholder:'e.g. Barred by limitation, no cause of action' },
+      { id:'VERIF_PLACE',     label:'Verification Place',      type:'text',     required:true },
+    ],
+    content:`IN THE COURT OF ${'{COURT_NAME}'.toUpperCase()}
+
+${'{CASE_NUMBER}'.toUpperCase()}
+
+${'{PLAINTIFF_NAME}'.toUpperCase()}
+... PLAINTIFF
+
+VERSUS
+
+${'{DEFENDANT_NAME}'.toUpperCase()}
+... DEFENDANT
+
+${'━'.repeat(55)}
+WRITTEN STATEMENT
+ON BEHALF OF THE DEFENDANT
+${'━'.repeat(55)}
+
+The Defendant above-named respectfully submits
+as under:
+
+${'━'.repeat(55)}
+PRELIMINARY OBJECTIONS:
+${'━'.repeat(55)}
+${'{PRELIM_OBJ}' || '1. That the suit is not maintainable in law or on facts.'}
+
+${'━'.repeat(55)}
+ON MERITS:
+${'━'.repeat(55)}
+
+1. ADMISSIONS:
+   The following paragraphs of the plaint are admitted:
+   ${'{PARA_ADMIT}'}
+
+2. DENIALS:
+   The following paragraphs of the plaint are denied:
+   ${'{PARA_DENY}'}
+   The Defendant puts the Plaintiff to strict proof
+   thereof.
+
+3. DEFENSE:
+   ${'{DEFENSE}'}
+
+4. That the Plaintiff is not entitled to any relief
+   as claimed in the plaint.
+
+5. That the suit is liable to be dismissed with costs.
+
+${'━'.repeat(55)}
+PRAYER:
+${'━'.repeat(55)}
+In view of the above submissions, it is most
+respectfully prayed that this Hon'ble Court may
+be pleased to:
+
+a) Dismiss the suit with costs;
+b) Pass any other order as deemed fit.
+
+${'━'.repeat(55)}
+VERIFICATION:
+${'━'.repeat(55)}
+I, ${'{DEFENDANT_NAME}'}, the Defendant above-named,
+do hereby verify that the contents of this Written
+Statement are true and correct to the best of my
+knowledge and belief.
+
+Verified at ${'{VERIF_PLACE}'}
+on this ${'{FILING_DATE}'}.
+
+
+_________________________
+DEFENDANT
+
+_________________________
+ADVOCATE FOR DEFENDANT
+${'━'.repeat(55)}
+`
+  },
+  {
+    id:'bail-application', name:'Bail Application', nameGu:'જામીન અરજી (Bail Application)',
+    icon:'🔓', desc:'Regular / Anticipatory Bail — Sec 483 BNSS 2023 Format', category:'Criminal',
+    fields:[
+      { id:'COURT_NAME',     label:'Court Name',              type:'text',     required:true,  placeholder:'e.g. Sessions Court, Ahmedabad' },
+      { id:'FIR_NUMBER',     label:'FIR / Crime Number',      type:'text',     required:true,  placeholder:'e.g. FIR No. 123/2025' },
+      { id:'POLICE_STATION', label:'Police Station',          type:'text',     required:true },
+      { id:'ACCUSED_NAME',   label:'Accused Name',            type:'text',     required:true },
+      { id:'ACCUSED_ADDR',   label:'Accused Address',         type:'textarea', required:true },
+      { id:'ACCUSED_AGE',    label:'Accused Age',             type:'number',   required:true },
+      { id:'SECTIONS',       label:'IPC / BNS Sections',      type:'text',     required:true,  placeholder:'e.g. Sec 323, 504, 34 IPC' },
+      { id:'ARREST_DATE',    label:'Date of Arrest',          type:'date',     required:false },
+      { id:'JAIL_NAME',      label:'Jail Name',               type:'text',     required:false, placeholder:'If in custody' },
+      { id:'BAIL_TYPE',      label:'Type of Bail',            type:'text',     required:true,  placeholder:'Regular Bail / Anticipatory Bail' },
+      { id:'GROUNDS',        label:'Grounds for Bail',        type:'textarea', required:true,  placeholder:'Reasons why bail should be granted' },
+      { id:'FILING_DATE',    label:'Date of Application',     type:'date',     required:true },
+    ],
+    content:`IN THE COURT OF ${'{COURT_NAME}'.toUpperCase()}
+
+BAIL APPLICATION NO. _____ OF 2025
+
+IN THE MATTER OF:
+State (via ${'{POLICE_STATION}'} Police Station)
+FIR No. ${'{FIR_NUMBER}'}
+U/s ${'{SECTIONS}'}
+
+... PROSECUTION
+
+VERSUS
+
+${'{ACCUSED_NAME}'.toUpperCase()}
+Age: ${'{ACCUSED_AGE}'} years
+Address: ${'{ACCUSED_ADDR}'}
+${'{ARREST_DATE}' ? 'Arrested on: ' + '{ARREST_DATE}' : ''}
+${'{JAIL_NAME}' ? 'Currently in: ' + '{JAIL_NAME}' : ''}
+... ACCUSED / APPLICANT
+
+${'━'.repeat(55)}
+APPLICATION FOR GRANT OF BAIL
+UNDER SECTION 483 OF BNSS, 2023
+(Formerly Sec 437/439 CrPC)
+${'━'.repeat(55)}
+
+MOST RESPECTFULLY SHOWETH:
+
+1. That the Applicant has been arrested in connection
+   with FIR No. ${'{FIR_NUMBER}'} registered at
+   ${'{POLICE_STATION}'} Police Station for offences
+   under ${'{SECTIONS}'}.
+
+2. That the Applicant is innocent and has not committed
+   any offence as alleged.
+
+3. TYPE OF BAIL: ${'{BAIL_TYPE}'}
+
+4. GROUNDS FOR BAIL:
+   ${'{GROUNDS}'}
+
+5. That the Applicant is a law-abiding citizen and
+   will not abscond or misuse the liberty of bail.
+
+6. That the Applicant undertakes to appear before
+   this Hon'ble Court on every date of hearing.
+
+7. That the Applicant is ready to furnish bail bond
+   and surety as may be directed by this Court.
+
+${'━'.repeat(55)}
+PRAYER:
+${'━'.repeat(55)}
+In view of the above, it is most respectfully prayed
+that this Hon'ble Court may be pleased to:
+
+a) Release the Applicant on bail in FIR No.
+   ${'{FIR_NUMBER}'};
+b) Pass any other order as deemed fit.
+
+Date: ${'{FILING_DATE}'}
+Place: _______________
+
+
+_________________________
+APPLICANT / ACCUSED
+
+_________________________
+ADVOCATE FOR APPLICANT
+${'━'.repeat(55)}
+`
+  },
+  {
+    id:'criminal-complaint', name:'Criminal Complaint', nameGu:'ફોજદારી ફરિયાદ (Criminal Complaint)',
+    icon:'', desc:'Private Criminal Complaint — Sec 200 CrPC / BNSS 2023', category:'Criminal',
+    fields:[
+      { id:'COURT_NAME',       label:'Court Name',              type:'text',     required:true,  placeholder:'e.g. Judicial Magistrate First Class, Ahmedabad' },
+      { id:'COMPLAINANT_NAME', label:'Complainant Name',        type:'text',     required:true },
+      { id:'COMPLAINANT_ADDR', label:'Complainant Address',     type:'textarea', required:true },
+      { id:'COMPLAINANT_AGE',  label:'Complainant Age',         type:'number',   required:true },
+      { id:'ACCUSED_NAME',     label:'Accused Name',            type:'text',     required:true },
+      { id:'ACCUSED_ADDR',     label:'Accused Address',         type:'textarea', required:true },
+      { id:'OFFENCE_DATE',     label:'Date of Offence',         type:'date',     required:true },
+      { id:'OFFENCE_PLACE',    label:'Place of Offence',        type:'text',     required:true },
+      { id:'SECTIONS',         label:'Sections (IPC/BNS)',      type:'text',     required:true,  placeholder:'e.g. Sec 323, 504, 506, 34 IPC' },
+      { id:'FACTS',            label:'Facts of the Case',       type:'textarea', required:true,  placeholder:'Detailed description of what happened' },
+      { id:'EVIDENCE',         label:'Evidence / Witnesses',    type:'textarea', required:false, placeholder:'List of witnesses and documents' },
+      { id:'FILING_DATE',      label:'Date of Complaint',       type:'date',     required:true },
+      { id:'FILING_PLACE',     label:'Place of Filing',         type:'text',     required:true },
+    ],
+    content:`IN THE COURT OF ${'{COURT_NAME}'.toUpperCase()}
+
+CRIMINAL COMPLAINT NO. _____ OF 2025
+
+${'━'.repeat(55)}
+${'{COMPLAINANT_NAME}'.toUpperCase()}
+Age: ${'{COMPLAINANT_AGE}'} years
+Address: ${'{COMPLAINANT_ADDR}'}
+... COMPLAINANT
+
+VERSUS
+
+${'{ACCUSED_NAME}'.toUpperCase()}
+Address: ${'{ACCUSED_ADDR}'}
+... ACCUSED
+${'━'.repeat(55)}
+
+COMPLAINT UNDER SECTION 200 OF CrPC
+(Section 309 of BNSS, 2023)
+FOR OFFENCES UNDER: ${'{SECTIONS}'}
+
+${'━'.repeat(55)}
+MOST RESPECTFULLY SHOWETH:
+${'━'.repeat(55)}
+
+1. That the Complainant is a law-abiding citizen
+   residing at the above-mentioned address.
+
+2. That the Accused is known to the Complainant
+   and resides at the above-mentioned address.
+
+3. FACTS OF THE CASE:
+   On ${'{OFFENCE_DATE}'}, at ${'{OFFENCE_PLACE}'},
+   the following incident occurred:
+
+   ${'{FACTS}'}
+
+4. That the above act of the Accused constitutes
+   offences under ${'{SECTIONS}'}.
+
+5. EVIDENCE AND WITNESSES:
+   ${'{EVIDENCE}' || 'The Complainant will produce witnesses and documents at the time of trial.'}
+
+6. That the Complainant has not filed any other
+   complaint or FIR in respect of the same incident.
+
+7. That this Hon'ble Court has jurisdiction to
+   try the offence as it was committed within
+   its local limits.
+
+${'━'.repeat(55)}
+PRAYER:
+${'━'.repeat(55)}
+It is most respectfully prayed that this Hon'ble
+Court may be pleased to:
+
+a) Take cognizance of the offence;
+b) Summon the Accused and proceed as per law;
+c) Convict and punish the Accused;
+d) Award compensation to the Complainant;
+e) Pass any other order as deemed fit.
+
+Date: ${'{FILING_DATE}'}
+Place: ${'{FILING_PLACE}'}
+
+
+_________________________
+COMPLAINANT
+
+_________________________
+ADVOCATE FOR COMPLAINANT
+${'━'.repeat(55)}
+VERIFICATION:
+${'━'.repeat(55)}
+I, ${'{COMPLAINANT_NAME}'}, do hereby verify that
+the contents of this complaint are true and correct
+to the best of my knowledge.
+
+_________________________
+COMPLAINANT
+${'━'.repeat(55)}
+`
+  },
+  {
+    id:'will', name:'Will / Testament', nameGu:'વસિયતનામું (Will)',
+    icon:'📜', desc:'Last Will and Testament — Indian Succession Act 1925', category:'Civil',
+    fields:[
+      { id:'TESTATOR_NAME',   label:'Testator (Will Maker) Name', type:'text',     required:true },
+      { id:'TESTATOR_AGE',    label:'Testator Age',               type:'number',   required:true },
+      { id:'TESTATOR_ADDR',   label:'Testator Address',           type:'textarea', required:true },
+      { id:'WILL_DATE',       label:'Date of Will',               type:'date',     required:true },
+      { id:'WILL_PLACE',      label:'Place of Making Will',       type:'text',     required:true },
+      { id:'FAMILY_DETAILS',  label:'Family Details',             type:'textarea', required:true,  placeholder:'Wife/Husband, children names' },
+      { id:'PROPERTY_LIST',   label:'Property / Assets List',     type:'textarea', required:true,  placeholder:'All properties, bank accounts, etc.' },
+      { id:'BENEFICIARY1',    label:'Beneficiary 1 Name',         type:'text',     required:true },
+      { id:'BENEFICIARY1_REL',label:'Beneficiary 1 Relation',     type:'text',     required:true,  placeholder:'e.g. Son / Daughter / Wife' },
+      { id:'BENEFICIARY1_SHARE',label:'Beneficiary 1 Share',      type:'text',     required:true,  placeholder:'e.g. 50% or House at Ahmedabad' },
+      { id:'BENEFICIARY2',    label:'Beneficiary 2 Name',         type:'text',     required:false },
+      { id:'BENEFICIARY2_REL',label:'Beneficiary 2 Relation',     type:'text',     required:false },
+      { id:'BENEFICIARY2_SHARE',label:'Beneficiary 2 Share',      type:'text',     required:false },
+      { id:'EXECUTOR_NAME',   label:'Executor Name',              type:'text',     required:true,  placeholder:'Person who will execute the will' },
+      { id:'EXECUTOR_ADDR',   label:'Executor Address',           type:'textarea', required:true },
+      { id:'WITNESS1_NAME',   label:'Witness 1 Name',             type:'text',     required:true },
+      { id:'WITNESS1_ADDR',   label:'Witness 1 Address',          type:'textarea', required:true },
+      { id:'WITNESS2_NAME',   label:'Witness 2 Name',             type:'text',     required:true },
+      { id:'WITNESS2_ADDR',   label:'Witness 2 Address',          type:'textarea', required:true },
+    ],
+    content:`LAST WILL AND TESTAMENT
+OF
+${'{TESTATOR_NAME}'.toUpperCase()}
+${'━'.repeat(55)}
+
+I, ${'{TESTATOR_NAME}'}, aged ${'{TESTATOR_AGE}'} years,
+resident of ${'{TESTATOR_ADDR}'},
+
+do hereby make, publish, and declare this as my
+Last Will and Testament, hereby revoking all former
+Wills and Codicils made by me.
+
+${'━'.repeat(55)}
+DECLARATION:
+${'━'.repeat(55)}
+1. I am of sound mind and making this Will voluntarily,
+   without any force, fraud, or undue influence.
+
+2. FAMILY DETAILS:
+   ${'{FAMILY_DETAILS}'}
+
+${'━'.repeat(55)}
+ASSETS AND PROPERTIES:
+${'━'.repeat(55)}
+${'{PROPERTY_LIST}'}
+
+${'━'.repeat(55)}
+BEQUEST / DISTRIBUTION:
+${'━'.repeat(55)}
+I hereby bequeath my properties as follows:
+
+1. TO ${'{BENEFICIARY1}'} (${'{BENEFICIARY1_REL}'}):
+   ${'{BENEFICIARY1_SHARE}'}
+
+${'{BENEFICIARY2}' ? '2. TO ' + '{BENEFICIARY2}' + ' (' + '{BENEFICIARY2_REL}' + '):\n   ' + '{BENEFICIARY2_SHARE}' : ''}
+
+3. All remaining properties, if any, shall go to
+   ${'{BENEFICIARY1}'} absolutely.
+
+${'━'.repeat(55)}
+EXECUTOR:
+${'━'.repeat(55)}
+I appoint ${'{EXECUTOR_NAME}'},
+resident of ${'{EXECUTOR_ADDR}'},
+as the Executor of this Will.
+
+The Executor shall have full authority to:
+- Administer my estate
+- Pay my debts and liabilities
+- Distribute assets as per this Will
+
+${'━'.repeat(55)}
+SIGNATURE OF TESTATOR:
+${'━'.repeat(55)}
+
+Signed and declared by the Testator
+${'{TESTATOR_NAME}'}
+as his Last Will and Testament
+
+Date: ${'{WILL_DATE}'}
+Place: ${'{WILL_PLACE}'}
+
+
+_________________________
+TESTATOR
+
+${'━'.repeat(55)}
+WITNESSES:
+${'━'.repeat(55)}
+We, the undersigned, witnessed the Testator signing
+this Will in our presence, and we sign as witnesses
+in the presence of the Testator and each other.
+
+WITNESS 1:
+Name: ${'{WITNESS1_NAME}'}
+Address: ${'{WITNESS1_ADDR}'}
+Signature: _________________
+
+WITNESS 2:
+Name: ${'{WITNESS2_NAME}'}
+Address: ${'{WITNESS2_ADDR}'}
+Signature: _________________
+
+Date: ${'{WILL_DATE}'}
+Place: ${'{WILL_PLACE}'}
+${'━'.repeat(55)}
+`
+  },
 ];
 
 // ── State ─────────────────────────────────────────────────────────

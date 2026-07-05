@@ -2,7 +2,7 @@
 
 A professional, offline-first legal management platform for Gujarati advocates. Manage cases, fees, hearings, and legal documents with voice support and PWA capabilities.
 
-## 🚀 Quick Start
+##  Quick Start
 
 1. **Open** `index.html` in Chrome, Edge, or Safari
 2. **Install as PWA** — Click "Install App" in browser menu for native-app experience
@@ -23,15 +23,20 @@ A professional, offline-first legal management platform for Gujarati advocates. 
 - 🖨️ **Case Brief** — Formatted A4 printable case summary
 
 ### Documents
-- 📜 **Legal Templates** — 12 pre-built Gujarati legal document templates
-- ️ **Wizard Builder** — Step-by-step document creation
+- 📜 **13 Legal Templates** — Official court formats from Gujarat High Court, CPC, BNSS 2023
+  - Vakalatnama, Plaint, Written Statement, Bail Application
+  - Criminal Complaint, Affidavit, Legal Notice, Power of Attorney
+  - Rent Agreement, Sale Deed, Partnership Deed, Release Deed, Will
+- 📝 **Wizard Builder** — Step-by-step document creation with live preview
+- 👁️ **Preview Before Save** — Full document preview before saving
 - 💾 **Auto-Save Drafts** — Never lose work, drafts persist in localStorage
-- 📄 **Save & Export** — Save to IndexedDB, export as .docx
+- 📥 **Word Export** — Download any document as .doc (new or saved)
+- 🖨️ **Print Ready** — Formatted for A4 printing
 
 ### Voice & Navigation
-- 🎤 **Gujarati Voice Input** — Speak field values in Gujarati
+-  **Gujarati Voice Input** — Speak field values in Gujarati
 - 🗣️ **Voice Navigation** — Floating mic button for voice commands
-- ⌨️ **Keyboard Shortcuts** — `Ctrl+K` search, `Escape` close modals
+- ️ **Keyboard Shortcuts** — `Ctrl+K` search, `Escape` close modals
 
 ### Data & Export
 - 📊 **Excel Export/Import** — Full case data as .xlsx
@@ -42,7 +47,7 @@ A professional, offline-first legal management platform for Gujarati advocates. 
 - 📱 **Installable** — Add to home screen on mobile/desktop
 - 🔔 **Push Notifications** — Hearing reminders via browser notifications
 - 🌐 **Offline Support** — Service worker caches all assets
-- 🌓 **Dark/Light Theme** — Toggle with persistence
+-  **Dark/Light Theme** — Toggle with persistence
 
 ## 🛠️ Tech Stack
 
@@ -68,10 +73,10 @@ Advocate-Pro/
 └── logo.png            # App icon & favicon
 ```
 
-## 🎯 Usage Tips
+##  Usage Tips
 
 ### Voice Commands
-Click the 🎤 button (bottom-right) and say:
+Click the  button (bottom-right) and say:
 - "Open cases" / "Show fees" / "Calendar"
 - "Add case" / "Search" / "Export"
 
@@ -93,7 +98,7 @@ Click the 🎤 button (bottom-right) and say:
 - ✅ Safari (macOS/iOS)
 - ️ Firefox (Limited voice support)
 
-##  Privacy
+## 🔒 Privacy
 
 - **100% local** — All data stored in browser IndexedDB
 - **No server** — Nothing sent to external services
