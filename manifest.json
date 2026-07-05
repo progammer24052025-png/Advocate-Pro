@@ -1,0 +1,21 @@
+{
+  "name": "Advocate Pro — Legal Management",
+  "short_name": "Advocate Pro",
+  "description": "Professional legal management platform for Gujarati advocates. Manage cases, fees, and legal documents.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#07090f",
+  "theme_color": "#c9a227",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "./logo.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "lang": "gu-IN"
+}

@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Legal Documents — Advocate Pro</title>
+  <meta name="theme-color" content="#c9a227">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="apple-touch-icon" href="logo.png">
+  <link rel="stylesheet" href="shared.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+Gujarati:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+  <!-- mammoth.js for .docx reading -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+  <!-- SheetJS for Excel export -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <style>
+    /* ── Document Studio ── */
+    .tmpl-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:18px; }
+    .tmpl-card {
+      background:var(--bg-card); border:1px solid var(--border);
+      border-radius:var(--radius-lg); padding:22px; cursor:pointer;
+      transition:all .28s ease; position:relative; overflow:hidden;
+    }
+    .tmpl-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--purple),var(--purple-light)); }
+    .tmpl-card.custom-card::before { background:linear-gradient(90deg,var(--gold-dark),var(--gold-light)); }
+    .tmpl-card:hover { border-color:var(--purple-light); transform:translateY(-4px); box-shadow:0 0 28px rgba(124,58,237,.22); }
+    .tmpl-card.custom-card:hover { border-color:var(--gold); box-shadow:var(--shadow-gold); }
+    .tmpl-icon { width:54px; height:54px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:1.6rem; margin-bottom:14px; background:rgba(124,58,237,.1); border:1px solid rgba(124,58,237,.25); }
+    .tmpl-card.custom-card .tmpl-icon { background:rgba(201,162,39,.1); border-color:rgba(201,162,39,.3); }
+    .tmpl-name { font-weight:800; font-size:1rem; margin-bottom:3px; }
+    .tmpl-name-gu { font-family:'Noto Sans Gujarati',sans-serif; font-size:.85rem; color:var(--gold); margin-bottom:8px; }
+    .tmpl-desc { font-size:.8rem; color:var(--text-secondary); line-height:1.55; }
+    .tmpl-badge { position:absolute; top:14px; right:14px; font-size:.68rem; font-weight:700; padding:3px 9px; border-radius:99px; }
+    .tmpl-badge-builtin { background:rgba(124,58,237,.15); color:var(--purple-light); border:1px solid rgba(124,58,237,.3); }
+    .tmpl-badge-custom  { background:rgba(201,162,39,.15); color:var(--gold);         border:1px solid rgba(201,162,39,.3); }
+
+    /* Wizard */
+    .wizard-progress { display:flex; margin-bottom:24px; }
+    .wiz-dot { flex:1; text-align:center; font-size:.75rem; font-weight:600; padding:8px 4px; border-bottom:3px solid var(--border); color:var(--text-muted); transition:var(--transition); }
+    .wiz-dot.active { border-color:var(--gold); color:var(--gold); }
+    .wiz-dot.done   { border-color:var(--success); color:var(--success); }
+    .wiz-step { display:none; }
+    .wiz-step.active { display:block; animation:fadeIn .3s ease; }
+
+    /* Doc preview */
+    .doc-preview-wrap { background:var(--bg-secondary); padding:20px; border-radius:var(--radius-lg); }
+    .doc-preview {
+      background:#fff; color:#111;
+      border-radius:var(--radius-lg); padding:36px 44px;
+      font-family:'Noto Sans Gujarati','Times New Roman',serif;
+      font-size:12pt; line-height:1.9; white-space:pre-wrap; word-wrap:break-word;
+      min-height:350px; box-shadow:0 4px 24px rgba(0,0,0,.15);
+      border:1px solid rgba(0,0,0,.08);
+    }
+
+    /* Field rows */
+    .field-row { display:flex; gap:8px; align-items:flex-start; margin-bottom:14px; }
+    .field-row .form-group { flex:1; margin-bottom:0; }
+    .field-row .voice-btn  { align-self:flex-end; margin-bottom:2px; flex-shrink:0; }
+
+    /* Saved docs */
+    .doc-item { display:flex; align-items:center; gap:14px; padding:14px 18px; border-radius:var(--radius-lg); background:var(--bg-card); border:1px solid var(--border); margin-bottom:10px; transition:var(--transition); }
+    .doc-item:hover { border-color:var(--border-hover); }
+    .doc-icon-box { width:46px; height:46px; border-radius:12px; background:rgba(124,58,237,.1); border:1px solid rgba(124,58,237,.3); display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0; }
+
+    /* Upload zone */
+    .upload-zone { border:2px dashed var(--border); border-radius:var(--radius-lg); padding:44px 24px; text-align:center; cursor:pointer; transition:var(--transition); background:rgba(201,162,39,.02); }
+    .upload-zone:hover,.upload-zone.drag-over { border-color:var(--gold); background:rgba(201,162,39,.06); }
+    .upload-icon { font-size:2.5rem; margin-bottom:12px; }
+
+    /* Detection result */
+    .detection-card { border:1px solid rgba(201,162,39,.35); background:rgba(201,162,39,.06); border-radius:var(--radius-lg); padding:16px; margin-top:14px; }
+    .detection-badge { display:inline-flex; align-items:center; gap:6px; background:rgba(201,162,39,.15); border:1px solid rgba(201,162,39,.4); color:var(--gold); font-size:.8rem; font-weight:700; padding:4px 12px; border-radius:99px; margin-bottom:10px; }
+
+    /* Mic status */
+    .mic-status { font-size:.77rem; min-height:18px; margin-top:4px; transition:color .2s; }
+    .mic-status.ok   { color:var(--success); }
+    .mic-status.warn { color:var(--warning); }
+    .mic-status.err  { color:var(--danger); }
+
+    /* Mobile */
+    .mob-header { display:none; align-items:center; justify-content:space-between; padding:12px 16px; background:var(--bg-sidebar); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:200; }
+    .sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:99; }
+    @media(max-width:768px){ .mob-header{display:flex;} .sidebar-overlay.open{display:block;} }
+    @media(max-width:900px){ .wiz-layout{flex-direction:column;} }
+
+    @media print {
+      .sidebar,.mob-header,.page-header .btn,.modal-overlay { display:none !important; }
+      .main-content { margin-left:0 !important; padding:0 !important; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-layout">
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <a href="index.html" class="sidebar-logo">
+        <img src="logo.png" alt="Advocate Pro" style="width:40px;height:40px;border-radius:8px;object-fit:contain;background:#fff;">
+        <div><div class="logo-text">Advocate Pro</div><div class="logo-sub">Document Studio</div></div>
+      </a>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Studio</div>
+      <button class="nav-item active" id="nav-templates" onclick="showTab('templates')"><span class="nav-icon">📚</span>Template Library</button>
+      <button class="nav-item" id="nav-mydocs"    onclick="showTab('mydocs')"><span class="nav-icon">📄</span>My Documents<span class="nav-badge" id="navDocCount">0</span></button>
+      <button class="nav-item" id="nav-upload"    onclick="showTab('upload')"><span class="nav-icon">⬆️</span>Upload Template</button>
+
+      <div class="nav-section">Navigation</div>
+      <a href="case-library.html" class="nav-item"><span class="nav-icon">📁</span>Case Library</a>
+      <a href="index.html"        class="nav-item"><span class="nav-icon">🏠</span>Home</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div style="font-size:.75rem;color:var(--text-muted);line-height:1.6;">📜 7 built-in Gujarati<br>legal templates · Offline</div>
+      <button class="btn btn-ghost btn-sm mt-2" id="themeToggle" onclick="toggleTheme()" style="width:100%;justify-content:center;margin-top:10px;">🌙 Dark Mode</button>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+  <div class="mob-header">
+    <button class="hamburger" onclick="openSidebar()">☰</button>
+    <span style="font-weight:700;font-size:.95rem;">📜 Document Studio</span>
+    <button class="btn btn-secondary btn-sm" onclick="showTab('upload')">⬆️ Upload</button>
+  </div>
+
+  <!-- ── Main Content ── -->
+  <main class="main-content">
+
+    <!-- ══ TEMPLATES TAB ══ -->
+    <div class="tab-content active" id="tab-templates">
+      <div class="page-header">
+        <h1 class="page-title">Template Library</h1>
+        <p class="page-subtitle">Choose a built-in Gujarati legal template, or use your uploaded custom template</p>
+      </div>
+
+      <div style="margin-bottom:10px;"><span style="font-size:.78rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.09em;">📚 Built-in Legal Templates</span></div>
+      <div class="tmpl-grid" id="builtinGrid" style="margin-bottom:32px;"></div>
+
+      <div style="margin-bottom:10px;"><span style="font-size:.78rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.09em;">⬆️ My Custom Templates</span></div>
+      <div class="tmpl-grid" id="customGrid"></div>
+    </div>
+
+    <!-- ══ MY DOCUMENTS TAB ══ -->
+    <div class="tab-content" id="tab-mydocs">
+      <div class="page-header flex items-center justify-between flex-wrap gap-3">
+        <div><h1 class="page-title">My Documents</h1><p class="page-subtitle">All saved and generated legal documents</p></div>
+        <button class="btn btn-secondary" onclick="exportAllDocsExcel()">📊 Export Index (Excel)</button>
+      </div>
+      <div id="savedDocsList">
+        <div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No documents yet. Create one from a template.</div></div>
+      </div>
+    </div>
+
+    <!-- ══ UPLOAD TAB ══ -->
+    <div class="tab-content" id="tab-upload">
+      <div class="page-header">
+        <h1 class="page-title">Upload Your Template</h1>
+        <p class="page-subtitle">Upload a <strong>.txt</strong> or <strong>.docx</strong> file. The system will auto-detect document type and extract all <code style="background:var(--bg-card);padding:2px 8px;border-radius:4px;color:var(--gold);">{{PLACEHOLDER}}</code> fields.</p>
+      </div>
+
+      <div class="grid grid-2" style="gap:24px; align-items:start;">
+        <!-- Instructions -->
+        <div>
+          <div class="card mb-4" style="padding:18px;">
+            <h3 class="font-bold mb-3">📋 How the Template System Works</h3>
+            <ol style="padding-left:18px; color:var(--text-secondary); font-size:.875rem; line-height:2.1;">
+              <li>Write your legal draft in any text editor or Word</li>
+              <li>Mark all fillable fields with <strong style="color:var(--gold);">{{FIELD_NAME}}</strong></li>
+              <li>Save as <strong>.txt</strong> or <strong>.docx</strong></li>
+              <li>Upload below — the system auto-reads it</li>
+              <li>It auto-detects the document type (Bhada Karar, POA, etc.)</li>
+              <li>It builds a smart form with correct input types per field</li>
+              <li>Fill the form, preview, then export to Word or Print!</li>
+            </ol>
+            <div class="card mt-4" style="padding:14px; background:var(--bg-secondary); border-color:rgba(201,162,39,.2);">
+              <div class="text-xs font-bold text-muted mb-2">EXAMPLE — PLACEHOLDERS IN TEMPLATE:</div>
+              <div style="font-family:monospace; font-size:.85rem; color:var(--gold); line-height:1.9;">
+                ભ-ઇ-ઇ-ઇ: {{TENANT_NAME}}<br>
+                ભ-ઇ-ઇ-ઇ: ₹{{RENT_AMOUNT}}<br>
+                ઇ-ઇ-ઇ-ઇ: {{START_DATE}}<br>
+                ઇ-ઇ-ઇ-ઇ: {{CITY}}<br>
+                ઇ-ઇ-ઇ-ઇ: {{LANDLORD_ADDRESS}}
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="padding:16px; background:rgba(124,58,237,.05); border-color:rgba(124,58,237,.25);">
+            <h4 class="font-bold mb-2" style="color:var(--purple-light);">⚡ Smart Auto-Detection</h4>
+            <p class="text-sm text-muted" style="line-height:1.7;">The system scans your document text and automatically:<br>
+            • Detects document type (Rent Agreement, Sale Deed, etc.)<br>
+            • Assigns correct input type (date, number, address, etc.)<br>
+            • Marks required vs optional fields<br>
+            • Supports Gujarati text in templates
+            </p>
+          </div>
+        </div>
+
+        <!-- Upload Form -->
+        <div>
+          <div class="form-group">
+            <label class="form-label">Template Name <span class="req">*</span></label>
+            <input type="text" class="form-control" id="uploadName" placeholder="e.g. My Bhada Karar, Custom POA…">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Category (will be auto-detected, or choose manually)</label>
+            <select class="form-control" id="uploadCategory">
+              <option value="">Auto Detect…</option>
+              <option>Rent / Lease</option><option>Sale / Purchase</option><option>Power of Attorney</option>
+              <option>Partnership</option><option>Affidavit</option><option>Legal Notice</option><option>Other</option>
+            </select>
+          </div>
+
+          <div class="upload-zone" id="dropZone"
+            onclick="document.getElementById('tmplFileInput').click()"
+            ondragover="e=>{ e.preventDefault(); document.getElementById('dropZone').classList.add('drag-over'); }"
+            ondragleave="()=>document.getElementById('dropZone').classList.remove('drag-over')"
+            ondrop="handleFileDrop(event)">
+            <div class="upload-icon">📁</div>
+            <div class="font-bold mb-2">Click to browse or drag &amp; drop</div>
+            <div class="text-sm text-muted">Supports <strong>.txt</strong> and <strong>.docx</strong> files</div>
+          </div>
+          <input type="file" id="tmplFileInput" accept=".txt,.docx" hidden onchange="handleFileSelect(event)">
+
+          <!-- Processing indicator -->
+          <div id="uploadProcessing" class="hidden" style="text-align:center; padding:16px;">
+            <div class="spinner" style="margin:0 auto 10px;"></div>
+            <div class="text-sm text-muted">Reading file…</div>
+          </div>
+
+          <!-- Preview -->
+          <div id="uploadPreviewWrap" class="hidden mt-4">
+            <div class="card" style="padding:16px; background:var(--bg-secondary);">
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-bold text-sm" id="uploadPreviewName">file.txt</span>
+                <button class="btn btn-ghost btn-sm" onclick="clearUpload()">✕ Clear</button>
+              </div>
+              <div class="text-xs text-muted mb-2" id="uploadPreviewStats"></div>
+              <!-- Detection result -->
+              <div class="detection-card" id="detectionCard">
+                <div class="detection-badge">🤖 Auto-Detected: <span id="detectedType">—</span></div>
+                <div class="text-xs text-muted" id="detectedFields"></div>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn btn-primary w-full mt-4" onclick="saveCustomTemplate()" style="justify-content:center;">
+            💾 Save Template to Library
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ WIZARD TAB ══ -->
+    <div class="tab-content" id="tab-wizard">
+      <div class="page-header flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h1 class="page-title" id="wizTitle">Create Document</h1>
+          <p class="page-subtitle" id="wizSubtitle">Fill in all required fields</p>
+        </div>
+        <button class="btn btn-ghost" onclick="showTab('templates')">← Back to Templates</button>
+      </div>
+
+      <!-- Progress bar -->
+      <div class="wizard-progress" id="wizProgress">
+        <div class="wiz-dot active" id="wdot-1">① Fill Fields</div>
+        <div class="wiz-dot"        id="wdot-2">② Preview &amp; Export</div>
+      </div>
+
+      <!-- Step 1: Fill Fields -->
+      <div class="wiz-step active" id="wstep-1">
+        <div class="flex gap-5 wiz-layout">
+          <!-- Form -->
+          <div style="flex:1; min-width:0;">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-bold text-gold">📝 Fill Document Details</h3>
+              <div class="flex gap-2 items-center">
+                <label class="text-xs text-muted">Voice Language:</label>
+                <select class="form-control" id="voiceLang" onchange="VoiceEngine.setLanguage(this.value)" style="width:130px; padding:6px 10px; font-size:.8rem;">
+                  <option value="gu-IN">Gujarati (gu-IN)</option>
+                  <option value="hi-IN">Hindi (hi-IN)</option>
+                  <option value="en-IN">English (en-IN)</option>
+                </select>
+              </div>
+            </div>
+            <div id="wizFieldsForm"></div>
+            <div class="mic-status" id="wizMicStatus"></div>
+            <div class="flex gap-3 mt-6">
+              <button class="btn btn-primary flex-1" onclick="goToStep(2)" style="justify-content:center;">👁️ Preview Document →</button>
+            </div>
+          </div>
+          <!-- Live Preview -->
+          <div style="width:380px; flex-shrink:0;">
+            <h3 class="font-bold mb-3">👁️ Live Preview</h3>
+            <div style="max-height:520px; overflow-y:auto; border-radius:var(--radius-lg); border:1px solid var(--border);">
+              <div class="doc-preview" id="wizLivePreview" style="padding:20px; font-size:10.5pt; min-height:0;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Preview & Export -->
+      <div class="wiz-step" id="wstep-2">
+        <div class="flex items-center justify-between flex-wrap gap-3 mb-4">
+          <h3 class="font-bold text-lg">📄 Full Document Preview</h3>
+          <div class="flex gap-3 flex-wrap">
+            <button class="btn btn-ghost"     onclick="goToStep(1)">← Edit Fields</button>
+            <button class="btn btn-secondary" onclick="saveCurrentDoc()">💾 Save</button>
+            <button class="btn btn-secondary" onclick="printCurrentDoc()">🖨️ Print</button>
+            <button class="btn btn-primary"   onclick="exportCurrentDocWord()">📥 Download Word</button>
+          </div>
+        </div>
+        <div class="form-group mb-4 flex gap-3 items-center flex-wrap">
+          <input type="text" class="form-control" id="docSaveName" placeholder="Document title (for saving)…" style="max-width:340px;">
+          <span class="text-sm text-muted">← Name it before saving</span>
+        </div>
+        <div class="doc-preview-wrap">
+          <div class="doc-preview" id="docFullPreview"></div>
+        </div>
+      </div>
+
+    </div><!-- end wizard tab -->
+
+  </main>
+</div>
+
+<!-- ══ SAVED DOC VIEW MODAL ══ -->
+<div class="modal-overlay" id="savedDocModal">
+  <div class="modal modal-xl">
+    <div class="modal-header">
+      <h2 class="modal-title" id="savedDocTitle">Document</h2>
+      <button class="modal-close" onclick="closeModal('savedDocModal')">✕</button>
+    </div>
+    <div class="doc-preview-wrap" style="max-height:68vh; overflow-y:auto;">
+      <div class="doc-preview" id="savedDocBody" style="font-size:11pt;"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost"     onclick="closeModal('savedDocModal')">Close</button>
+      <button class="btn btn-secondary" id="savedPrintBtn">🖨️ Print</button>
+      <button class="btn btn-primary"   id="savedWordBtn">📥 Download Word</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Scripts -->
+<script src="db.js"></script>
+<script src="shared.js"></script>
+<script>
+// ═══════════════════════════════════════════════════════════════════
+//  ADVOCATE PRO — Document Studio  (complete, reliable)
+// ═══════════════════════════════════════════════════════════════════
+
+const showToast = showAdvToast;
+
+// ── Built-in Templates ─────────────────────────────────────────────
+const BUILTIN = [
+  {
+    id:'bhada-karar', name:'Bhada Karar', nameGu:'ભ-ઇ-ઇ-ઇ (Rent Agreement)',
+    icon:'🏠', desc:'Residential / Commercial Rent Agreement', category:'Rent / Lease',
+    fields:[
+      { id:'DATE',               label:'Agreement Date',            type:'date',     required:true  },
+      { id:'CITY',               label:'City / Place (ઇ-ઇ-ઇ)',       type:'text',     required:true,  placeholder:'e.g. Ahmedabad / Surat' },
+      { id:'LANDLORD_NAME',      label:'Landlord Name (ઇ-ઇ-ઇ-ઇ-ઇ)', type:'text',     required:true,  placeholder:'Full name' },
+      { id:'LANDLORD_AGE',       label:'Landlord Age',              type:'number',   required:true,  placeholder:'e.g. 52' },
+      { id:'LANDLORD_OCCUPATION',label:'Landlord Occupation',       type:'text',     required:false, placeholder:'Business / Service' },
+      { id:'LANDLORD_ADDRESS',   label:'Landlord Address',          type:'textarea', required:true,  placeholder:'Full address' },
+      { id:'TENANT_NAME',        label:'Tenant Name (ઇ-ઇ-ઇ-ઇ)',    type:'text',     required:true,  placeholder:'Full name' },
+      { id:'TENANT_AGE',         label:'Tenant Age',                type:'number',   required:true,  placeholder:'e.g. 30' },
+      { id:'TENANT_OCCUPATION',  label:'Tenant Occupation',         type:'text',     required:false, placeholder:'Business / Service' },
+      { id:'TENANT_ADDRESS',     label:'Tenant Permanent Address',  type:'textarea', required:true,  placeholder:'Permanent address' },
+      { id:'PROPERTY_ADDRESS',   label:'Property Address (ઇ-ઇ-ઇ-ઇ)', type:'textarea', required:true, placeholder:'Full property address to be rented' },
+      { id:'START_DATE',         label:'Tenancy Start Date',        type:'date',     required:true  },
+      { id:'DURATION',           label:'Duration (ઇ-ઇ-ઇ)',          type:'text',     required:true,  placeholder:'e.g. 11 Months / ૧૧ ઇ-ઇ-ઇ-ઇ' },
+      { id:'END_DATE',           label:'Tenancy End Date',          type:'date',     required:true  },
+      { id:'RENT_AMOUNT',        label:'Monthly Rent (₹)',          type:'number',   required:true,  placeholder:'e.g. 15000' },
+      { id:'RENT_AMOUNT_WORDS',  label:'Rent in Words',             type:'text',     required:true,  placeholder:'e.g. Fifteen Thousand Only' },
+      { id:'RENT_DUE_DATE',      label:'Rent Due Date (day of month)',type:'text',   required:true,  placeholder:'e.g. 5th of each month' },
+      { id:'DEPOSIT_AMOUNT',     label:'Security Deposit (₹)',      type:'number',   required:true,  placeholder:'e.g. 30000' },
+      { id:'DEPOSIT_AMOUNT_WORDS',label:'Deposit in Words',         type:'text',     required:true,  placeholder:'e.g. Thirty Thousand Only' },
+      { id:'NOTICE_PERIOD',      label:'Notice Period',             type:'text',     required:true,  placeholder:'e.g. 1 Month / ૧ ઇ-ઇ-ઇ' },
+      { id:'WITNESS1_NAME',      label:'Witness 1 Name',            type:'text',     required:false, placeholder:'Optional' },
+      { id:'WITNESS2_NAME',      label:'Witness 2 Name',            type:'text',     required:false, placeholder:'Optional' },
+    ],
+    content: `ભ-ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ (LEAVE AND LICENSE AGREEMENT)
+${'━'.repeat(55)}
+
+આ ઇ-ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ {{DATE}} ઇ-ઇ ઇ-ઇ-ઇ {{CITY}} ઇ-ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ ઇ-ઇ:
+
+${'━'.repeat(55)}
+★ પ્રથમ પક્ષ (ઇ-ઇ-ઇ-ઇ / Licensor):
+${'━'.repeat(55)}
+   ઇ-ઇ-ઇ      : {{LANDLORD_NAME}}
+   ઇ-ઇ.ઇ.     : {{LANDLORD_AGE}} ઇ-ઇ-ઇ
+   ઇ-ઇ-ઇ-ઇ    : {{LANDLORD_OCCUPATION}}
+   ઇ-ઇ-ઇ-ઇ-ઇ  : {{LANDLORD_ADDRESS}}
+
+${'━'.repeat(55)}
+★ ઇ-ઇ-ઇ-ઇ ઇ-ઇ-ઇ (ઇ-ઇ-ઇ-ઇ / Licensee):
+${'━'.repeat(55)}
+   ઇ-ઇ-ઇ      : {{TENANT_NAME}}
+   ઇ-ઇ.ઇ.     : {{TENANT_AGE}} ઇ-ઇ-ઇ
+   ઇ-ઇ-ઇ-ઇ    : {{TENANT_OCCUPATION}}
+   ઇ-ઇ-ઇ-ઇ-ઇ  : {{TENANT_ADDRESS}}
+
+ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ (ઇ-ઇ-ઇ-ઇ) {{PROPERTY_ADDRESS}} ઇ-ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ-ઇ ઇ-ઇ.
+
+${'━'.repeat(55)}
+ઇ-ઇ-ઇ-ઇ (TERMS & CONDITIONS)
+${'━'.repeat(55)}
+
+૧. ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ (Tenancy Period):
+   {{START_DATE}} ઇ-ઇ ઇ-ઇ-ઇ {{END_DATE}} ઇ-ઇ-ઇ, {{DURATION}} ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ.
+
+૨. ઇ-ઇ-ઇ ઇ-ઇ-ઇ (Monthly Rent):
+   ઇ-ઇ-ઇ ₹{{RENT_AMOUNT}}/- ({{RENT_AMOUNT_WORDS}}) ઇ-ઇ-ઇ-ઇ
+   ઇ-ઇ-ઇ {{RENT_DUE_DATE}} ઇ-ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ-ઇ.
+
+૩. ઇ-ઇ-ઇ-ઇ-ઇ (Security Deposit):
+   ₹{{DEPOSIT_AMOUNT}}/- ({{DEPOSIT_AMOUNT_WORDS}}) ઇ-ઇ-ઇ-ઇ
+   ઇ-ઇ-ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ-ઇ.
+
+૪. ઇ-ઇ-ઇ-ઇ (Notice Period):
+   {{NOTICE_PERIOD}} ઇ-ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ-ઇ.
+
+${'━'.repeat(55)}
+ઇ-ઇ-ઇ-ઇ-ઇ (SIGNATURES):
+
+ઇ-ઇ-ઇ-ઇ: {{LANDLORD_NAME}}          ઇ-ઇ-ઇ-ઇ: {{TENANT_NAME}}
+
+ઇ-ઇ-ઇ-ઇ ૧: {{WITNESS1_NAME}}        ઇ-ઇ-ઇ-ઇ ૨: {{WITNESS2_NAME}}
+
+ઇ-ઇ-ઇ: {{DATE}}     ઇ-ઇ-ઇ-ઇ: {{CITY}}
+${'━'.repeat(55)}
+`
+  },
+  {
+    id:'mukhtyarnamu', name:'Mukhtyarnamu', nameGu:'ઇ-ઇ-ઇ-ઇ-ઇ-ઇ-ઇ-ઇ (Power of Attorney)',
+    icon:'📋', desc:'Power of Attorney — General or Specific', category:'Power of Attorney',
+    fields:[
+      { id:'DATE',              label:'Date',                    type:'date',     required:true },
+      { id:'CITY',              label:'City / Place',            type:'text',     required:true,  placeholder:'e.g. Ahmedabad' },
+      { id:'PRINCIPAL_NAME',   label:'Principal Name',          type:'text',     required:true,  placeholder:'Name of person granting power' },
+      { id:'PRINCIPAL_AGE',    label:'Principal Age',           type:'number',   required:true  },
+      { id:'PRINCIPAL_ADDRESS',label:'Principal Address',       type:'textarea', required:true  },
+      { id:'AGENT_NAME',       label:'Agent / Attorney Name',   type:'text',     required:true,  placeholder:'Name of person receiving power' },
+      { id:'AGENT_AGE',        label:'Agent Age',               type:'number',   required:true  },
+      { id:'AGENT_ADDRESS',    label:'Agent Address',           type:'textarea', required:true  },
+      { id:'RELATION',         label:'Relation to Principal',   type:'text',     required:false, placeholder:'e.g. Son / Daughter / Brother' },
+      { id:'PROPERTY_DESC',    label:'Property / Matter Description', type:'textarea', required:true, placeholder:'Details of property or matter for which power is granted' },
+      { id:'POWERS_GRANTED',   label:'Powers Granted',          type:'textarea', required:true,  placeholder:'List all powers being granted…' },
+      { id:'STAMP_VALUE',      label:'Stamp Duty (₹)',           type:'number',   required:false, placeholder:'e.g. 500' },
+    ],
+    content:`ઇ-ઇ-ઇ-ઇ-ઇ-ઇ-ઇ-ઇ (POWER OF ATTORNEY)
+${'━'.repeat(55)}
+
+Date: {{DATE}}   Place: {{CITY}}
+
+${'━'.repeat(55)}
+PRINCIPAL (Power Grantor):
+${'━'.repeat(55)}
+Name    : {{PRINCIPAL_NAME}}
+Age     : {{PRINCIPAL_AGE}} years
+Address : {{PRINCIPAL_ADDRESS}}
+
+${'━'.repeat(55)}
+AGENT / ATTORNEY (Power Receiver):
+${'━'.repeat(55)}
+Name     : {{AGENT_NAME}}
+Age      : {{AGENT_AGE}} years
+Address  : {{AGENT_ADDRESS}}
+Relation : {{RELATION}}
+
+${'━'.repeat(55)}
+DECLARATION
+${'━'.repeat(55)}
+
+I, {{PRINCIPAL_NAME}}, hereby appoint and authorize {{AGENT_NAME}} as my true and lawful Attorney for the following subject matter / property:
+
+SUBJECT / PROPERTY:
+{{PROPERTY_DESC}}
+
+POWERS GRANTED:
+{{POWERS_GRANTED}}
+
+${'━'.repeat(55)}
+SIGNATURES:
+
+Principal: {{PRINCIPAL_NAME}}          Agent: {{AGENT_NAME}}
+
+Stamp Duty: ₹{{STAMP_VALUE}}
+Date: {{DATE}}     Place: {{CITY}}
+${'━'.repeat(55)}
+`
+  },
+  {
+    id:'legal-notice', name:'Legal Notice', nameGu:'ઇ-ઇ-ઇ-ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ-ઇ (Legal Notice)',
+    icon:'⚖️', desc:'Formal Legal Notice from Advocate to Opposite Party', category:'Legal Notice',
+    fields:[
+      { id:'DATE',              label:'Notice Date',             type:'date',     required:true },
+      { id:'ADVOCATE_NAME',    label:'Advocate Name',           type:'text',     required:true,  placeholder:'Your full name' },
+      { id:'ADVOCATE_ADDRESS', label:'Advocate Office Address', type:'textarea', required:true  },
+      { id:'ADVOCATE_PHONE',   label:'Advocate Phone',          type:'tel',      required:false },
+      { id:'CLIENT_NAME',      label:'Client Name (Sender)',    type:'text',     required:true  },
+      { id:'CLIENT_ADDRESS',   label:'Client Address',          type:'textarea', required:true  },
+      { id:'OPPOSITE_NAME',    label:'Opposite Party Name',     type:'text',     required:true  },
+      { id:'OPPOSITE_ADDRESS', label:'Opposite Party Address',  type:'textarea', required:true  },
+      { id:'SUBJECT',          label:'Subject of Notice',       type:'text',     required:true,  placeholder:'e.g. Recovery of dues / Illegal possession' },
+      { id:'NOTICE_FACTS',     label:'Facts & Grievances',      type:'textarea', required:true,  placeholder:'Describe the facts and legal grievances…' },
+      { id:'DEMAND',           label:'Legal Demand / Relief',   type:'textarea', required:true,  placeholder:'Specific demands and relief sought…' },
+      { id:'REPLY_DAYS',       label:'Days to Reply',           type:'number',   required:true,  placeholder:'e.g. 15 or 30' },
+    ],
+    content:`                              LEGAL NOTICE
+${'━'.repeat(65)}
+From:
+{{ADVOCATE_NAME}}
+Advocate & Solicitor
+{{ADVOCATE_ADDRESS}}
+Phone: {{ADVOCATE_PHONE}}
+
+Date: {{DATE}}
+${'━'.repeat(65)}
+To,
+{{OPPOSITE_NAME}}
+{{OPPOSITE_ADDRESS}}
+${'━'.repeat(65)}
+
+Sub: LEGAL NOTICE — {{SUBJECT}}
+
+Sir / Madam,
+
+Under instructions from and on behalf of my client,
+{{CLIENT_NAME}}
+{{CLIENT_ADDRESS}}
+I hereby serve upon you the following Legal Notice:
+
+FACTS:
+{{NOTICE_FACTS}}
+
+LEGAL DEMAND:
+{{DEMAND}}
+
+You are hereby called upon to comply with the above demands within
+{{REPLY_DAYS}} days from receipt of this notice, failing which my client
+shall initiate appropriate legal proceedings before the competent court,
+entirely at your risk, cost and consequences.
+
+Please take notice accordingly.
+${'━'.repeat(65)}
+Yours faithfully,
+
+{{ADVOCATE_NAME}}
+Advocate
+${'━'.repeat(65)}
+`
+  },
+  {
+    id:'halfnamu', name:'Halfnamu', nameGu:'ઇ-ઇ-ઇ-ઇ-ઇ-ઇ-ઇ-ઇ (Affidavit)',
+    icon:'🔏', desc:'Sworn Affidavit before Notary / Court', category:'Affidavit',
+    fields:[
+      { id:'DATE',          label:'Date',                  type:'date',     required:true },
+      { id:'COURT_NAME',    label:'Before (Court / Notary)',type:'text',    required:true,  placeholder:'e.g. Civil Court Ahmedabad / Notary Public' },
+      { id:'DEPONENT_NAME', label:'Deponent Name',         type:'text',     required:true  },
+      { id:'DEPONENT_AGE',  label:'Deponent Age',          type:'number',   required:true  },
+      { id:'DEPONENT_ADDR', label:'Deponent Address',      type:'textarea', required:true  },
+      { id:'SUBJECT',       label:'Subject of Affidavit',  type:'text',     required:true  },
+      { id:'STATEMENTS',    label:'Sworn Statements',      type:'textarea', required:true,  placeholder:'1. …\n2. …\n3. …' },
+      { id:'PLACE',         label:'Place of Swearing',     type:'text',     required:true  },
+    ],
+    content:`AFFIDAVIT / HALFNAMU
+${'━'.repeat(55)}
+
+Before: {{COURT_NAME}}
+
+I, {{DEPONENT_NAME}}, Age: {{DEPONENT_AGE}} years,
+Residing at: {{DEPONENT_ADDR}},
+
+do hereby solemnly affirm and state on oath as under:
+
+Subject: {{SUBJECT}}
+
+SWORN STATEMENTS:
+{{STATEMENTS}}
+
+I state that the above contents are true and correct to the
+best of my knowledge and belief. Nothing has been concealed.
+
+DEPONENT: {{DEPONENT_NAME}}
+
+Verified at {{PLACE}} on {{DATE}}.
+
+${'─'.repeat(40)}
+Solemnly affirmed before me:
+
+Deponent's Signature
+${'─'.repeat(40)}
+NOTARY / OATH COMMISSIONER
+${'━'.repeat(55)}
+`
+  },
+  {
+    id:'bhagidari', name:'Bhagidari Karar', nameGu:'ઇ-ઇ-ઇ-ઇ-ઇ ઇ-ઇ-ઇ-ઇ (Partnership Deed)',
+    icon:'🤝', desc:'Partnership Agreement between two or more partners', category:'Partnership',
+    fields:[
+      { id:'DATE',             label:'Date',                 type:'date',   required:true },
+      { id:'CITY',             label:'City / Place',         type:'text',   required:true },
+      { id:'FIRM_NAME',        label:'Firm Name',            type:'text',   required:true,  placeholder:'Name of partnership firm' },
+      { id:'BUSINESS_TYPE',    label:'Nature of Business',   type:'text',   required:true,  placeholder:'e.g. Retail / Trading / Manufacturing' },
+      { id:'BUSINESS_ADDRESS', label:'Business Address',     type:'textarea',required:true },
+      { id:'PARTNER1_NAME',    label:'Partner 1 Name',       type:'text',   required:true },
+      { id:'PARTNER1_SHARE',   label:'Partner 1 Share (%)',  type:'number', required:true,  placeholder:'e.g. 50' },
+      { id:'PARTNER2_NAME',    label:'Partner 2 Name',       type:'text',   required:true },
+      { id:'PARTNER2_SHARE',   label:'Partner 2 Share (%)',  type:'number', required:true,  placeholder:'e.g. 50' },
+      { id:'CAPITAL_AMOUNT',   label:'Total Capital (₹)',    type:'number', required:true },
+      { id:'START_DATE',       label:'Commencement Date',    type:'date',   required:true },
+      { id:'PROFIT_RATIO',     label:'Profit / Loss Ratio',  type:'text',   required:true,  placeholder:'e.g. 50:50 or 60:40' },
+    ],
+    content:`PARTNERSHIP DEED / BHAGIDARI KARAR
+${'━'.repeat(55)}
+
+This Partnership Deed is executed on {{DATE}} at {{CITY}}.
+
+BETWEEN:
+1. {{PARTNER1_NAME}}  —  Share: {{PARTNER1_SHARE}}%
+2. {{PARTNER2_NAME}}  —  Share: {{PARTNER2_SHARE}}%
+
+(Collectively referred to as "Partners")
+
+${'━'.repeat(55)}
+FIRM DETAILS:
+${'━'.repeat(55)}
+Firm Name     : {{FIRM_NAME}}
+Business Type : {{BUSINESS_TYPE}}
+Business Addr : {{BUSINESS_ADDRESS}}
+Commencement  : {{START_DATE}}
+Total Capital : ₹{{CAPITAL_AMOUNT}}
+
+${'━'.repeat(55)}
+TERMS:
+${'━'.repeat(55)}
+1. PROFIT & LOSS: {{PROFIT_RATIO}} between {{PARTNER1_NAME}} and {{PARTNER2_NAME}}.
+2. CAPITAL: Total capital of ₹{{CAPITAL_AMOUNT}} as per agreed ratio.
+3. MANAGEMENT: Partners shall jointly manage the business.
+4. BANK ACCOUNT: Joint account operated by both partners.
+5. ACCOUNTS: Books maintained at principal place of business.
+
+${'━'.repeat(55)}
+SIGNATURES:
+
+{{PARTNER1_NAME}}                    {{PARTNER2_NAME}}
+Partner 1                            Partner 2
+
+Date: {{DATE}}     Place: {{CITY}}
+${'━'.repeat(55)}
+`
+  },
+  {
+    id:'vechan-khat', name:'Vechan Khat', nameGu:'ઇ-ઇ-ઇ-ઇ-ઇ ઇ-ઇ-ઇ (Sale Deed)',
+    icon:'🏘️', desc:'Property Sale Deed / Vechan Dastavej', category:'Sale / Purchase',
+    fields:[
+      { id:'DATE',              label:'Date of Deed',          type:'date',     required:true },
+      { id:'CITY',              label:'City / Taluka',         type:'text',     required:true },
+      { id:'SELLER_NAME',       label:'Seller Name',           type:'text',     required:true },
+      { id:'SELLER_ADDRESS',    label:'Seller Address',        type:'textarea', required:true },
+      { id:'BUYER_NAME',        label:'Buyer Name',            type:'text',     required:true },
+      { id:'BUYER_ADDRESS',     label:'Buyer Address',         type:'textarea', required:true },
+      { id:'PROPERTY_DESC',     label:'Property Description',  type:'textarea', required:true,  placeholder:'Survey no., plot no., area, boundaries…' },
+      { id:'SALE_AMOUNT',       label:'Sale Amount (₹)',       type:'number',   required:true },
+      { id:'SALE_AMOUNT_WORDS', label:'Amount in Words',       type:'text',     required:true,  placeholder:'e.g. Fifty Lakh Rupees Only' },
+      { id:'PAYMENT_MODE',      label:'Mode of Payment',       type:'text',     required:true,  placeholder:'Cheque No. / NEFT / Cash' },
+      { id:'POSSESSION_DATE',   label:'Possession Date',       type:'date',     required:true },
+      { id:'STAMP_VALUE',       label:'Stamp Duty (₹)',         type:'number',   required:false },
+    ],
+    content:`SALE DEED / VECHAN KHAT
+${'━'.repeat(55)}
+Date: {{DATE}}   Place: {{CITY}}
+
+${'━'.repeat(55)}
+SELLER (Vikretu):
+Name    : {{SELLER_NAME}}
+Address : {{SELLER_ADDRESS}}
+
+BUYER (Kharidnar):
+Name    : {{BUYER_NAME}}
+Address : {{BUYER_ADDRESS}}
+
+${'━'.repeat(55)}
+PROPERTY DETAILS:
+{{PROPERTY_DESC}}
+
+${'━'.repeat(55)}
+CONSIDERATION:
+Sale Amount  : ₹{{SALE_AMOUNT}} ({{SALE_AMOUNT_WORDS}})
+Payment Mode : {{PAYMENT_MODE}}
+Possession   : {{POSSESSION_DATE}}
+Stamp Duty   : ₹{{STAMP_VALUE}}
+
+${'━'.repeat(55)}
+DECLARATIONS:
+1. Seller declares property is free from all encumbrances.
+2. Seller confirms full consideration of ₹{{SALE_AMOUNT}} received.
+3. Physical possession handed to Buyer on {{POSSESSION_DATE}}.
+4. Buyer shall be absolute owner from date of registration.
+
+${'━'.repeat(55)}
+Seller: {{SELLER_NAME}}          Buyer: {{BUYER_NAME}}
+Date: {{DATE}}    Place: {{CITY}}
+Witness 1: ______________    Witness 2: ______________
+${'━'.repeat(55)}
+`
+  },
+  {
+    id:'faragati', name:'Faragati', nameGu:'ઇ-ઇ-ઇ-ઇ-ઇ-ઇ (Release Deed)',
+    icon:'📝', desc:'Release Deed / No Claim Certificate', category:'Other',
+    fields:[
+      { id:'DATE',           label:'Date',                              type:'date',     required:true },
+      { id:'CITY',           label:'City',                              type:'text',     required:true },
+      { id:'RELEASOR_NAME',  label:'Releasor (who gives release)',       type:'text',     required:true },
+      { id:'RELEASOR_ADDR',  label:'Releasor Address',                  type:'textarea', required:true },
+      { id:'RELEASEE_NAME',  label:'Releasee (who receives release)',    type:'text',     required:true },
+      { id:'RELEASEE_ADDR',  label:'Releasee Address',                  type:'textarea', required:true },
+      { id:'SUBJECT',        label:'Subject (what is being released)',   type:'text',     required:true,  placeholder:'e.g. Property / Claim / Dues' },
+      { id:'DESCRIPTION',    label:'Description of Release',            type:'textarea', required:true },
+      { id:'CONSIDERATION',  label:'Consideration (₹ or NIL)',          type:'text',     required:false, placeholder:'Amount or NIL' },
+    ],
+    content:`RELEASE DEED / FARAGATI
+${'━'.repeat(55)}
+Date: {{DATE}}   Place: {{CITY}}
+
+RELEASOR: {{RELEASOR_NAME}}
+Address : {{RELEASOR_ADDR}}
+
+RELEASEE: {{RELEASEE_NAME}}
+Address : {{RELEASEE_ADDR}}
+
+${'━'.repeat(55)}
+SUBJECT: {{SUBJECT}}
+${'━'.repeat(55)}
+
+DESCRIPTION:
+{{DESCRIPTION}}
+
+CONSIDERATION: {{CONSIDERATION}}
+
+${'━'.repeat(55)}
+DECLARATION:
+I, {{RELEASOR_NAME}}, hereby declare that I have no claim,
+right, title, or interest whatsoever in the above-mentioned
+subject matter and hereby release and discharge {{RELEASEE_NAME}}
+from all claims, demands, and liabilities in respect thereof.
+
+${'━'.repeat(55)}
+Releasor: {{RELEASOR_NAME}}         Releasee: {{RELEASEE_NAME}}
+Date: {{DATE}}   Place: {{CITY}}
+${'━'.repeat(55)}
+`
+  },
+];
+
+// ── State ─────────────────────────────────────────────────────────
+let activeTemplate  = null;
+let uploadedContent = null;
+let currentDocContent = '';
+
+// ── Sidebar ───────────────────────────────────────────────────────
+function openSidebar()  { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebarOverlay').classList.add('open'); }
+function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+// ── Tab Navigation ─────────────────────────────────────────────────
+function showTab(tab) {
+  ['templates','mydocs','upload','wizard'].forEach(t => {
+    document.getElementById(`tab-${t}`).classList.remove('active');
+    const n=document.getElementById(`nav-${t}`); if(n) n.classList.remove('active');
+  });
+  document.getElementById(`tab-${tab}`).classList.add('active');
+  const n=document.getElementById(`nav-${tab}`); if(n) n.classList.add('active');
+  closeSidebar();
+  if (tab==='mydocs')    loadSavedDocs();
+  if (tab==='templates') renderTemplateGrids();
+}
+
+// ── Render Template Cards ──────────────────────────────────────────
+function renderTemplateGrids() {
+  const builtinGrid = document.getElementById('builtinGrid');
+  builtinGrid.innerHTML = BUILTIN.map(t => `
+    <div class="tmpl-card" onclick="openWizard('${t.id}','builtin')">
+      <span class="tmpl-badge tmpl-badge-builtin">Built-in</span>
+      <div class="tmpl-icon">${t.icon}</div>
+      <div class="tmpl-name">${t.name}</div>
+      <div class="tmpl-name-gu gujarati">${t.nameGu}</div>
+      <div class="tmpl-desc">${t.desc}</div>
+    </div>`).join('');
+  loadCustomGrid();
+}
+
+async function loadCustomGrid() {
+  const grid    = document.getElementById('customGrid');
+  const customs = await dbGetAll(STORES.TEMPLATES);
+  const addCard = `<div class="tmpl-card custom-card" onclick="showTab('upload')" style="border-style:dashed;text-align:center;padding:32px 20px;">
+    <div style="font-size:2.2rem;margin-bottom:10px;">➕</div>
+    <div class="font-bold">Upload Your Template</div>
+    <div class="text-sm text-muted mt-2">Upload .txt or .docx with {{PLACEHOLDERS}}<br>System auto-detects type &amp; fields</div>
+  </div>`;
+  if (!customs.length) { grid.innerHTML = addCard; return; }
+  grid.innerHTML = customs.map(t => `
+    <div class="tmpl-card custom-card" onclick="openWizard(${t.id},'custom')">
+      <span class="tmpl-badge tmpl-badge-custom">Custom</span>
+      <div class="tmpl-icon">📁</div>
+      <div class="tmpl-name">${t.name}</div>
+      <div class="tmpl-name-gu text-muted" style="font-size:.78rem;">${t.detectedType||t.category||'Custom'}</div>
+      <div class="tmpl-desc">${(t.fields||[]).length} fields · ${t.category||'Custom'}</div>
+      <button class="btn btn-danger btn-sm" style="margin-top:14px;" onclick="event.stopPropagation();deleteCustomTemplate(${t.id})">🗑️ Delete</button>
+    </div>`).join('') + addCard;
+}
+
+// ── Open Wizard ────────────────────────────────────────────────────
+async function openWizard(templateId, type) {
+  if (type==='builtin') {
+    activeTemplate = BUILTIN.find(t=>t.id===templateId);
+  } else {
+    activeTemplate = await dbGet(STORES.TEMPLATES, templateId);
+  }
+  if (!activeTemplate) { showToast('Template not found.','error'); return; }
+
+  document.getElementById('wizTitle').textContent    = activeTemplate.name;
+  document.getElementById('wizSubtitle').textContent = activeTemplate.nameGu || activeTemplate.desc || activeTemplate.detectedType || '';
+  document.getElementById('docSaveName').value       = activeTemplate.name + ' — ' + new Date().toLocaleDateString('en-IN');
+
+  // Build field form
+  buildFieldsForm(activeTemplate.fields || []);
+  goToStep(1);
+  showTab('wizard');
+  restoreDraft();
+  updateLivePreview();
+}
+
+function buildFieldsForm(fields) {
+  const form = document.getElementById('wizardFieldsForm');
+  form.innerHTML = fields.map(f => {
+    let input;
+    if (f.type==='textarea') {
+      input = `<textarea class="form-control" id="wf-${f.id}" rows="3" placeholder="${f.placeholder||''}" oninput="updateLivePreview()"></textarea>`;
+    } else {
+      input = `<input type="${f.type||'text'}" class="form-control" id="wf-${f.id}" placeholder="${f.placeholder||''}" ${f.required?'required':''} oninput="updateLivePreview()" value="">`;
+    }
+    return `<div class="field-row">
+      <div class="form-group">
+        <label class="form-label">${f.label}${f.required?'<span class="req"> *</span>':''}</label>
+        ${input}
+      </div>
+      <button type="button" class="voice-btn" data-voice-for="wf-${f.id}" onclick="fieldVoice('wf-${f.id}')" title="Voice input (Gujarati)">🎤</button>
+    </div>`;
+  }).join('');
+}
+
+// ── Voice for wizard fields ────────────────────────────────────────
+function fieldVoice(fieldId) {
+  const langEl = document.getElementById('voiceLang');
+  if (langEl) VoiceEngine.setLanguage(langEl.value);
+
+  VoiceEngine.startFor(
+    fieldId,
+    (id, text) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.value = el.value ? el.value + ' ' + text : text;
+      updateLivePreview();
+    },
+    (msg, type) => {
+      const el  = document.getElementById('wizMicStatus');
+      if (!el) return;
+      el.textContent = msg;
+      el.className   = 'mic-status ' + ({ success:'ok', error:'err', warning:'warn' }[type]||'');
+    }
+  );
+}
+
+// ── Live Preview ───────────────────────────────────────────────────
+function updateLivePreview() {
+  const text = buildDocument();
+  document.getElementById('wizLivePreview').textContent = text;
+  // Auto-save draft
+  saveDraft();
+}
+
+function saveDraft() {
+  if (!activeTemplate) return;
+  const data = {};
+  (activeTemplate.fields||[]).forEach(f => {
+    const el = document.getElementById(`wf-${f.id}`);
+    if (el) data[f.id] = el.value;
+  });
+  localStorage.setItem('advpro_draft_' + activeTemplate.id, JSON.stringify(data));
+}
+
+function restoreDraft() {
+  if (!activeTemplate) return;
+  try {
+    const saved = JSON.parse(localStorage.getItem('advpro_draft_' + activeTemplate.id)||'null');
+    if (!saved) return;
+    (activeTemplate.fields||[]).forEach(f => {
+      const el = document.getElementById(`wf-${f.id}`);
+      if (el && saved[f.id] !== undefined) el.value = saved[f.id];
+    });
+    updateLivePreview();
+  } catch(e) {}
+}
+
+function clearDraft() {
+  if (!activeTemplate) return;
+  localStorage.removeItem('advpro_draft_' + activeTemplate.id);
+}
+
+function buildDocument() {
+  if (!activeTemplate || !activeTemplate.content) return '(No template content)';
+  let content = activeTemplate.content;
+  (activeTemplate.fields || []).forEach(f => {
+    const el  = document.getElementById(`wf-${f.id}`);
+    const val = (el ? el.value.trim() : '') || `[${f.label}]`;
+    content   = content.split(`{{${f.id}}}`).join(val);
+  });
+  return content;
+}
+
+// ── Wizard Steps ───────────────────────────────────────────────────
+function goToStep(step) {
+  [1,2].forEach(s => {
+    document.getElementById(`wstep-${s}`).classList.remove('active');
+    const dot = document.getElementById(`wdot-${s}`);
+    if (dot) { dot.classList.remove('active','done'); if(s<step) dot.classList.add('done'); }
+  });
+  document.getElementById(`wstep-${step}`).classList.add('active');
+  const dot = document.getElementById(`wdot-${step}`);
+  if (dot) dot.classList.add('active');
+
+  if (step === 2) {
+    currentDocContent = buildDocument();
+    document.getElementById('docFullPreview').textContent = currentDocContent;
+  }
+}
+
+// ── Save Document ──────────────────────────────────────────────────
+async function saveCurrentDoc() {
+  currentDocContent = buildDocument();
+  const name = document.getElementById('docSaveName').value.trim() || activeTemplate.name;
+  const data = {};
+  (activeTemplate.fields||[]).forEach(f => { const el=document.getElementById(`wf-${f.id}`); if(el) data[f.id]=el.value; });
+  await dbAdd(STORES.DOCUMENTS, {
+    name, templateId:activeTemplate.id, templateName:activeTemplate.name,
+    content:currentDocContent, data,
+  });
+  clearDraft();
+  showToast('Document saved!','success');
+  const docs = await dbGetAll(STORES.DOCUMENTS);
+  document.getElementById('navDocCount').textContent = docs.length;
+}
+
+// ── Export Word ────────────────────────────────────────────────────
+function exportCurrentDocWord() {
+  currentDocContent = buildDocument();
+  const name = document.getElementById('docSaveName').value.trim() || activeTemplate.name;
+  WordExporter.download(currentDocContent, name);
+}
+
+// ── Print ──────────────────────────────────────────────────────────
+function printCurrentDoc() {
+  currentDocContent = buildDocument();
+  const name = document.getElementById('docSaveName').value.trim() || activeTemplate.name;
+  WordExporter.print(currentDocContent, name);
+}
+
+// ── Saved Documents ────────────────────────────────────────────────
+async function loadSavedDocs() {
+  const docs = await dbGetAll(STORES.DOCUMENTS);
+  document.getElementById('navDocCount').textContent = docs.length;
+  const container = document.getElementById('savedDocsList');
+  if (!docs.length) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No documents yet. Create one from a template.</div></div>';
+    return;
+  }
+  const sorted = [...docs].sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));
+  container.innerHTML = sorted.map(doc => `
+    <div class="doc-item">
+      <div class="doc-icon-box">📄</div>
+      <div style="flex:1;min-width:0;">
+        <div class="font-bold text-sm">${doc.name}</div>
+        <div class="text-xs text-muted mt-1">Based on: ${doc.templateName||'—'} &nbsp;·&nbsp; Created: ${new Date(doc.createdAt).toLocaleDateString('en-IN')}</div>
+      </div>
+      <div class="flex gap-2 flex-wrap">
+        <button class="btn btn-ghost btn-sm"    onclick="viewSavedDoc(${doc.id})">👁️ View</button>
+        <button class="btn btn-secondary btn-sm" onclick="printSavedDoc(${doc.id})">🖨️ Print</button>
+        <button class="btn btn-primary btn-sm"  onclick="exportSavedDocWord(${doc.id})">📥 Word</button>
+        <button class="btn btn-danger btn-sm"   onclick="deleteSavedDoc(${doc.id})">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+
+async function viewSavedDoc(id) {
+  const doc = await dbGet(STORES.DOCUMENTS, id);
+  if (!doc) return;
+  document.getElementById('savedDocTitle').textContent   = doc.name;
+  document.getElementById('savedDocBody').textContent    = doc.content;
+  document.getElementById('savedWordBtn').onclick  = () => WordExporter.download(doc.content, doc.name);
+  document.getElementById('savedPrintBtn').onclick = () => WordExporter.print(doc.content, doc.name);
+  document.getElementById('savedDocModal').classList.add('active');
+}
+
+async function printSavedDoc(id) {
+  const doc = await dbGet(STORES.DOCUMENTS, id);
+  if (doc) WordExporter.print(doc.content, doc.name);
+}
+
+async function exportSavedDocWord(id) {
+  const doc = await dbGet(STORES.DOCUMENTS, id);
+  if (doc) WordExporter.download(doc.content, doc.name);
+}
+
+async function deleteSavedDoc(id) {
+  if (!confirm('Delete this document?')) return;
+  await dbDelete(STORES.DOCUMENTS, id);
+  showToast('Document deleted.','warning');
+  loadSavedDocs();
+}
+
+async function exportAllDocsExcel() {
+  if (typeof XLSX==='undefined') { showToast('Excel library not loaded.','error'); return; }
+  const docs = await dbGetAll(STORES.DOCUMENTS);
+  const wb   = XLSX.utils.book_new();
+  const data = [['#','Document Name','Template','Created On'],
+    ...docs.map((d,i)=>[i+1, d.name, d.templateName||'', new Date(d.createdAt).toLocaleDateString('en-IN')])];
+  const ws = XLSX.utils.aoa_to_sheet(data);
+  ws['!cols']=[{wch:5},{wch:40},{wch:25},{wch:18}];
+  XLSX.utils.book_append_sheet(wb, ws, 'Documents');
+  XLSX.writeFile(wb, `AdvocatePro_Documents_Index_${new Date().toISOString().slice(0,10)}.xlsx`);
+  showToast('Document index exported!','success');
+}
+
+// ── Upload Template ────────────────────────────────────────────────
+function handleFileDrop(e) {
+  e.preventDefault();
+  document.getElementById('dropZone').classList.remove('drag-over');
+  const f = e.dataTransfer.files[0];
+  if (f) processUploadedFile(f);
+}
+function handleFileSelect(e) {
+  const f = e.target.files[0];
+  if (f) processUploadedFile(f);
+  e.target.value = '';
+}
+function clearUpload() {
+  uploadedContent = null;
+  document.getElementById('uploadPreviewWrap').classList.add('hidden');
+  document.getElementById('uploadProcessing').classList.add('hidden');
+}
+
+async function processUploadedFile(file) {
+  const allowed = ['.txt', '.docx'];
+  const ext     = file.name.slice(file.name.lastIndexOf('.')).toLowerCase();
+  if (!allowed.includes(ext)) { showToast('Please upload a .txt or .docx file.','error'); return; }
+
+  document.getElementById('uploadProcessing').classList.remove('hidden');
+  document.getElementById('uploadPreviewWrap').classList.add('hidden');
+
+  try {
+    let text = '';
+    if (ext === '.docx') {
+      if (typeof mammoth === 'undefined') {
+        showToast('mammoth.js not loaded — using file as text.','warning');
+        text = await file.text();
+      } else {
+        const buf    = await file.arrayBuffer();
+        const result = await mammoth.extractRawText({ arrayBuffer: buf });
+        text = result.value;
+      }
+    } else {
+      text = await file.text();
+    }
+
+    uploadedContent = text;
+
+    // Auto-detect document type
+    const detected = DocTypeDetector.detect(text);
+    const fields   = extractAndBuildFields(text);
+
+    // Auto-fill name if empty
+    if (!document.getElementById('uploadName').value.trim()) {
+      document.getElementById('uploadName').value = detected.label || file.name.replace(/\.[^.]+$/,'');
+    }
+    // Auto-fill category if not manually set
+    if (!document.getElementById('uploadCategory').value) {
+      const catMap = { BHADA_KARAR:'Rent / Lease', VECHAN_KHAT:'Sale / Purchase', MUKHTYARNAMU:'Power of Attorney', BHAGIDARI:'Partnership', HALFNAMU:'Affidavit', LEGAL_NOTICE:'Legal Notice' };
+      document.getElementById('uploadCategory').value = catMap[detected.type] || 'Other';
+    }
+
+    // Show preview
+    document.getElementById('uploadPreviewName').textContent  = file.name;
+    document.getElementById('uploadPreviewStats').textContent = `${text.length} characters · ${text.split('\n').length} lines · ${ext} format`;
+    document.getElementById('detectedType').textContent       = detected.label;
+    document.getElementById('detectedFields').textContent     = fields.length
+      ? `✦ ${fields.length} placeholder${fields.length!==1?'s':''} found: ${fields.slice(0,8).map(f=>`{{${f.id}}}`).join(', ')}${fields.length>8?` + ${fields.length-8} more…`:''}`
+      : '⚠️ No {{PLACEHOLDERS}} found. Add them to your template to make it fillable.';
+
+    document.getElementById('uploadProcessing').classList.add('hidden');
+    document.getElementById('uploadPreviewWrap').classList.remove('hidden');
+  } catch (err) {
+    document.getElementById('uploadProcessing').classList.add('hidden');
+    showToast('Error reading file: '+err.message,'error');
+    console.error(err);
+  }
+}
+
+function extractAndBuildFields(text) {
+  const matches = (text.match(/\{\{([A-Z_0-9]+)\}\}/g) || []);
+  const unique  = [...new Set(matches.map(m=>m.replace(/\{\{|\}\}/g,'')))];
+  return SmartFields.build(unique);
+}
+
+async function saveCustomTemplate() {
+  const name = document.getElementById('uploadName').value.trim();
+  const cat  = document.getElementById('uploadCategory').value || 'Other';
+  if (!name) { showToast('Please enter a template name.','error'); return; }
+  if (!uploadedContent) { showToast('Please upload a file first.','error'); return; }
+
+  const fields       = extractAndBuildFields(uploadedContent);
+  const detected     = DocTypeDetector.detect(uploadedContent);
+
+  await dbAdd(STORES.TEMPLATES, {
+    name, category:cat, detectedType:detected.label,
+    content:uploadedContent, fields,
+  });
+  showToast('Template saved to library!','success');
+  clearUpload();
+  document.getElementById('uploadName').value = '';
+  document.getElementById('uploadCategory').value = '';
+  renderTemplateGrids();
+  showTab('templates');
+}
+
+async function deleteCustomTemplate(id) {
+  if (!confirm('Delete this custom template?')) return;
+  await dbDelete(STORES.TEMPLATES, id);
+  showToast('Template deleted.','warning');
+  loadCustomGrid();
+}
+
+// ── Modal overlay dismiss ──────────────────────────────────────────
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{ if(e.target===o) o.classList.remove('active'); }));
+
+// ── Drag events on drop zone ───────────────────────────────────────
+const dz = document.getElementById('dropZone');
+if (dz) {
+  dz.addEventListener('dragover',  e => { e.preventDefault(); dz.classList.add('drag-over'); });
+  dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
+}
+
+// ── Init ──────────────────────────────────────────────────────────
+async function init() {
+  renderTemplateGrids();
+  const docs = await dbGetAll(STORES.DOCUMENTS);
+  document.getElementById('navDocCount').textContent = docs.length;
+}
+init();
+
+// ── Theme Toggle ──────────────────────────────────────────────────
+function toggleTheme() {
+  document.body.classList.toggle('light-theme');
+  const isLight = document.body.classList.contains('light-theme');
+  localStorage.setItem('advpro_theme', isLight ? 'light' : 'dark');
+  document.getElementById('themeToggle').textContent = isLight ? '☀️ Light Mode' : '🌙 Dark Mode';
+}
+if (localStorage.getItem('advpro_theme') === 'light') {
+  document.body.classList.add('light-theme');
+  const btn = document.getElementById('themeToggle');
+  if (btn) btn.textContent = '☀️ Light Mode';
+}
+</script>
+</body>
+</html>
