@@ -6,8 +6,8 @@
   <title>Case Library — Advocate Pro</title>
   <meta name="theme-color" content="#c9a227">
   <link rel="manifest" href="manifest.json">
-  <link rel="icon" type="image/png" href="logo.png">
-  <link rel="apple-touch-icon" href="logo.png">
+  <link rel="icon" type="image/svg+xml" href="logo.svg">
+  <link rel="apple-touch-icon" href="logo.svg">
   <link rel="stylesheet" href="shared.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+Gujarati:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -43,6 +43,26 @@
     .sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:99; }
     .mic-status { font-size:.77rem; color:var(--text-muted); margin-top:5px; min-height:18px; transition:var(--transition); }
     .import-panel { background:var(--bg-secondary); border:1px solid var(--border); border-radius:var(--radius-lg); padding:16px; margin-top:12px; }
+    
+    /* Case Tags */
+    .case-tag { display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:99px; font-size:.7rem; font-weight:600; cursor:default; }
+    .case-tag-remove { cursor:pointer; opacity:.6; margin-left:2px; }
+    .case-tag-remove:hover { opacity:1; }
+    .tag-urgent { background:rgba(239,68,68,.15); color:#ef4444; border:1px solid rgba(239,68,68,.3); }
+    .tag-high-priority { background:rgba(249,115,22,.15); color:#f97316; border:1px solid rgba(249,115,22,.3); }
+    .tag-senior-citizen { background:rgba(168,85,247,.15); color:#a855f7; border:1px solid rgba(168,85,247,.3); }
+    .tag-women { background:rgba(236,72,153,.15); color:#ec4899; border:1px solid rgba(236,72,153,.3); }
+    .tag-sc-st { background:rgba(59,130,246,.15); color:#3b82f6; border:1px solid rgba(59,130,246,.3); }
+    .tag-free-legal-aid { background:rgba(34,197,94,.15); color:#22c55e; border:1px solid rgba(34,197,94,.3); }
+    .tag-mediation { background:rgba(14,165,233,.15); color:#0ea5e9; border:1px solid rgba(14,165,233,.3); }
+    .tag-appeal { background:rgba(168,85,247,.15); color:#a855f7; border:1px solid rgba(168,85,247,.3); }
+    .tag-custom { background:rgba(201,162,39,.15); color:var(--gold); border:1px solid rgba(201,162,39,.3); }
+    
+    /* Tag filter in filter bar */
+    .tag-filter-chip { display:inline-flex; align-items:center; gap:4px; padding:4px 12px; border-radius:99px; font-size:.75rem; font-weight:600; cursor:pointer; border:1px solid var(--border); background:var(--bg-card); transition:var(--transition); }
+    .tag-filter-chip:hover { border-color:var(--gold); }
+    .tag-filter-chip.active { background:var(--gold); color:#000; border-color:var(--gold); }
+    
     @media(max-width:768px){ .mob-header{display:flex;} .sidebar-overlay.open{display:block;} }
     @media print {
       .sidebar, .mob-header, .filter-bar, .case-actions, .page-header .btn,
@@ -62,7 +82,7 @@
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
       <a href="index.html" class="sidebar-logo">
-        <img src="logo.png" alt="Advocate Pro" style="width:40px;height:40px;border-radius:8px;object-fit:contain;background:#fff;">
+        <img src="logo.svg" alt="Advocate Pro" style="width:40px;height:40px;border-radius:8px;object-fit:contain;background:#fff;">
         <div><div class="logo-text">Advocate Pro</div><div class="logo-sub">Case Library</div></div>
       </a>
     </div>
@@ -90,11 +110,7 @@
 
   <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
-  <!-- Voice Navigation Button -->
-  <button id="voiceNavBtn" onclick="toggleVoiceNav()" style="position:fixed;bottom:24px;right:24px;width:56px;height:56px;border-radius:50%;background:var(--gold);color:#000;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(201,162,39,.4);z-index:999;display:flex;align-items:center;justify-content:center;font-size:1.5rem;transition:var(--transition);" title="Voice Navigation">
-    🎤
-  </button>
-  <div id="voiceNavStatus" style="position:fixed;bottom:90px;right:24px;background:var(--bg-card);color:var(--text-primary);padding:8px 16px;border-radius:8px;box-shadow:var(--shadow);font-size:.875rem;z-index:998;display:none;max-width:250px;text-align:center;"></div>
+  <!-- Voice nav injected by shared.js VoiceNav -->
 
   <!-- Mobile header -->
   <div class="mob-header">
@@ -170,9 +186,21 @@
         <select class="form-control" id="filterType"   onchange="filterCases()" style="width:140px;">
           <option value="">All Types</option><option>Civil</option><option>Criminal</option><option>Family</option><option>Revenue</option><option>Labour</option><option>Motor Accident</option><option>Other</option>
         </select>
+        <select class="form-control" id="filterTag" onchange="filterCases()" style="width:150px;">
+          <option value="">All Tags</option>
+          <option value="Urgent">🔴 Urgent</option>
+          <option value="High Priority">🟠 High Priority</option>
+          <option value="Senior Citizen">👴 Senior Citizen</option>
+          <option value="Women">👩 Women</option>
+          <option value="SC/ST">🛡️ SC/ST</option>
+          <option value="Free Legal Aid">🆓 Free Legal Aid</option>
+          <option value="Mediation">🤝 Mediation</option>
+          <option value="Appeal">📜 Appeal</option>
+        </select>
         <input type="date" class="form-control" id="filterDate" onchange="filterCases()" style="width:160px;" title="Filter by next hearing date">
         <button class="btn btn-ghost btn-sm" onclick="clearFilters()">✕ Clear</button>
       </div>
+      <div id="tagFilterChips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;"></div>
 
       <!-- Import info panel (shown after import) -->
       <div class="import-panel hidden" id="importPanel">
@@ -187,7 +215,7 @@
       <div class="table-wrap" id="casesTableWrap">
         <table><thead><tr>
           <th>Case No.</th><th>Case Title</th><th>Court No.</th><th>Judge</th>
-          <th>Client</th><th>Type</th><th>Next Hearing</th><th>Status</th><th>Actions</th>
+          <th>Client</th><th>Type</th><th>Tags</th><th>Next Hearing</th><th>Status</th><th>Actions</th>
         </tr></thead><tbody id="casesTbody"></tbody></table>
       </div>
     </div>
@@ -275,6 +303,27 @@
         <div class="grid grid-2">
           <div class="form-group"><label class="form-label">Filing Date</label><input type="date" class="form-control" id="f-filingDate"></div>
           <div class="form-group"><label class="form-label">Next Hearing Date</label><input type="date" class="form-control" id="f-nextHearing"></div>
+        </div>
+        
+        <!-- Tags Section -->
+        <div class="form-group" style="margin-top:8px;">
+          <label class="form-label">🏷️ Case Tags</label>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;" id="selectedTagsContainer"></div>
+          <div style="display:flex;gap:8px;">
+            <select class="form-control" id="tagPresetSelect" style="flex:1;" onchange="addPresetTag()">
+              <option value="">+ Add preset tag…</option>
+              <option value="Urgent">🔴 Urgent</option>
+              <option value="High Priority">🟠 High Priority</option>
+              <option value="Senior Citizen">👴 Senior Citizen</option>
+              <option value="Women">👩 Women</option>
+              <option value="SC/ST">🛡️ SC/ST</option>
+              <option value="Free Legal Aid">🆓 Free Legal Aid</option>
+              <option value="Mediation">🤝 Mediation</option>
+              <option value="Appeal">📜 Appeal</option>
+            </select>
+            <input type="text" class="form-control" id="customTagInput" placeholder="Or type custom tag…" style="flex:1;" onkeypress="if(event.key==='Enter'){event.preventDefault();addCustomTag();}">
+            <button type="button" class="btn btn-secondary btn-sm" onclick="addCustomTag()">Add</button>
+          </div>
         </div>
       </div>
 
@@ -402,6 +451,78 @@ let calSelectedDate = null;
 let currentViewCaseId = null;
 const showToast = showAdvToast; // alias
 
+// ── Tag Management ──────────────────────────────────────────────
+let currentCaseTags = []; // Tags for the case being edited
+
+function getTagClass(tag) {
+  const map = {
+    'urgent': 'tag-urgent',
+    'high priority': 'tag-high-priority',
+    'senior citizen': 'tag-senior-citizen',
+    'women': 'tag-women',
+    'sc/st': 'tag-sc-st',
+    'free legal aid': 'tag-free-legal-aid',
+    'mediation': 'tag-mediation',
+    'appeal': 'tag-appeal',
+  };
+  return map[(tag || '').toLowerCase()] || 'tag-custom';
+}
+
+function renderSelectedTags() {
+  const container = document.getElementById('selectedTagsContainer');
+  if (!container) return;
+  container.innerHTML = currentCaseTags.map((tag, idx) => 
+    `<span class="case-tag ${getTagClass(tag)}">
+      ${tag}
+      <span class="case-tag-remove" onclick="removeTag(${idx})">✕</span>
+    </span>`
+  ).join('');
+}
+
+function addPresetTag() {
+  const select = document.getElementById('tagPresetSelect');
+  const tag = select.value;
+  if (tag && !currentCaseTags.includes(tag)) {
+    currentCaseTags.push(tag);
+    renderSelectedTags();
+  }
+  select.value = '';
+}
+
+function addCustomTag() {
+  const input = document.getElementById('customTagInput');
+  const tag = input.value.trim();
+  if (tag && !currentCaseTags.includes(tag)) {
+    currentCaseTags.push(tag);
+    renderSelectedTags();
+    input.value = '';
+  }
+}
+
+function removeTag(idx) {
+  currentCaseTags.splice(idx, 1);
+  renderSelectedTags();
+}
+
+const TAG_PRESETS = ['Urgent','High Priority','Senior Citizen','Women','SC/ST','Free Legal Aid','Mediation','Appeal'];
+
+function renderTagFilterChips() {
+  const wrap = document.getElementById('tagFilterChips');
+  if (!wrap) return;
+  const active = document.getElementById('filterTag')?.value || '';
+  wrap.innerHTML = TAG_PRESETS.map(tag => {
+    const emoji = { Urgent:'🔴', 'High Priority':'🟠', 'Senior Citizen':'👴', Women:'👩', 'SC/ST':'🛡️', 'Free Legal Aid':'🆓', Mediation:'🤝', Appeal:'📜' }[tag] || '🏷️';
+    return `<button type="button" class="tag-filter-chip${active===tag?' active':''}" onclick="filterByTagChip('${tag.replace(/'/g,"\\'")}')">${emoji} ${tag}</button>`;
+  }).join('') + (active ? `<button type="button" class="tag-filter-chip" onclick="filterByTagChip('')" style="opacity:.7;">✕ Clear tag</button>` : '');
+}
+
+function filterByTagChip(tag) {
+  const sel = document.getElementById('filterTag');
+  if (sel) sel.value = tag;
+  filterCases();
+  renderTagFilterChips();
+}
+
 // ── Sidebar ───────────────────────────────────────────────────────
 function openSidebar()  { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebarOverlay').classList.add('open'); }
 function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('open'); }
@@ -472,8 +593,18 @@ async function loadAllCases() {
     if (f.s) document.getElementById('filterStatus').value = f.s;
     if (f.t) document.getElementById('filterType').value = f.t;
     if (f.d) document.getElementById('filterDate').value = f.d;
-    if (f.q||f.s||f.t||f.d) filterCases();
+    if (f.tag) document.getElementById('filterTag').value = f.tag;
+    if (f.q||f.s||f.t||f.d||f.tag) filterCases();
   } catch(e) {}
+  renderTagFilterChips();
+  // Deep-link: open case or tab from URL hash
+  const hash = window.location.hash;
+  if (hash.startsWith('#case-')) {
+    const caseId = parseInt(hash.replace('#case-', ''), 10);
+    if (caseId) setTimeout(() => viewCase(caseId), 400);
+  } else if (hash === '#calendar') {
+    setTimeout(() => showTab('calendar'), 300);
+  }
 }
 
 // ── Dashboard ──────────────────────────────────────────────────────
@@ -663,16 +794,20 @@ function renderCasesTable(cases) {
   document.getElementById('casesSubtitle').textContent = `${cases.length} case${cases.length!==1?'s':''} found`;
   const tbody = document.getElementById('casesTbody');
   if (!cases.length) {
-    tbody.innerHTML = `<tr><td colspan="9" class="text-center text-muted" style="padding:40px;">No cases match filter. <button class="btn btn-ghost btn-sm" onclick="clearFilters()">Clear</button></td></tr>`; return;
+    tbody.innerHTML = `<tr><td colspan="10" class="text-center text-muted" style="padding:40px;">No cases match filter. <button class="btn btn-ghost btn-sm" onclick="clearFilters()">Clear</button></td></tr>`; return;
   }
-  tbody.innerHTML = cases.map(c=>`
+  tbody.innerHTML = cases.map(c=>{
+    const tagsHtml = (c.tags||[]).slice(0,3).map(t => `<span class="case-tag ${getTagClass(t)}" style="font-size:.65rem;padding:2px 6px;">${t}</span>`).join('');
+    const moreTags = (c.tags||[]).length > 3 ? `<span class="text-xs text-muted">+${c.tags.length-3}</span>` : '';
+    return `
     <tr>
       <td class="font-medium text-gold" style="cursor:pointer;" onclick="viewCase(${c.id})">${c.caseNumber||'—'}</td>
-      <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${c.caseTitle||''}">${c.caseTitle||'—'}</td>
+      <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${c.caseTitle||''}">${c.caseTitle||'—'}</td>
       <td>${c.courtNo||'—'}</td>
       <td>${c.judgeName||'—'}</td>
       <td><span style="cursor:pointer;color:var(--gold);text-decoration:underline;" onclick="filterByClient('${(c.clientName||'').replace(/'/g,"\\'")}')" title="Show all cases for ${c.clientName||''}">${c.clientName||'—'}</span></td>
       <td><span class="badge badge-${(c.caseType||'other').toLowerCase()}">${c.caseType||'—'}</span></td>
+      <td><div style="display:flex;flex-wrap:wrap;gap:3px;max-width:150px;">${tagsHtml}${moreTags}</div></td>
       <td class="${hClass(c.nextHearing)} font-medium">${fmt(c.nextHearing)}</td>
       <td><span class="badge badge-${(c.status||'').toLowerCase()}">${c.status||'—'}</span></td>
       <td><div class="case-actions">
@@ -682,7 +817,8 @@ function renderCasesTable(cases) {
         <button class="btn btn-ghost btn-sm" onclick="openFeesModal(${c.id})" title="Fees">💰</button>
         <button class="btn btn-danger btn-sm" onclick="deleteCase(${c.id})" title="Delete">🗑️</button>
       </div></td>
-    </tr>`).join('');
+    </tr>`;
+  }).join('');
 }
 
 // ── Filter ─────────────────────────────────────────────────────────
@@ -691,19 +827,22 @@ function filterCases() {
   const s = document.getElementById('filterStatus').value;
   const t = document.getElementById('filterType').value;
   const d = document.getElementById('filterDate').value;
+  const tag = document.getElementById('filterTag').value;
   const res = allCases.filter(c => {
     const mq = !q || [c.caseNumber,c.caseTitle,c.clientName,c.judgeName,c.courtNo,c.courtName,c.caseType,c.opposingAdvocate].some(f=>(f||'').toLowerCase().includes(q));
-    return mq && (!s||c.status===s) && (!t||c.caseType===t) && (!d||c.nextHearing===d);
+    const tagMatch = !tag || (c.tags||[]).includes(tag);
+    return mq && (!s||c.status===s) && (!t||c.caseType===t) && (!d||c.nextHearing===d) && tagMatch;
   });
   renderCasesTable(res);
-  localStorage.setItem('advpro_filters', JSON.stringify({q,s,t,d}));
+  localStorage.setItem('advpro_filters', JSON.stringify({q,s,t,d,tag}));
+  renderTagFilterChips();
 }
-function clearFilters() { ['searchInput','filterStatus','filterType','filterDate'].forEach(id=>{ const el=document.getElementById(id); if(el)el.value=''; }); renderCasesTable(allCases); }
+function clearFilters() { ['searchInput','filterStatus','filterType','filterDate','filterTag'].forEach(id=>{ const el=document.getElementById(id); if(el)el.value=''; }); renderCasesTable(allCases); renderTagFilterChips(); }
 
 function filterByClient(name) {
   if (!name) return;
   document.getElementById('searchInput').value = name;
-  ['filterStatus','filterType','filterDate'].forEach(id=>{ const el=document.getElementById(id); if(el)el.value=''; });
+  ['filterStatus','filterType','filterDate','filterTag'].forEach(id=>{ const el=document.getElementById(id); if(el)el.value=''; });
   filterCases();
   showTab('cases');
 }
@@ -714,6 +853,8 @@ function openAddCaseModal() {
   document.getElementById('caseForm').reset();
   document.getElementById('caseId').value = '';
   document.getElementById('f-filingDate').value = new Date().toISOString().slice(0,10);
+  currentCaseTags = []; // Reset tags
+  renderSelectedTags();
   switchFormTab('basic');
   document.getElementById('caseModal').classList.add('active');
 }
@@ -735,6 +876,8 @@ async function editCase(id) {
   const fields = ['caseNumber','caseType','caseTitle','clientName','clientPhone','opposingAdvocate','status','filingDate','nextHearing','courtNo','courtName','judgeName','hearingType','prevHearing','stampInfo','prevOrder','notes','docsNeeded'];
   fields.forEach(f => { const el=document.getElementById('f-'+f); if(el) el.value=c[f]||''; });
   document.getElementById('caseId').value = id;
+  currentCaseTags = c.tags || []; // Load tags
+  renderSelectedTags();
   switchFormTab('basic');
   document.getElementById('caseModal').classList.add('active');
 }
@@ -747,6 +890,8 @@ async function duplicateCase(id) {
   fields.forEach(f => { const el=document.getElementById('f-'+f); if(el) el.value=c[f]||''; });
   document.getElementById('f-caseNumber').value = ''; // clear so user enters new number
   document.getElementById('caseId').value = '';
+  currentCaseTags = c.tags || []; // Copy tags
+  renderSelectedTags();
   switchFormTab('basic');
   document.getElementById('caseModal').classList.add('active');
 }
@@ -757,6 +902,7 @@ async function saveCase(e) {
   const fields = ['caseNumber','caseType','caseTitle','clientName','clientPhone','opposingAdvocate','status','filingDate','nextHearing','courtNo','courtName','judgeName','hearingType','prevHearing','stampInfo','prevOrder','notes','docsNeeded'];
   const data = {};
   fields.forEach(f => { const el=document.getElementById('f-'+f); if(el) data[f]=el.value.trim(); });
+  data.tags = [...currentCaseTags]; // Save tags
   try {
     if (id) { await dbPut(STORES.CASES, {...data, id:parseInt(id)}); showToast('Case updated!','success'); }
     else     { await dbAdd(STORES.CASES, data);                     showToast('Case added!','success'); }
@@ -1063,8 +1209,8 @@ async function printFeesSummary() {
 // ── Excel Export ───────────────────────────────────────────────────
 async function exportCasesExcel() {
   if (typeof XLSX==='undefined') { showToast('Excel library not loaded. Check internet.','error'); return; }
-  const caseHeaders = ['Case Number','Case Title','Case Type','Client Name','Client Phone','Opposing Advocate','Court Number','Court Name','Judge Name','Hearing Type','Filing Date','Next Hearing Date','Previous Hearing','Status','Notes'];
-  const caseRows    = allCases.map(c => [c.caseNumber,c.caseTitle,c.caseType,c.clientName,c.clientPhone,c.opposingAdvocate,c.courtNo,c.courtName,c.judgeName,c.hearingType,c.filingDate,c.nextHearing,c.prevHearing,c.status,c.notes]);
+  const caseHeaders = ['Case Number','Case Title','Case Type','Client Name','Client Phone','Opposing Advocate','Court Number','Court Name','Judge Name','Hearing Type','Filing Date','Next Hearing Date','Previous Hearing','Status','Tags','Stamp Paper','Previous Order','Documents Needed','Notes'];
+  const caseRows    = allCases.map(c => [c.caseNumber,c.caseTitle,c.caseType,c.clientName,c.clientPhone,c.opposingAdvocate,c.courtNo,c.courtName,c.judgeName,c.hearingType,c.filingDate,c.nextHearing,c.prevHearing,c.status,(c.tags||[]).join(', '),c.stampInfo,c.prevOrder,c.docsNeeded,c.notes]);
 
   const feesHeaders = ['Case Number','Case Title','Client','Agreed Fees (₹)','Received (₹)','Pending (₹)','% Received'];
   const feesRows    = [];
@@ -1129,6 +1275,10 @@ async function importFromExcel(e) {
       'Next Hearing Date':'nextHearing','Next Hearing':'nextHearing',
       'Previous Hearing':'prevHearing',
       'Status':'status',
+      'Tags':'tags',
+      'Stamp Paper':'stampInfo','Stamp Paper / Registration':'stampInfo',
+      'Previous Order':'prevOrder',
+      'Documents Needed':'docsNeeded',
       'Notes':'notes',
     };
 
@@ -1136,12 +1286,21 @@ async function importFromExcel(e) {
     for(const row of rows){
       const data={};
       for(const [col,field] of Object.entries(fieldMap)){
-        if(row[col]!==undefined && row[col]!=='') data[field]=String(row[col]).trim();
+        if(row[col]!==undefined && row[col]!=='') {
+          if (field === 'tags') {
+            data.tags = String(row[col]).split(',').map(t => t.trim()).filter(Boolean);
+          } else {
+            data[field]=String(row[col]).trim();
+          }
+        }
       }
       if(!data.caseNumber){ skipped++; continue; }
-      // Check if already exists
       const existing=allCases.find(c=>c.caseNumber===data.caseNumber);
-      if(existing){ await dbPut(STORES.CASES,{...existing,...data}); }
+      if(existing){
+        const merged = {...existing,...data};
+        if (!data.tags) merged.tags = existing.tags;
+        await dbPut(STORES.CASES, merged);
+      }
       else { await dbAdd(STORES.CASES,data); }
       imported++;
     }
@@ -1408,36 +1567,8 @@ if (localStorage.getItem('advpro_theme') === 'light') {
   if (btn) btn.textContent = '☀️ Light Mode';
 }
 
-// ── PWA: Register Service Worker ─────────────────────────────────
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js')
-    .then(reg => {
-      console.log('[SW] Registered:', reg.scope);
-      // Request notification permission
-      if ('Notification' in window && Notification.permission === 'default') {
-        Notification.requestPermission();
-      }
-      // Check hearings now and schedule periodic checks
-      if ('Notification' in window && Notification.permission === 'granted') {
-        // Immediate check
-        reg.active && reg.active.postMessage('check-hearings');
-        // Periodic background sync (if supported)
-        if ('periodicSync' in reg) {
-          reg.periodicSync.register('hearing-check', { minInterval: 30 * 60 * 1000 })
-            .catch(() => console.log('[SW] Periodic sync not available'));
-        }
-      }
-    })
-    .catch(err => console.warn('[SW] Registration failed:', err));
-}
-
-// Also check notifications when page becomes visible
-document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible' && 'Notification' in window && Notification.permission === 'granted') {
-    const reg = navigator.serviceWorker?.controller;
-    if (reg) reg.postMessage('check-hearings');
-  }
-});
+// Legacy voice nav aliases (shared.js VoiceNav)
+function toggleVoiceNav() { VoiceNav.toggle(); }
 
 // ─ Case Tasks ────────────────────────────────────────────────────
 function renderTasks(tasks) {
@@ -1487,111 +1618,6 @@ async function deleteTask(caseId, taskId) {
   viewCase(caseId);
 }
 
-// ── Voice Navigation ──────────────────────────────────────────────
-let voiceNavActive = false;
-let voiceNavRecognition = null;
-
-function toggleVoiceNav() {
-  if (voiceNavActive) {
-    stopVoiceNav();
-  } else {
-    startVoiceNav();
-  }
-}
-
-function startVoiceNav() {
-  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-    showToast('Voice navigation not supported in this browser.','error');
-    return;
-  }
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  voiceNavRecognition = new SpeechRecognition();
-  voiceNavRecognition.lang = 'gu-IN';
-  voiceNavRecognition.continuous = false;
-  voiceNavRecognition.interimResults = false;
-
-  voiceNavRecognition.onstart = () => {
-    voiceNavActive = true;
-    const btn = document.getElementById('voiceNavBtn');
-    const status = document.getElementById('voiceNavStatus');
-    if (btn) { btn.style.background = 'var(--danger)'; btn.style.animation = 'pulse 1s infinite'; }
-    if (status) { status.textContent = '🎤 Listening… Say a command'; status.style.display = 'block'; }
-  };
-
-  voiceNavRecognition.onresult = (event) => {
-    const transcript = event.results[0][0].transcript.toLowerCase().trim();
-    const status = document.getElementById('voiceNavStatus');
-    if (status) status.textContent = `Heard: "${transcript}"`;
-    processVoiceCommand(transcript);
-  };
-
-  voiceNavRecognition.onerror = (event) => {
-    console.warn('[VoiceNav] Error:', event.error);
-    const status = document.getElementById('voiceNavStatus');
-    if (status) status.textContent = 'Error: ' + event.error;
-    stopVoiceNav();
-  };
-
-  voiceNavRecognition.onend = () => {
-    setTimeout(() => stopVoiceNav(), 1500);
-  };
-
-  voiceNavRecognition.start();
-}
-
-function stopVoiceNav() {
-  voiceNavActive = false;
-  if (voiceNavRecognition) {
-    try { voiceNavRecognition.stop(); } catch(e) {}
-    voiceNavRecognition = null;
-  }
-  const btn = document.getElementById('voiceNavBtn');
-  const status = document.getElementById('voiceNavStatus');
-  if (btn) { btn.style.background = 'var(--gold)'; btn.style.animation = ''; }
-  if (status) { setTimeout(() => { status.style.display = 'none'; }, 1500); }
-}
-
-function processVoiceCommand(text) {
-  const t = text.toLowerCase();
-  let action = '';
-  
-  // Navigation commands
-  if (t.includes('dashboard') || t.includes('home') || t.includes('home page')) {
-    action = 'Dashboard';
-    showTab('dashboard');
-  } else if (t.includes('case') && (t.includes('open') || t.includes('show') || t.includes('go'))) {
-    action = 'Cases';
-    showTab('cases');
-  } else if (t.includes('fee') || t.includes('payment')) {
-    action = 'Fees';
-    showTab('fees');
-  } else if (t.includes('calendar') || t.includes('hearing')) {
-    action = 'Calendar';
-    showTab('calendar');
-  } else if (t.includes('document')) {
-    action = 'Documents';
-    window.location.href = 'documents.html';
-  } else if (t.includes('add') || t.includes('new case') || t.includes('create')) {
-    action = 'Add Case';
-    openAddCaseModal();
-  } else if (t.includes('search') || t.includes('find')) {
-    action = 'Search';
-    openGlobalSearch();
-  } else if (t.includes('export') || t.includes('excel')) {
-    action = 'Export';
-    exportCasesExcel();
-  } else if (t.includes('print')) {
-    action = 'Print';
-    printCaseList();
-  } else {
-    const status = document.getElementById('voiceNavStatus');
-    if (status) status.textContent = 'Command not recognized. Try: "Open cases", "Add case", "Show fees"';
-    return;
-  }
-  
-  showToast(`Voice command: ${action}`, 'success');
-  stopVoiceNav();
-}
 </script>
 </body>
 </html>

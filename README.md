@@ -2,11 +2,7 @@
 
 A professional, offline-first legal management platform for Gujarati advocates. Manage cases, fees, hearings, and legal documents with voice support and PWA capabilities.
 
-<<<<<<< HEAD
-##  Quick Start
-=======
 ## 🚀 Quick Start
->>>>>>> 774ce407dd557885f4b919de4c76c9fdcf235ccd
 
 1. **Open** `index.html` in Chrome, Edge, or Safari
 2. **Install as PWA** — Click "Install App" in browser menu for native-app experience
@@ -27,7 +23,6 @@ A professional, offline-first legal management platform for Gujarati advocates. 
 - 🖨️ **Case Brief** — Formatted A4 printable case summary
 
 ### Documents
-<<<<<<< HEAD
 - 📜 **13 Legal Templates** — Official court formats from Gujarat High Court, CPC, BNSS 2023
   - Vakalatnama, Plaint, Written Statement, Bail Application
   - Criminal Complaint, Affidavit, Legal Notice, Power of Attorney
@@ -39,35 +34,20 @@ A professional, offline-first legal management platform for Gujarati advocates. 
 - 🖨️ **Print Ready** — Formatted for A4 printing
 
 ### Voice & Navigation
--  **Gujarati Voice Input** — Speak field values in Gujarati
-- 🗣️ **Voice Navigation** — Floating mic button for voice commands
-- ️ **Keyboard Shortcuts** — `Ctrl+K` search, `Escape` close modals
-=======
-- 📜 **Legal Templates** — 12 pre-built Gujarati legal document templates
-- ️ **Wizard Builder** — Step-by-step document creation
-- 💾 **Auto-Save Drafts** — Never lose work, drafts persist in localStorage
-- 📄 **Save & Export** — Save to IndexedDB, export as .docx
-
-### Voice & Navigation
 - 🎤 **Gujarati Voice Input** — Speak field values in Gujarati
 - 🗣️ **Voice Navigation** — Floating mic button for voice commands
 - ⌨️ **Keyboard Shortcuts** — `Ctrl+K` search, `Escape` close modals
->>>>>>> 774ce407dd557885f4b919de4c76c9fdcf235ccd
 
 ### Data & Export
 - 📊 **Excel Export/Import** — Full case data as .xlsx
--  **JSON Backup/Restore** — Complete data backup
+- 💾 **JSON Backup/Restore** — Complete data backup
 - 🖨️ **Print Lists** — Case list, calendar, individual cases
 
 ### PWA & Offline
 - 📱 **Installable** — Add to home screen on mobile/desktop
 - 🔔 **Push Notifications** — Hearing reminders via browser notifications
 - 🌐 **Offline Support** — Service worker caches all assets
-<<<<<<< HEAD
--  **Dark/Light Theme** — Toggle with persistence
-=======
 - 🌓 **Dark/Light Theme** — Toggle with persistence
->>>>>>> 774ce407dd557885f4b919de4c76c9fdcf235ccd
 
 ## 🛠️ Tech Stack
 
@@ -93,17 +73,10 @@ Advocate-Pro/
 └── logo.png            # App icon & favicon
 ```
 
-<<<<<<< HEAD
-##  Usage Tips
-
-### Voice Commands
-Click the  button (bottom-right) and say:
-=======
 ## 🎯 Usage Tips
 
 ### Voice Commands
 Click the 🎤 button (bottom-right) and say:
->>>>>>> 774ce407dd557885f4b919de4c76c9fdcf235ccd
 - "Open cases" / "Show fees" / "Calendar"
 - "Add case" / "Search" / "Export"
 
@@ -113,6 +86,7 @@ Click the 🎤 button (bottom-right) and say:
 | `Ctrl+K` | Open global search |
 | `Escape` | Close any modal |
 | `Ctrl+Enter` | Start/stop voice recording |
+| `?` | Show keyboard shortcuts help |
 
 ### Data Backup
 1. Click "Full JSON Backup" in sidebar
@@ -123,18 +97,20 @@ Click the 🎤 button (bottom-right) and say:
 
 - ✅ Chrome / Edge (Recommended)
 - ✅ Safari (macOS/iOS)
-- ️ Firefox (Limited voice support)
+- ⚠️ Firefox (Limited voice support)
 
-<<<<<<< HEAD
 ## 🔒 Privacy
-=======
-##  Privacy
->>>>>>> 774ce407dd557885f4b919de4c76c9fdcf235ccd
 
 - **100% local** — All data stored in browser IndexedDB
 - **No server** — Nothing sent to external services
 - **No tracking** — No analytics or cookies
 - **Offline-first** — Works without internet after first load
+
+## 🔮 Future Scope
+
+Planned features for future releases:
+
+- 📋 **Cause List Integration** — Auto-parse court cause list PDFs to extract hearing dates, item numbers, and court rooms. Upload PDF → system matches your cases → auto-updates hearing schedule with notifications.
 
 ## 📝 License
 

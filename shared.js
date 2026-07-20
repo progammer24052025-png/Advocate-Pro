@@ -151,8 +151,32 @@ const DocTypeDetector = (() => {
       keywords: ['legal notice', 'notice', 'advocate', 'client', 'demand', 'failing which', 'proceedings'],
     },
     {
-      type: 'FARAGATI',     label: 'ઇ-ઇ-ઇ-ઇ-ઇ-ઇ (Release Deed)',
+      type: 'FARAGATI',     label: 'ફરગતી (Release Deed)',
       keywords: ['release deed', 'faragati', 'releasor', 'releasee', 'no claim', 'relinquish'],
+    },
+    {
+      type: 'VAKALATNAMA',  label: 'વકાલતનામું (Vakalatnama)',
+      keywords: ['vakalatnama', 'vakalat', 'appoint advocate', 'enrollment', 'client hereby appoints'],
+    },
+    {
+      type: 'PLAINT',       label: 'પ્લેઇન્ટ (Plaint / Civil Suit)',
+      keywords: ['plaint', 'civil suit', 'plaintiff', 'defendant', 'cause of action', 'relief claimed', 'jurisdiction'],
+    },
+    {
+      type: 'WRITTEN_STATEMENT', label: 'લિખિત જવાબ (Written Statement)',
+      keywords: ['written statement', 'paragraphs denied', 'paragraphs admitted', 'preliminary objection', 'defence'],
+    },
+    {
+      type: 'BAIL_APPLICATION', label: 'જામીન અરજી (Bail Application)',
+      keywords: ['bail application', 'anticipatory bail', 'regular bail', 'sec 483', 'bnss', 'applicant seeks bail'],
+    },
+    {
+      type: 'CRIMINAL_COMPLAINT', label: 'ફોજદારી ફરિયાદ (Criminal Complaint)',
+      keywords: ['criminal complaint', 'complainant', 'accused', 'offence', 'sec 200', 'private complaint'],
+    },
+    {
+      type: 'WILL',         label: 'વસિયતનામું (Will / Testament)',
+      keywords: ['last will', 'testament', 'testator', 'executor', 'bequeath', 'codicil', 'succession act'],
     },
   ];
 
@@ -463,7 +487,7 @@ async function runGlobalSearch() {
   try {
     const cases = await dbGetAll(STORES.CASES);
     for (const c of cases) {
-      const s = [c.caseNumber,c.caseTitle,c.clientName,c.judgeName,c.courtNo,c.courtName,c.caseType,c.opposingAdvocate,c.notes].join(' ').toLowerCase();
+      const s = [c.caseNumber,c.caseTitle,c.clientName,c.judgeName,c.courtNo,c.courtName,c.caseType,c.opposingAdvocate,c.notes,(c.tags||[]).join(' ')].join(' ').toLowerCase();
       if (s.includes(q)) results.push({ type:'case', id:c.id, title:c.caseTitle||c.caseNumber, sub:`Case ${c.caseNumber} · ${c.clientName||''}`, status:c.status });
     }
   } catch(e) {}
@@ -487,11 +511,288 @@ async function runGlobalSearch() {
 
 function navigateToResult(type, id) {
   closeGlobalSearch();
-  if (type==='case') {
-    if (window.location.pathname.includes('case-library')) { viewCase(id); }
-    else { window.location.href = 'case-library.html'; }
+  if (type === 'case') {
+    if (window.location.pathname.includes('case-library') && typeof viewCase === 'function') {
+      viewCase(id);
+    } else {
+      window.location.href = `case-library.html#case-${id}`;
+    }
   } else {
-    if (window.location.pathname.includes('documents')) { viewSavedDoc(id); }
-    else { window.location.href = 'documents.html'; }
+    if (window.location.pathname.includes('documents') && typeof viewSavedDoc === 'function') {
+      viewSavedDoc(id);
+    } else {
+      window.location.href = `documents.html#view-${id}`;
+    }
   }
+}
+
+// ── Keyboard Shortcuts Panel (?) ─────────────────────────────────
+(function initShortcutsPanel() {
+  const shortcutsHTML = `
+    <div class="modal-overlay" id="shortcutsModal" style="z-index:10001;">
+      <div class="modal" style="max-width:500px;">
+        <div class="modal-header">
+          <h2 class="modal-title">⌨️ Keyboard Shortcuts</h2>
+          <button class="modal-close" onclick="closeShortcutsModal()">✕</button>
+        </div>
+        <div style="max-height:60vh;overflow-y:auto;">
+          <table style="width:100%;border-collapse:collapse;">
+            <thead>
+              <tr style="border-bottom:2px solid var(--border);">
+                <th style="text-align:left;padding:10px 12px;font-size:.85rem;color:var(--text-muted);">Shortcut</th>
+                <th style="text-align:left;padding:10px 12px;font-size:.85rem;color:var(--text-muted);">Action</th>
+              </tr>
+            </thead>
+            <tbody id="shortcutsTableBody"></tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <span class="text-xs text-muted">Press <kbd style="background:var(--bg-secondary);padding:2px 6px;border-radius:4px;">?</kbd> anytime to see this</span>
+        </div>
+      </div>
+    </div>`;
+  document.body.insertAdjacentHTML('beforeend', shortcutsHTML);
+
+  // Define shortcuts
+  const shortcuts = [
+    { key: 'Ctrl + K', action: 'Open global search' },
+    { key: 'Escape', action: 'Close any modal / panel' },
+    { key: 'Ctrl + Enter', action: 'Start / stop voice recording' },
+    { key: '?', action: 'Show this shortcuts help' },
+  ];
+
+  // Add page-specific shortcuts
+  if (window.location.pathname.includes('case-library')) {
+    shortcuts.push(
+      { key: 'N', action: 'Add new case' },
+      { key: 'E', action: 'Export to Excel' },
+      { key: 'B', action: 'Full JSON backup' }
+    );
+  }
+  if (window.location.pathname.includes('documents')) {
+    shortcuts.push(
+      { key: 'N', action: 'New document from template' },
+      { key: 'S', action: 'Save current document' }
+    );
+  }
+
+  // Populate table
+  const tbody = document.getElementById('shortcutsTableBody');
+  if (tbody) {
+    tbody.innerHTML = shortcuts.map(s => `
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:12px;"><kbd style="background:var(--bg-secondary);padding:4px 10px;border-radius:6px;font-family:monospace;font-size:.85rem;border:1px solid var(--border);">${s.key}</kbd></td>
+        <td style="padding:12px;font-size:.9rem;">${s.action}</td>
+      </tr>
+    `).join('');
+  }
+
+  // Listen for ? key (only when not in input/textarea)
+  document.addEventListener('keydown', (e) => {
+    // Don't trigger if typing in an input
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
+    
+    if (e.key === '?' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      e.preventDefault();
+      openShortcutsModal();
+    }
+  });
+})();
+
+function openShortcutsModal() {
+  const modal = document.getElementById('shortcutsModal');
+  if (modal) modal.classList.add('active');
+}
+
+function closeShortcutsModal() {
+  const modal = document.getElementById('shortcutsModal');
+  if (modal) modal.classList.remove('active');
+}
+
+// Add Escape handler for shortcuts modal
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeShortcutsModal();
+});
+
+// ── Keyboard shortcut actions ────────────────────────────────────
+function _isTypingTarget(el) {
+  return el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable);
+}
+
+function _toggleVoiceForFocusedField() {
+  const active = document.activeElement;
+  if (active && active.id) {
+    const btn = document.querySelector(`[data-voice-for="${active.id}"]`);
+    if (btn) { btn.click(); return; }
+    if (typeof fieldVoice === 'function') { fieldVoice(active.id); return; }
+  }
+  const recording = document.querySelector('.voice-btn.recording');
+  if (recording) { recording.click(); return; }
+  const first = document.querySelector('.voice-btn');
+  if (first) first.click();
+}
+
+function _runPageShortcut(key) {
+  const onCaseLib = window.location.pathname.includes('case-library');
+  const onDocs    = window.location.pathname.includes('documents');
+
+  if (key === 'n') {
+    if (onCaseLib && typeof openAddCaseModal === 'function') { openAddCaseModal(); return true; }
+    if (onDocs && typeof showTab === 'function') { showTab('templates'); return true; }
+  }
+  if (key === 'e' && onCaseLib && typeof exportCasesExcel === 'function') {
+    exportCasesExcel(); return true;
+  }
+  if (key === 'b' && onCaseLib && typeof exportBackup === 'function') {
+    exportBackup(); return true;
+  }
+  if (key === 's' && onDocs && typeof saveCurrentDoc === 'function') {
+    const wiz = document.getElementById('tab-wizard');
+    if (wiz && wiz.classList.contains('active')) { saveCurrentDoc(); return true; }
+  }
+  return false;
+}
+
+document.addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    e.preventDefault();
+    _toggleVoiceForFocusedField();
+    return;
+  }
+  if (_isTypingTarget(e.target)) return;
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+  const k = e.key.toLowerCase();
+  if (k === 'n' || k === 'e' || k === 'b' || k === 's') {
+    if (_runPageShortcut(k)) e.preventDefault();
+  }
+});
+
+// ── Voice Navigation (all pages) ────────────────────────────────
+const VoiceNav = (() => {
+  let active = false;
+  let rec    = null;
+
+  function injectUI() {
+    if (document.getElementById('voiceNavBtn')) return;
+    document.body.insertAdjacentHTML('beforeend', `
+      <button id="voiceNavBtn" onclick="VoiceNav.toggle()" title="Voice Navigation"
+        style="position:fixed;bottom:24px;right:24px;width:56px;height:56px;border-radius:50%;background:var(--gold);color:#000;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(201,162,39,.4);z-index:999;display:flex;align-items:center;justify-content:center;font-size:1.5rem;transition:var(--transition);">🎤</button>
+      <div id="voiceNavStatus" style="position:fixed;bottom:90px;right:24px;background:var(--bg-card);color:var(--text-primary);padding:8px 16px;border-radius:8px;box-shadow:var(--shadow);font-size:.875rem;z-index:998;display:none;max-width:250px;text-align:center;"></div>`);
+  }
+
+  function setStatus(msg, recording) {
+    const btn = document.getElementById('voiceNavBtn');
+    const status = document.getElementById('voiceNavStatus');
+    if (status) { status.textContent = msg; status.style.display = msg ? 'block' : 'none'; }
+    if (btn) {
+      btn.style.background = recording ? 'var(--danger)' : 'var(--gold)';
+      btn.style.animation  = recording ? 'pulse 1s infinite' : '';
+    }
+  }
+
+  function stop() {
+    active = false;
+    if (rec) { try { rec.stop(); } catch (_) {} rec = null; }
+    setStatus('', false);
+    setTimeout(() => { const s = document.getElementById('voiceNavStatus'); if (s) s.style.display = 'none'; }, 1500);
+  }
+
+  function processCommand(text) {
+    const t = text.toLowerCase();
+    let action = '';
+
+    if (window.location.pathname.includes('documents')) {
+      if (t.includes('template') || t.includes('library')) { action = 'Templates'; showTab('templates'); }
+      else if (t.includes('document') || t.includes('saved') || t.includes('my doc')) { action = 'My Documents'; showTab('mydocs'); }
+      else if (t.includes('upload')) { action = 'Upload'; showTab('upload'); }
+      else if (t.includes('save')) { action = 'Save'; if (typeof saveCurrentDoc === 'function') saveCurrentDoc(); }
+      else if (t.includes('case')) { action = 'Cases'; window.location.href = 'case-library.html'; }
+      else if (t.includes('home')) { action = 'Home'; window.location.href = 'index.html'; }
+      else if (t.includes('search')) { action = 'Search'; openGlobalSearch(); }
+      else { setStatus('Try: "Templates", "Save", "Open cases"', false); return; }
+    } else if (!window.location.pathname.includes('case-library')) {
+      if (t.includes('case')) { action = 'Cases'; window.location.href = 'case-library.html'; }
+      else if (t.includes('document')) { action = 'Documents'; window.location.href = 'documents.html'; }
+      else if (t.includes('search')) { action = 'Search'; openGlobalSearch(); }
+      else if (t.includes('home')) { action = 'Home'; window.location.href = 'index.html'; }
+      else { setStatus('Try: "Open cases", "Documents", "Search"', false); return; }
+    } else {
+      if (t.includes('dashboard') || t.includes('home')) { action = 'Dashboard'; showTab('dashboard'); }
+      else if (t.includes('case') && (t.includes('open') || t.includes('show') || t.includes('go') || t.includes('all'))) { action = 'Cases'; showTab('cases'); }
+      else if (t.includes('fee') || t.includes('payment')) { action = 'Fees'; showTab('fees'); }
+      else if (t.includes('calendar') || t.includes('hearing')) { action = 'Calendar'; showTab('calendar'); }
+      else if (t.includes('document')) { action = 'Documents'; window.location.href = 'documents.html'; }
+      else if (t.includes('add') || t.includes('new case') || t.includes('create')) { action = 'Add Case'; openAddCaseModal(); }
+      else if (t.includes('search') || t.includes('find')) { action = 'Search'; openGlobalSearch(); }
+      else if (t.includes('export') || t.includes('excel')) { action = 'Export'; exportCasesExcel(); }
+      else if (t.includes('print')) { action = 'Print'; printCaseList(); }
+      else if (t.includes('backup')) { action = 'Backup'; exportBackup(); }
+      else { setStatus('Try: "Open cases", "Add case", "Show fees"', false); return; }
+    }
+
+    showAdvToast(`Voice command: ${action}`, 'success');
+    stop();
+  }
+
+  function start() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      showAdvToast('Voice navigation not supported in this browser.', 'error');
+      return;
+    }
+    rec = new SpeechRecognition();
+    rec.lang = 'gu-IN';
+    rec.continuous = false;
+    rec.interimResults = false;
+    rec.onstart = () => { active = true; setStatus('🎤 Listening… Say a command', true); };
+    rec.onresult = (e) => {
+      const transcript = e.results[0][0].transcript.toLowerCase().trim();
+      setStatus(`Heard: "${transcript}"`, true);
+      processCommand(transcript);
+    };
+    rec.onerror = () => { setStatus('Could not hear command.', false); stop(); };
+    rec.onend = () => { if (active) setTimeout(stop, 1500); };
+    rec.start();
+  }
+
+  function toggle() {
+    if (active) stop();
+    else start();
+  }
+
+  injectUI();
+  return { toggle, start, stop };
+})();
+
+// ── PWA / Service Worker registration (all pages) ───────────────
+const AdvProPWA = {
+  register() {
+    if (!('serviceWorker' in navigator)) return;
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => {
+        if ('Notification' in window && Notification.permission === 'default') {
+          Notification.requestPermission();
+        }
+        const ping = () => reg.active && reg.active.postMessage('check-reminders');
+        if ('Notification' in window && Notification.permission === 'granted') ping();
+        if ('periodicSync' in reg) {
+          reg.periodicSync.register('hearing-check', { minInterval: 30 * 60 * 1000 }).catch(() => {});
+        }
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'visible' && Notification.permission === 'granted') ping();
+        });
+        // Periodic check while app is open
+        setInterval(() => {
+          if (Notification.permission === 'granted') ping();
+        }, 30 * 60 * 1000);
+      })
+      .catch(err => console.warn('[SW] Registration failed:', err));
+  },
+};
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => AdvProPWA.register());
+} else {
+  AdvProPWA.register();
 }

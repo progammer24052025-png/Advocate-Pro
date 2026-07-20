@@ -4,7 +4,7 @@
 // ================================================================
 
 const DB_NAME = 'AdvocateProDB';
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 
 const STORES = {
   CASES:     'cases',
@@ -23,6 +23,7 @@ function openDB() {
 
     req.onupgradeneeded = (e) => {
       const d = e.target.result;
+      const oldVersion = e.oldVersion;
 
       // Cases store
       if (!d.objectStoreNames.contains(STORES.CASES)) {
@@ -34,6 +35,16 @@ function openDB() {
         s.createIndex('status',      'status',      { unique: false });
         s.createIndex('nextHearing', 'nextHearing', { unique: false });
         s.createIndex('caseType',    'caseType',    { unique: false });
+      }
+
+      // Version 3: Add tags index for case filtering
+      if (oldVersion < 3) {
+        const caseStore = d.transaction.objectStore
+          ? d.transaction.objectStore(STORES.CASES)
+          : e.target.transaction.objectStore(STORES.CASES);
+        if (!caseStore.indexNames.contains('tags')) {
+          caseStore.createIndex('tags', 'tags', { unique: false, multiEntry: true });
+        }
       }
 
       // Fees store (one per case — agreed amount)

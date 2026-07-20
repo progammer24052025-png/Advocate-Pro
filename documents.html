@@ -6,8 +6,8 @@
   <title>Legal Documents — Advocate Pro</title>
   <meta name="theme-color" content="#c9a227">
   <link rel="manifest" href="manifest.json">
-  <link rel="icon" type="image/png" href="logo.png">
-  <link rel="apple-touch-icon" href="logo.png">
+  <link rel="icon" type="image/svg+xml" href="logo.svg">
+  <link rel="apple-touch-icon" href="logo.svg">
   <link rel="stylesheet" href="shared.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+Gujarati:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
@@ -100,7 +100,7 @@
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
       <a href="index.html" class="sidebar-logo">
-        <img src="logo.png" alt="Advocate Pro" style="width:40px;height:40px;border-radius:8px;object-fit:contain;background:#fff;">
+        <img src="logo.svg" alt="Advocate Pro" style="width:40px;height:40px;border-radius:8px;object-fit:contain;background:#fff;">
         <div><div class="logo-text">Advocate Pro</div><div class="logo-sub">Document Studio</div></div>
       </a>
     </div>
@@ -115,7 +115,7 @@
       <a href="index.html"        class="nav-item"><span class="nav-icon">🏠</span>Home</a>
     </nav>
     <div class="sidebar-footer">
-      <div style="font-size:.75rem;color:var(--text-muted);line-height:1.6;">📜 7 built-in Gujarati<br>legal templates · Offline</div>
+      <div style="font-size:.75rem;color:var(--text-muted);line-height:1.6;">📜 13 built-in Gujarati<br>legal templates · Offline</div>
       <button class="btn btn-ghost btn-sm mt-2" id="themeToggle" onclick="toggleTheme()" style="width:100%;justify-content:center;margin-top:10px;">🌙 Dark Mode</button>
     </div>
   </aside>
@@ -1121,7 +1121,7 @@ ${'━'.repeat(55)}
   },
   {
     id:'criminal-complaint', name:'Criminal Complaint', nameGu:'ફોજદારી ફરિયાદ (Criminal Complaint)',
-    icon:'', desc:'Private Criminal Complaint — Sec 200 CrPC / BNSS 2023', category:'Criminal',
+    icon:'⚖️', desc:'Private Criminal Complaint — Sec 200 CrPC / BNSS 2023', category:'Criminal',
     fields:[
       { id:'COURT_NAME',       label:'Court Name',              type:'text',     required:true,  placeholder:'e.g. Judicial Magistrate First Class, Ahmedabad' },
       { id:'COMPLAINANT_NAME', label:'Complainant Name',        type:'text',     required:true },
@@ -1677,13 +1677,10 @@ async function processUploadedFile(file) {
   try {
     let text = '';
     if (ext === '.docx') {
-      if (typeof mammoth === 'undefined') {
-        showToast('mammoth.js not loaded — using file as text.','warning');
-        text = await file.text();
-      } else {
-        const buf    = await file.arrayBuffer();
-        const result = await mammoth.extractRawText({ arrayBuffer: buf });
-        text = result.value;
+      text = await DocxReader.extractText(file);
+      if (!text) {
+        showToast('Could not read .docx — check internet for mammoth.js or upload .txt instead.','warning');
+        text = '';
       }
     } else {
       text = await file.text();
@@ -1701,7 +1698,12 @@ async function processUploadedFile(file) {
     }
     // Auto-fill category if not manually set
     if (!document.getElementById('uploadCategory').value) {
-      const catMap = { BHADA_KARAR:'Rent / Lease', VECHAN_KHAT:'Sale / Purchase', MUKHTYARNAMU:'Power of Attorney', BHAGIDARI:'Partnership', HALFNAMU:'Affidavit', LEGAL_NOTICE:'Legal Notice' };
+      const catMap = {
+        BHADA_KARAR:'Rent / Lease', VECHAN_KHAT:'Sale / Purchase', MUKHTYARNAMU:'Power of Attorney',
+        BHAGIDARI:'Partnership', HALFNAMU:'Affidavit', LEGAL_NOTICE:'Legal Notice', FARAGATI:'Release Deed',
+        VAKALATNAMA:'Court Filing', PLAINT:'Court Filing', WRITTEN_STATEMENT:'Court Filing',
+        BAIL_APPLICATION:'Criminal', CRIMINAL_COMPLAINT:'Criminal', WILL:'Other',
+      };
       document.getElementById('uploadCategory').value = catMap[detected.type] || 'Other';
     }
 
