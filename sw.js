@@ -3,7 +3,7 @@
 // Handles PWA offline support + hearing & task notifications
 // ================================================================
 
-const CACHE_NAME = 'advocate-pro-v2';
+const CACHE_NAME = 'advocate-pro-v5';
 const DB_NAME = 'AdvocateProDB';
 const DB_VERSION = 3;
 
@@ -15,6 +15,7 @@ const PRECACHE_URLS = [
   './shared.css',
   './shared.js',
   './db.js',
+  './sync.js',
   './manifest.json',
   './logo.svg',
   'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js',
@@ -25,7 +26,7 @@ const PRECACHE_URLS = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache =>
-      Promise.allSettled(PRECACHE_URLS.map(url => cache.add(url)))
+      Promise.allSettled(PRECACHE_URLS.map(url => cache.add(new Request(url, { cache: 'reload' }))))
     ).then(() => self.skipWaiting())
   );
 });

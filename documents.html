@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Legal Documents — Advocate Pro</title>
-  <meta name="theme-color" content="#c9a227">
+  <meta name="theme-color" content="#eef3fc">
+  <script>try{var t=localStorage.getItem("advpro_theme");if(t==="dark"||(!t&&matchMedia("(prefers-color-scheme: dark)").matches))document.documentElement.classList.add("dark-theme")}catch(e){}</script>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/svg+xml" href="logo.svg">
   <link rel="apple-touch-icon" href="logo.svg">
   <link rel="stylesheet" href="shared.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+Gujarati:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
   <!-- mammoth.js for .docx reading -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
   <!-- SheetJS for Excel export -->
@@ -21,20 +21,20 @@
     .tmpl-card {
       background:var(--bg-card); border:1px solid var(--border);
       border-radius:var(--radius-lg); padding:22px; cursor:pointer;
-      transition:all .28s ease; position:relative; overflow:hidden;
+      transition:var(--transition); position:relative; overflow:hidden; box-shadow:var(--shadow);
     }
-    .tmpl-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--purple),var(--purple-light)); }
-    .tmpl-card.custom-card::before { background:linear-gradient(90deg,var(--gold-dark),var(--gold-light)); }
-    .tmpl-card:hover { border-color:var(--purple-light); transform:translateY(-4px); box-shadow:0 0 28px rgba(124,58,237,.22); }
-    .tmpl-card.custom-card:hover { border-color:var(--gold); box-shadow:var(--shadow-gold); }
-    .tmpl-icon { width:54px; height:54px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:1.6rem; margin-bottom:14px; background:rgba(124,58,237,.1); border:1px solid rgba(124,58,237,.25); }
-    .tmpl-card.custom-card .tmpl-icon { background:rgba(201,162,39,.1); border-color:rgba(201,162,39,.3); }
-    .tmpl-name { font-weight:800; font-size:1rem; margin-bottom:3px; }
-    .tmpl-name-gu { font-family:'Noto Sans Gujarati',sans-serif; font-size:.85rem; color:var(--gold); margin-bottom:8px; }
+    .tmpl-card::before { content:none; }
+    
+    .tmpl-card:hover { border-color:var(--accent); box-shadow:var(--shadow-lg); }
+    
+    .tmpl-icon { width:40px; height:40px; border-radius:var(--radius); display:flex; align-items:center; justify-content:center; font-size:1.2rem; margin-bottom:14px; background:var(--bg-secondary); color:var(--text-secondary); }
+    .tmpl-card.custom-card .tmpl-icon { background:var(--accent-soft); color:var(--accent); }
+    .tmpl-name { font-family:var(--font-serif); font-weight:600; font-size:1.08rem; margin-bottom:3px; }
+    .tmpl-name-gu { font-family:'Noto Serif Gujarati',serif; font-size:.86rem; color:var(--accent); margin-bottom:8px; }
     .tmpl-desc { font-size:.8rem; color:var(--text-secondary); line-height:1.55; }
-    .tmpl-badge { position:absolute; top:14px; right:14px; font-size:.68rem; font-weight:700; padding:3px 9px; border-radius:99px; }
-    .tmpl-badge-builtin { background:rgba(124,58,237,.15); color:var(--purple-light); border:1px solid rgba(124,58,237,.3); }
-    .tmpl-badge-custom  { background:rgba(201,162,39,.15); color:var(--gold);         border:1px solid rgba(201,162,39,.3); }
+    .tmpl-badge { position:absolute; top:14px; right:14px; font-size:.64rem; font-weight:600; padding:2px 7px; border-radius:var(--radius-sm); text-transform:uppercase; letter-spacing:.06em; }
+    .tmpl-badge-builtin { color:var(--text-muted); border:1px solid var(--border-strong); }
+    .tmpl-badge-custom  { color:var(--accent); border:1px solid rgba(var(--accent-rgb),.4); }
 
     /* Wizard */
     .wizard-progress { display:flex; margin-bottom:24px; }
@@ -48,7 +48,7 @@
     .doc-preview-wrap { background:var(--bg-secondary); padding:20px; border-radius:var(--radius-lg); }
     .doc-preview {
       background:#fff; color:#111;
-      border-radius:var(--radius-lg); padding:36px 44px;
+      border-radius:2px; padding:48px 56px;
       font-family:'Noto Sans Gujarati','Times New Roman',serif;
       font-size:12pt; line-height:1.9; white-space:pre-wrap; word-wrap:break-word;
       min-height:350px; box-shadow:0 4px 24px rgba(0,0,0,.15);
@@ -63,16 +63,16 @@
     /* Saved docs */
     .doc-item { display:flex; align-items:center; gap:14px; padding:14px 18px; border-radius:var(--radius-lg); background:var(--bg-card); border:1px solid var(--border); margin-bottom:10px; transition:var(--transition); }
     .doc-item:hover { border-color:var(--border-hover); }
-    .doc-icon-box { width:46px; height:46px; border-radius:12px; background:rgba(124,58,237,.1); border:1px solid rgba(124,58,237,.3); display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0; }
+    .doc-icon-box { width:40px; height:40px; border-radius:var(--radius); background:var(--bg-secondary); color:var(--text-secondary); display:flex; align-items:center; justify-content:center; font-size:1.15rem; flex-shrink:0; }
 
     /* Upload zone */
-    .upload-zone { border:2px dashed var(--border); border-radius:var(--radius-lg); padding:44px 24px; text-align:center; cursor:pointer; transition:var(--transition); background:rgba(201,162,39,.02); }
-    .upload-zone:hover,.upload-zone.drag-over { border-color:var(--gold); background:rgba(201,162,39,.06); }
-    .upload-icon { font-size:2.5rem; margin-bottom:12px; }
+    .upload-zone { border:2px dashed var(--border); border-radius:var(--radius-lg); padding:44px 24px; text-align:center; cursor:pointer; transition:var(--transition); background:rgba(var(--accent-rgb),.02); }
+    .upload-zone:hover,.upload-zone.drag-over { border-color:var(--gold); background:rgba(var(--accent-rgb),.06); }
+    .upload-icon { font-size:1.8rem; margin-bottom:10px; color:var(--text-muted); display:flex; justify-content:center; }
 
     /* Detection result */
-    .detection-card { border:1px solid rgba(201,162,39,.35); background:rgba(201,162,39,.06); border-radius:var(--radius-lg); padding:16px; margin-top:14px; }
-    .detection-badge { display:inline-flex; align-items:center; gap:6px; background:rgba(201,162,39,.15); border:1px solid rgba(201,162,39,.4); color:var(--gold); font-size:.8rem; font-weight:700; padding:4px 12px; border-radius:99px; margin-bottom:10px; }
+    .detection-card { border:1px solid rgba(var(--accent-rgb),.35); background:rgba(var(--accent-rgb),.06); border-radius:var(--radius-lg); padding:16px; margin-top:14px; }
+    .detection-badge { display:inline-flex; align-items:center; gap:6px; background:rgba(var(--accent-rgb),.15); border:1px solid rgba(var(--accent-rgb),.4); color:var(--gold); font-size:.8rem; font-weight:700; padding:4px 12px; border-radius:99px; margin-bottom:10px; }
 
     /* Mic status */
     .mic-status { font-size:.77rem; min-height:18px; margin-top:4px; transition:color .2s; }
@@ -81,7 +81,7 @@
     .mic-status.err  { color:var(--danger); }
 
     /* Mobile */
-    .mob-header { display:none; align-items:center; justify-content:space-between; padding:12px 16px; background:var(--bg-sidebar); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:200; }
+    .mob-header { display:none; align-items:center; justify-content:space-between; padding:10px 16px; background:var(--bg-sidebar); color:#f3efe6; border-bottom:1px solid var(--sidebar-border); position:sticky; top:0; z-index:200; }
     .sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:99; }
     @media(max-width:768px){ .mob-header{display:flex;} .sidebar-overlay.open{display:block;} }
     @media(max-width:900px){ .wiz-layout{flex-direction:column;} }
@@ -100,31 +100,31 @@
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
       <a href="index.html" class="sidebar-logo">
-        <img src="logo.svg" alt="Advocate Pro" style="width:40px;height:40px;border-radius:8px;object-fit:contain;background:#fff;">
+        <img src="logo.svg" alt="" width="38" height="38">
         <div><div class="logo-text">Advocate Pro</div><div class="logo-sub">Document Studio</div></div>
       </a>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Studio</div>
-      <button class="nav-item active" id="nav-templates" onclick="showTab('templates')"><span class="nav-icon">📚</span>Template Library</button>
-      <button class="nav-item" id="nav-mydocs"    onclick="showTab('mydocs')"><span class="nav-icon">📄</span>My Documents<span class="nav-badge" id="navDocCount">0</span></button>
-      <button class="nav-item" id="nav-upload"    onclick="showTab('upload')"><span class="nav-icon">⬆️</span>Upload Template</button>
+      <button class="nav-item active" id="nav-templates" onclick="showTab('templates')"><i class="ic ic-book nav-icon"></i>Template Library</button>
+      <button class="nav-item" id="nav-mydocs"    onclick="showTab('mydocs')"><i class="ic ic-doc nav-icon"></i>My Documents<span class="nav-badge" id="navDocCount">0</span></button>
+      <button class="nav-item" id="nav-upload"    onclick="showTab('upload')"><i class="ic ic-upload nav-icon"></i>Upload Template</button>
 
       <div class="nav-section">Navigation</div>
-      <a href="case-library.html" class="nav-item"><span class="nav-icon">📁</span>Case Library</a>
-      <a href="index.html"        class="nav-item"><span class="nav-icon">🏠</span>Home</a>
+      <a href="case-library.html" class="nav-item"><i class="ic ic-folder nav-icon"></i>Case Library</a>
+      <a href="index.html"        class="nav-item"><i class="ic ic-home nav-icon"></i>Home</a>
     </nav>
     <div class="sidebar-footer">
-      <div style="font-size:.75rem;color:var(--text-muted);line-height:1.6;">📜 13 built-in Gujarati<br>legal templates · Offline</div>
-      <button class="btn btn-ghost btn-sm mt-2" id="themeToggle" onclick="toggleTheme()" style="width:100%;justify-content:center;margin-top:10px;">🌙 Dark Mode</button>
+      <div style="font-size:.75rem;color:var(--text-muted);line-height:1.6;"><i class="ic ic-doc"></i> 13 built-in Gujarati<br>legal templates · Offline</div>
+      <button class="btn btn-ghost btn-sm" id="themeToggle" onclick="toggleTheme()" style="width:100%;margin-top:12px;"><i class="ic ic-moon"></i> Dark</button>
     </div>
   </aside>
 
   <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
   <div class="mob-header">
-    <button class="hamburger" onclick="openSidebar()">☰</button>
-    <span style="font-weight:700;font-size:.95rem;">📜 Document Studio</span>
-    <button class="btn btn-secondary btn-sm" onclick="showTab('upload')">⬆️ Upload</button>
+    <button class="hamburger" onclick="openSidebar()"><i class="ic ic-menu"></i></button>
+    <span style="font-weight:700;font-size:.95rem;"><i class="ic ic-doc"></i> Document Studio</span>
+    <button class="btn btn-secondary btn-sm" onclick="showTab('upload')"><i class="ic ic-upload"></i> Upload</button>
   </div>
 
   <!-- ── Main Content ── -->
@@ -137,10 +137,10 @@
         <p class="page-subtitle">Choose a built-in Gujarati legal template, or use your uploaded custom template</p>
       </div>
 
-      <div style="margin-bottom:10px;"><span style="font-size:.78rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.09em;">📚 Built-in Legal Templates</span></div>
+      <div style="margin-bottom:10px;"><span style="font-size:.78rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.09em;"><i class="ic ic-book"></i> Built-in Legal Templates</span></div>
       <div class="tmpl-grid" id="builtinGrid" style="margin-bottom:32px;"></div>
 
-      <div style="margin-bottom:10px;"><span style="font-size:.78rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.09em;">⬆️ My Custom Templates</span></div>
+      <div style="margin-bottom:10px;"><span style="font-size:.78rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.09em;"><i class="ic ic-upload"></i> My Custom Templates</span></div>
       <div class="tmpl-grid" id="customGrid"></div>
     </div>
 
@@ -148,10 +148,10 @@
     <div class="tab-content" id="tab-mydocs">
       <div class="page-header flex items-center justify-between flex-wrap gap-3">
         <div><h1 class="page-title">My Documents</h1><p class="page-subtitle">All saved and generated legal documents</p></div>
-        <button class="btn btn-secondary" onclick="exportAllDocsExcel()">📊 Export Index (Excel)</button>
+        <button class="btn btn-secondary" onclick="exportAllDocsExcel()"><i class="ic ic-sheet"></i> Export Index (Excel)</button>
       </div>
       <div id="savedDocsList">
-        <div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No documents yet. Create one from a template.</div></div>
+        <div class="empty-state"><div class="empty-icon"><i class="ic ic-inbox"></i></div><div class="empty-title">No documents yet. Create one from a template.</div></div>
       </div>
     </div>
 
@@ -166,7 +166,7 @@
         <!-- Instructions -->
         <div>
           <div class="card mb-4" style="padding:18px;">
-            <h3 class="font-bold mb-3">📋 How the Template System Works</h3>
+            <h3 class="font-bold mb-3"><i class="ic ic-copy"></i> How the Template System Works</h3>
             <ol style="padding-left:18px; color:var(--text-secondary); font-size:.875rem; line-height:2.1;">
               <li>Write your legal draft in any text editor or Word</li>
               <li>Mark all fillable fields with <strong style="color:var(--gold);">{{FIELD_NAME}}</strong></li>
@@ -176,7 +176,7 @@
               <li>It builds a smart form with correct input types per field</li>
               <li>Fill the form, preview, then export to Word or Print!</li>
             </ol>
-            <div class="card mt-4" style="padding:14px; background:var(--bg-secondary); border-color:rgba(201,162,39,.2);">
+            <div class="card mt-4" style="padding:14px; background:var(--bg-secondary); border-color:rgba(var(--accent-rgb),.2);">
               <div class="text-xs font-bold text-muted mb-2">EXAMPLE — PLACEHOLDERS IN TEMPLATE:</div>
               <div style="font-family:monospace; font-size:.85rem; color:var(--gold); line-height:1.9;">
                 ભાડૂત: {{TENANT_NAME}}<br>
@@ -188,8 +188,8 @@
             </div>
           </div>
 
-          <div class="card" style="padding:16px; background:rgba(124,58,237,.05); border-color:rgba(124,58,237,.25);">
-            <h4 class="font-bold mb-2" style="color:var(--purple-light);">⚡ Smart Auto-Detection</h4>
+          <div class="card" style="padding:16px; background:rgba(var(--ink-rgb),.05); border-color:rgba(var(--ink-rgb),.25);">
+            <h4 class="font-bold mb-2" style="color:var(--purple-light);"><i class="ic ic-bolt"></i> Smart Auto-Detection</h4>
             <p class="text-sm text-muted" style="line-height:1.7;">The system scans your document text and automatically:<br>
             • Detects document type (Rent Agreement, Sale Deed, etc.)<br>
             • Assigns correct input type (date, number, address, etc.)<br>
@@ -219,7 +219,7 @@
             ondragover="e=>{ e.preventDefault(); document.getElementById('dropZone').classList.add('drag-over'); }"
             ondragleave="()=>document.getElementById('dropZone').classList.remove('drag-over')"
             ondrop="handleFileDrop(event)">
-            <div class="upload-icon">📁</div>
+            <div class="upload-icon"><i class="ic ic-folder"></i></div>
             <div class="font-bold mb-2">Click to browse or drag &amp; drop</div>
             <div class="text-sm text-muted">Supports <strong>.txt</strong> and <strong>.docx</strong> files</div>
           </div>
@@ -241,14 +241,14 @@
               <div class="text-xs text-muted mb-2" id="uploadPreviewStats"></div>
               <!-- Detection result -->
               <div class="detection-card" id="detectionCard">
-                <div class="detection-badge">🤖 Auto-Detected: <span id="detectedType">—</span></div>
+                <div class="detection-badge"><i class="ic ic-bolt"></i> Auto-Detected: <span id="detectedType">—</span></div>
                 <div class="text-xs text-muted" id="detectedFields"></div>
               </div>
             </div>
           </div>
 
           <button class="btn btn-primary w-full mt-4" onclick="saveCustomTemplate()" style="justify-content:center;">
-            💾 Save Template to Library
+            <i class="ic ic-save"></i> Save Template to Library
           </button>
         </div>
       </div>
@@ -276,7 +276,7 @@
           <!-- Form -->
           <div style="flex:1; min-width:0;">
             <div class="flex items-center justify-between mb-4">
-              <h3 class="font-bold text-gold">📝 Fill Document Details</h3>
+              <h3 class="font-bold text-gold"><i class="ic ic-note"></i> Fill Document Details</h3>
               <div class="flex gap-2 items-center">
                 <label class="text-xs text-muted">Voice Language:</label>
                 <select class="form-control" id="voiceLang" onchange="VoiceEngine.setLanguage(this.value)" style="width:130px; padding:6px 10px; font-size:.8rem;">
@@ -297,12 +297,12 @@
             <div id="wizFieldsForm"></div>
             <div class="mic-status" id="wizMicStatus"></div>
             <div class="flex gap-3 mt-6">
-              <button class="btn btn-primary flex-1" onclick="goToStep(2)" style="justify-content:center;">👁️ Preview Document →</button>
+              <button class="btn btn-primary flex-1" onclick="goToStep(2)" style="justify-content:center;"><i class="ic ic-eye"></i> Preview Document →</button>
             </div>
           </div>
           <!-- Live Preview -->
           <div style="width:380px; flex-shrink:0;">
-            <h3 class="font-bold mb-3">👁️ Live Preview</h3>
+            <h3 class="font-bold mb-3"><i class="ic ic-eye"></i> Live Preview</h3>
             <div style="max-height:520px; overflow-y:auto; border-radius:var(--radius-lg); border:1px solid var(--border);">
               <div class="doc-preview" id="wizLivePreview" style="padding:20px; font-size:10.5pt; min-height:0;"></div>
             </div>
@@ -313,12 +313,12 @@
       <!-- Step 2: Preview & Export -->
       <div class="wiz-step" id="wstep-2">
         <div class="flex items-center justify-between flex-wrap gap-3 mb-4">
-          <h3 class="font-bold text-lg">📄 Full Document Preview</h3>
+          <h3 class="font-bold text-lg"><i class="ic ic-doc"></i> Full Document Preview</h3>
           <div class="flex gap-3 flex-wrap">
             <button class="btn btn-ghost"     onclick="goToStep(1)">← Edit Fields</button>
-            <button class="btn btn-secondary" onclick="saveCurrentDoc()">💾 Save</button>
-            <button class="btn btn-secondary" onclick="printCurrentDoc()">🖨️ Print</button>
-            <button class="btn btn-primary"   onclick="exportCurrentDocWord()">📥 Download Word</button>
+            <button class="btn btn-secondary" onclick="saveCurrentDoc()"><i class="ic ic-save"></i> Save</button>
+            <button class="btn btn-secondary" onclick="printCurrentDoc()"><i class="ic ic-print"></i> Print</button>
+            <button class="btn btn-primary"   onclick="exportCurrentDocWord()"><i class="ic ic-download"></i> Download Word</button>
           </div>
         </div>
         <div class="form-group mb-4 flex gap-3 items-center flex-wrap">
@@ -347,11 +347,20 @@
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost"     onclick="closeModal('savedDocModal')">Close</button>
-      <button class="btn btn-secondary" id="savedPrintBtn">🖨️ Print</button>
-      <button class="btn btn-primary"   id="savedWordBtn">📥 Download Word</button>
+      <button class="btn btn-secondary" id="savedPrintBtn"><i class="ic ic-print"></i> Print</button>
+      <button class="btn btn-primary"   id="savedWordBtn"><i class="ic ic-download"></i> Download Word</button>
     </div>
   </div>
 </div>
+
+<nav class="mobile-dock" aria-label="Sections">
+  <div class="mobile-dock-inner">
+    <button type="button" data-tab="templates" onclick="showTab('templates')"><i class="ic ic-book"></i>Templates</button>
+    <button type="button" data-tab="mydocs" onclick="showTab('mydocs')"><i class="ic ic-doc"></i>My docs</button>
+    <button type="button" data-tab="upload" onclick="showTab('upload')"><i class="ic ic-upload"></i>Upload</button>
+    <a href="case-library.html"><i class="ic ic-folder"></i>Cases</a>
+  </div>
+</nav>
 
 <div class="toast-container" id="toastContainer"></div>
 
@@ -369,7 +378,7 @@ const showToast = showAdvToast;
 const BUILTIN = [
   {
     id:'bhada-karar', name:'Bhada Karar', nameGu:'ભાડા કરાર (Rent Agreement)',
-    icon:'🏠', desc:'Residential / Commercial Rent Agreement', category:'Rent / Lease',
+    icon:'<i class="ic ic-home"></i>', desc:'Residential / Commercial Rent Agreement', category:'Rent / Lease',
     fields:[
       { id:'DATE',               label:'Agreement Date',            type:'date',     required:true  },
       { id:'CITY',               label:'City / Place (ગુજરાતી)',       type:'text',     required:true,  placeholder:'e.g. Ahmedabad / Surat' },
@@ -448,7 +457,7 @@ ${'━'.repeat(55)}
   },
   {
     id:'mukhtyarnamu', name:'Mukhtyarnamu', nameGu:'મુખત્યારનામું (Power of Attorney)',
-    icon:'📋', desc:'Power of Attorney — General or Specific', category:'Power of Attorney',
+    icon:'<i class="ic ic-copy"></i>', desc:'Power of Attorney — General or Specific', category:'Power of Attorney',
     fields:[
       { id:'DATE',              label:'Date',                    type:'date',     required:true },
       { id:'CITY',              label:'City / Place',            type:'text',     required:true,  placeholder:'e.g. Ahmedabad' },
@@ -507,7 +516,7 @@ ${'━'.repeat(55)}
   },
   {
     id:'legal-notice', name:'Legal Notice', nameGu:'કાનૂની નોટિસ (Legal Notice)',
-    icon:'⚖️', desc:'Formal Legal Notice from Advocate to Opposite Party', category:'Legal Notice',
+    icon:'<i class="ic ic-scale"></i>', desc:'Formal Legal Notice from Advocate to Opposite Party', category:'Legal Notice',
     fields:[
       { id:'DATE',              label:'Notice Date',             type:'date',     required:true },
       { id:'ADVOCATE_NAME',    label:'Advocate Name',           type:'text',     required:true,  placeholder:'Your full name' },
@@ -568,7 +577,7 @@ ${'━'.repeat(65)}
   },
   {
     id:'halfnamu', name:'Halfnamu', nameGu:'હલફનામું (Affidavit)',
-    icon:'🔏', desc:'Sworn Affidavit before Notary / Court', category:'Affidavit',
+    icon:'<i class="ic ic-shield"></i>', desc:'Sworn Affidavit before Notary / Court', category:'Affidavit',
     fields:[
       { id:'DATE',          label:'Date',                  type:'date',     required:true },
       { id:'COURT_NAME',    label:'Before (Court / Notary)',type:'text',    required:true,  placeholder:'e.g. Civil Court Ahmedabad / Notary Public' },
@@ -612,7 +621,7 @@ ${'━'.repeat(55)}
   },
   {
     id:'bhagidari', name:'Bhagidari Karar', nameGu:'ભાગીદારી કરાર (Partnership Deed)',
-    icon:'🤝', desc:'Partnership Agreement between two or more partners', category:'Partnership',
+    icon:'<i class="ic ic-users"></i>', desc:'Partnership Agreement between two or more partners', category:'Partnership',
     fields:[
       { id:'DATE',             label:'Date',                 type:'date',   required:true },
       { id:'CITY',             label:'City / Place',         type:'text',   required:true },
@@ -668,7 +677,7 @@ ${'━'.repeat(55)}
   },
   {
     id:'vechan-khat', name:'Vechan Khat', nameGu:'વેચાણ ખત (Sale Deed)',
-    icon:'🏘️', desc:'Property Sale Deed / Vechan Dastavej', category:'Sale / Purchase',
+    icon:'<i class="ic ic-home"></i>', desc:'Property Sale Deed / Vechan Dastavej', category:'Sale / Purchase',
     fields:[
       { id:'DATE',              label:'Date of Deed',          type:'date',     required:true },
       { id:'CITY',              label:'City / Taluka',         type:'text',     required:true },
@@ -723,7 +732,7 @@ ${'━'.repeat(55)}
   },
   {
     id:'faragati', name:'Faragati', nameGu:'ફરગતી (Release Deed)',
-    icon:'📝', desc:'Release Deed / No Claim Certificate', category:'Other',
+    icon:'<i class="ic ic-note"></i>', desc:'Release Deed / No Claim Certificate', category:'Other',
     fields:[
       { id:'DATE',           label:'Date',                              type:'date',     required:true },
       { id:'CITY',           label:'City',                              type:'text',     required:true },
@@ -769,7 +778,7 @@ ${'━'.repeat(55)}
   },
   {
     id:'vakalatnama', name:'Vakalatnama', nameGu:'વકાલતનામું (Vakalatnama)',
-    icon:'️', desc:'Court Representation Authority — Gujarat High Court Format', category:'Court Filing',
+    icon:'<i class="ic ic-court"></i>', desc:'Court Representation Authority — Gujarat High Court Format', category:'Court Filing',
     fields:[
       { id:'COURT_NAME',     label:'Court Name',              type:'text',     required:true,  placeholder:'e.g. Hon\'ble High Court of Gujarat at Ahmedabad' },
       { id:'CASE_NUMBER',    label:'Case Number / Year',      type:'text',     required:true,  placeholder:'e.g. Civil Suit No. 123 of 2025' },
@@ -844,7 +853,7 @@ ${'━'.repeat(55)}
   },
   {
     id:'plaint', name:'Plaint (Civil Suit)', nameGu:'પ્લેઇન્ટ (દીવાની દાવો)',
-    icon:'📄', desc:'Civil Suit Plaint — Order VII CPC Format', category:'Court Filing',
+    icon:'<i class="ic ic-doc"></i>', desc:'Civil Suit Plaint — Order VII CPC Format', category:'Court Filing',
     fields:[
       { id:'COURT_NAME',     label:'Court Name',              type:'text',     required:true,  placeholder:'e.g. Civil Judge Senior Division, Ahmedabad' },
       { id:'SUIT_NUMBER',    label:'Suit Number (if known)',  type:'text',     required:false, placeholder:'Leave blank if new filing' },
@@ -939,7 +948,7 @@ ${'━'.repeat(55)}
   },
   {
     id:'written-statement', name:'Written Statement', nameGu:'લિખિત જવાબ (Written Statement)',
-    icon:'📋', desc:'Defense Reply to Plaint — Order VIII CPC Format', category:'Court Filing',
+    icon:'<i class="ic ic-copy"></i>', desc:'Defense Reply to Plaint — Order VIII CPC Format', category:'Court Filing',
     fields:[
       { id:'COURT_NAME',      label:'Court Name',              type:'text',     required:true },
       { id:'CASE_NUMBER',     label:'Case / Suit Number',      type:'text',     required:true },
@@ -1032,7 +1041,7 @@ ${'━'.repeat(55)}
   },
   {
     id:'bail-application', name:'Bail Application', nameGu:'જામીન અરજી (Bail Application)',
-    icon:'🔓', desc:'Regular / Anticipatory Bail — Sec 483 BNSS 2023 Format', category:'Criminal',
+    icon:'<i class="ic ic-unlock"></i>', desc:'Regular / Anticipatory Bail — Sec 483 BNSS 2023 Format', category:'Criminal',
     fields:[
       { id:'COURT_NAME',     label:'Court Name',              type:'text',     required:true,  placeholder:'e.g. Sessions Court, Ahmedabad' },
       { id:'FIR_NUMBER',     label:'FIR / Crime Number',      type:'text',     required:true,  placeholder:'e.g. FIR No. 123/2025' },
@@ -1121,7 +1130,7 @@ ${'━'.repeat(55)}
   },
   {
     id:'criminal-complaint', name:'Criminal Complaint', nameGu:'ફોજદારી ફરિયાદ (Criminal Complaint)',
-    icon:'⚖️', desc:'Private Criminal Complaint — Sec 200 CrPC / BNSS 2023', category:'Criminal',
+    icon:'<i class="ic ic-scale"></i>', desc:'Private Criminal Complaint — Sec 200 CrPC / BNSS 2023', category:'Criminal',
     fields:[
       { id:'COURT_NAME',       label:'Court Name',              type:'text',     required:true,  placeholder:'e.g. Judicial Magistrate First Class, Ahmedabad' },
       { id:'COMPLAINANT_NAME', label:'Complainant Name',        type:'text',     required:true },
@@ -1222,7 +1231,7 @@ ${'━'.repeat(55)}
   },
   {
     id:'will', name:'Will / Testament', nameGu:'વસિયતનામું (Will)',
-    icon:'📜', desc:'Last Will and Testament — Indian Succession Act 1925', category:'Civil',
+    icon:'<i class="ic ic-doc"></i>', desc:'Last Will and Testament — Indian Succession Act 1925', category:'Civil',
     fields:[
       { id:'TESTATOR_NAME',   label:'Testator (Will Maker) Name', type:'text',     required:true },
       { id:'TESTATOR_AGE',    label:'Testator Age',               type:'number',   required:true },
@@ -1375,7 +1384,7 @@ async function loadCustomGrid() {
   const grid    = document.getElementById('customGrid');
   const customs = await dbGetAll(STORES.TEMPLATES);
   const addCard = `<div class="tmpl-card custom-card" onclick="showTab('upload')" style="border-style:dashed;text-align:center;padding:32px 20px;">
-    <div style="font-size:2.2rem;margin-bottom:10px;">➕</div>
+    <div style="font-size:2.2rem;margin-bottom:10px;"><i class="ic ic-plus"></i></div>
     <div class="font-bold">Upload Your Template</div>
     <div class="text-sm text-muted mt-2">Upload .txt or .docx with {{PLACEHOLDERS}}<br>System auto-detects type &amp; fields</div>
   </div>`;
@@ -1383,11 +1392,11 @@ async function loadCustomGrid() {
   grid.innerHTML = customs.map(t => `
     <div class="tmpl-card custom-card" onclick="openWizard(${t.id},'custom')">
       <span class="tmpl-badge tmpl-badge-custom">Custom</span>
-      <div class="tmpl-icon">📁</div>
+      <div class="tmpl-icon"><i class="ic ic-folder"></i></div>
       <div class="tmpl-name">${t.name}</div>
       <div class="tmpl-name-gu text-muted" style="font-size:.78rem;">${t.detectedType||t.category||'Custom'}</div>
       <div class="tmpl-desc">${(t.fields||[]).length} fields · ${t.category||'Custom'}</div>
-      <button class="btn btn-danger btn-sm" style="margin-top:14px;" onclick="event.stopPropagation();deleteCustomTemplate(${t.id})">🗑️ Delete</button>
+      <button class="btn btn-danger btn-sm" style="margin-top:14px;" onclick="event.stopPropagation();deleteCustomTemplate(${t.id})"><i class="ic ic-trash"></i> Delete</button>
     </div>`).join('') + addCard;
 }
 
@@ -1448,7 +1457,7 @@ function buildFieldsForm(fields) {
         <label class="form-label">${f.label}${f.required?'<span class="req"> *</span>':''}</label>
         ${input}
       </div>
-      <button type="button" class="voice-btn" data-voice-for="wf-${f.id}" onclick="fieldVoice('wf-${f.id}')" title="Voice input (Gujarati)">🎤</button>
+      <button type="button" class="voice-btn" data-voice-for="wf-${f.id}" onclick="fieldVoice('wf-${f.id}')" title="Voice input (Gujarati)"><i class="ic ic-mic"></i></button>
     </div>`;
   }).join('');
 }
@@ -1576,7 +1585,7 @@ async function loadSavedDocs() {
   document.getElementById('navDocCount').textContent = docs.length;
   const container = document.getElementById('savedDocsList');
   if (!docs.length) {
-    container.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No documents yet. Create one from a template.</div></div>';
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon"><i class="ic ic-inbox"></i></div><div class="empty-title">No documents yet. Create one from a template.</div></div>';
     return;
   }
   const sorted = [...docs].sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));
@@ -1590,10 +1599,10 @@ async function loadSavedDocs() {
   
   container.innerHTML = sorted.map(doc => {
     const linkedCase = doc.caseId ? casesMap[doc.caseId] : null;
-    const caseInfo = linkedCase ? `<span style="color:var(--gold);">📁 ${linkedCase.caseNumber || 'Case'}</span> · ` : '';
+    const caseInfo = linkedCase ? `<span style="color:var(--gold);"><i class="ic ic-folder"></i> ${linkedCase.caseNumber || 'Case'}</span> · ` : '';
     return `
     <div class="doc-item">
-      <div class="doc-icon-box">📄</div>
+      <div class="doc-icon-box"><i class="ic ic-doc"></i></div>
       <div style="flex:1;min-width:0;">
         <div class="font-bold text-sm">${doc.name}</div>
         <div class="text-xs text-muted mt-1">${caseInfo}Based on: ${doc.templateName||'—'} · Created: ${new Date(doc.createdAt).toLocaleDateString('en-IN')}</div>
@@ -1712,8 +1721,8 @@ async function processUploadedFile(file) {
     document.getElementById('uploadPreviewStats').textContent = `${text.length} characters · ${text.split('\n').length} lines · ${ext} format`;
     document.getElementById('detectedType').textContent       = detected.label;
     document.getElementById('detectedFields').textContent     = fields.length
-      ? `✦ ${fields.length} placeholder${fields.length!==1?'s':''} found: ${fields.slice(0,8).map(f=>`{{${f.id}}}`).join(', ')}${fields.length>8?` + ${fields.length-8} more…`:''}`
-      : '⚠️ No {{PLACEHOLDERS}} found. Add them to your template to make it fillable.';
+      ? `${fields.length} placeholder${fields.length!==1?'s':''} found: ${fields.slice(0,8).map(f=>`{{${f.id}}}`).join(', ')}${fields.length>8?` + ${fields.length-8} more…`:''}`
+      : 'No {{PLACEHOLDERS}} found. Add them to your template to make it fillable.';
 
     document.getElementById('uploadProcessing').classList.add('hidden');
     document.getElementById('uploadPreviewWrap').classList.remove('hidden');
@@ -1790,18 +1799,6 @@ async function init() {
 }
 init();
 
-// ── Theme Toggle ──────────────────────────────────────────────────
-function toggleTheme() {
-  document.body.classList.toggle('light-theme');
-  const isLight = document.body.classList.contains('light-theme');
-  localStorage.setItem('advpro_theme', isLight ? 'light' : 'dark');
-  document.getElementById('themeToggle').textContent = isLight ? '☀️ Light Mode' : '🌙 Dark Mode';
-}
-if (localStorage.getItem('advpro_theme') === 'light') {
-  document.body.classList.add('light-theme');
-  const btn = document.getElementById('themeToggle');
-  if (btn) btn.textContent = '☀️ Light Mode';
-}
 </script>
 </body>
 </html>
