@@ -51,7 +51,7 @@ const VoiceEngine = (() => {
 
   async function startFor(fieldId, onResult, onStatusChange) {
     if (!SpeechRec) {
-      if (onStatusChange) onStatusChange('❌ Voice recognition not supported. Please use Chrome.', 'error');
+      if (onStatusChange) onStatusChange('Voice recognition not supported. Please use Chrome.', 'error');
       return;
     }
 
@@ -67,7 +67,7 @@ const VoiceEngine = (() => {
     // Ensure mic permission
     const granted = await MicManager.ensurePermission();
     if (!granted) {
-      if (onStatusChange) onStatusChange('❌ Microphone permission denied. Please allow mic in browser settings.', 'error');
+      if (onStatusChange) onStatusChange('Microphone permission denied. Please allow mic in browser settings.', 'error');
       showAdvToast('Microphone permission denied. Click the mic icon in your browser address bar to allow.', 'error');
       return;
     }
@@ -75,7 +75,7 @@ const VoiceEngine = (() => {
     _activeId = fieldId;
     const btn = document.querySelector(`[data-voice-for="${fieldId}"]`);
     if (btn) btn.classList.add('recording');
-    if (onStatusChange) onStatusChange('🎤 Listening… speak in Gujarati or English', 'info');
+    if (onStatusChange) onStatusChange('Listening… speak in Gujarati or English', 'info');
 
     _rec = new SpeechRec();
     _rec.lang             = _langPref;
@@ -86,13 +86,13 @@ const VoiceEngine = (() => {
     _rec.onresult = (e) => {
       const text = Array.from(e.results).map(r => r[0].transcript).join(' ').trim();
       if (text && onResult) onResult(fieldId, text);
-      if (onStatusChange) onStatusChange(`✅ Got: "${text.substring(0,60)}${text.length>60?'…':''}"`, 'success');
+      if (onStatusChange) onStatusChange(`Got: "${text.substring(0,60)}${text.length>60?'…':''}"`, 'success');
       setTimeout(() => { if (onStatusChange) onStatusChange('', ''); }, 3000);
     };
 
     _rec.onerror = (e) => {
       const msgs = { 'no-speech':'No speech detected — try again.', 'audio-capture':'Microphone not found.', 'network':'Network error.' };
-      if (onStatusChange) onStatusChange('⚠️ ' + (msgs[e.error] || e.error), 'warning');
+      if (onStatusChange) onStatusChange(msgs[e.error] || e.error, 'warning');
       _clearActiveBtn(); _rec = null;
     };
 
@@ -101,7 +101,7 @@ const VoiceEngine = (() => {
     try { _rec.start(); }
     catch (err) {
       _clearActiveBtn(); _rec = null;
-      if (onStatusChange) onStatusChange('⚠️ Could not start mic. Refresh and try again.', 'error');
+      if (onStatusChange) onStatusChange('Could not start mic. Refresh and try again.', 'error');
     }
   }
 
@@ -113,12 +113,12 @@ const VoiceEngine = (() => {
 
 // ── Shared Toast ────────────────────────────────────────────────
 function showAdvToast(msg, type = 'info', duration = 4000) {
-  const icons  = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+  const icons  = { success: 'check', error: 'x', warning: 'alert', info: 'info' };
   const cont   = document.getElementById('toastContainer');
   if (!cont) return;
   const el = document.createElement('div');
   el.className = `toast toast-${type}`;
-  el.innerHTML = `<span style="flex-shrink:0;">${icons[type] || 'ℹ️'}</span><span>${msg}</span>`;
+  el.innerHTML = `<i class="ic ic-${icons[type] || 'info'}"></i><span>${msg}</span>`;
   cont.prepend(el);
   setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 300); }, duration);
 }
@@ -438,7 +438,7 @@ warmMicPermission();
     <div class="modal-overlay" id="globalSearchModal" style="z-index:10000;">
       <div class="modal" style="max-width:600px;">
         <div class="modal-header">
-          <h2 class="modal-title">🔍 Global Search</h2>
+          <h2 class="modal-title"><i class="ic ic-search"></i> Global Search</h2>
           <button class="modal-close" onclick="closeGlobalSearch()">✕</button>
         </div>
         <div class="form-group" style="margin-bottom:16px;">
@@ -502,7 +502,7 @@ async function runGlobalSearch() {
   if (!results.length) { resultsEl.innerHTML = '<div class="text-muted text-sm text-center" style="padding:20px;">No results found.</div>'; return; }
   resultsEl.innerHTML = results.slice(0,20).map(r => `
     <div style="padding:12px;border-radius:8px;cursor:pointer;border:1px solid var(--border);margin-bottom:8px;" onmouseover="this.style.background='var(--bg-secondary)'" onmouseout="this.style.background='transparent'" onclick="navigateToResult('${r.type}',${r.id})">
-      <div class="font-bold text-sm">${r.type==='case'?'📁':'📄'} ${r.title}</div>
+      <div class="font-bold text-sm"><i class="ic ic-${r.type==='case'?'folder':'doc'}" style="color:var(--text-muted);margin-right:6px;"></i>${r.title}</div>
       <div class="text-xs text-muted mt-1">${r.sub}</div>
       ${r.status?`<span class="badge badge-${(r.status||'').toLowerCase()}" style="margin-top:6px;">${r.status}</span>`:''}
     </div>
@@ -532,7 +532,7 @@ function navigateToResult(type, id) {
     <div class="modal-overlay" id="shortcutsModal" style="z-index:10001;">
       <div class="modal" style="max-width:500px;">
         <div class="modal-header">
-          <h2 class="modal-title">⌨️ Keyboard Shortcuts</h2>
+          <h2 class="modal-title"><i class="ic ic-keyboard"></i> Keyboard Shortcuts</h2>
           <button class="modal-close" onclick="closeShortcutsModal()">✕</button>
         </div>
         <div style="max-height:60vh;overflow-y:auto;">
@@ -676,9 +676,8 @@ const VoiceNav = (() => {
   function injectUI() {
     if (document.getElementById('voiceNavBtn')) return;
     document.body.insertAdjacentHTML('beforeend', `
-      <button id="voiceNavBtn" onclick="VoiceNav.toggle()" title="Voice Navigation"
-        style="position:fixed;bottom:24px;right:24px;width:56px;height:56px;border-radius:50%;background:var(--gold);color:#000;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(201,162,39,.4);z-index:999;display:flex;align-items:center;justify-content:center;font-size:1.5rem;transition:var(--transition);">🎤</button>
-      <div id="voiceNavStatus" style="position:fixed;bottom:90px;right:24px;background:var(--bg-card);color:var(--text-primary);padding:8px 16px;border-radius:8px;box-shadow:var(--shadow);font-size:.875rem;z-index:998;display:none;max-width:250px;text-align:center;"></div>`);
+      <button id="voiceNavBtn" onclick="VoiceNav.toggle()" title="Voice navigation" aria-label="Voice navigation"><i class="ic ic-mic"></i></button>
+      <div id="voiceNavStatus"></div>`);
   }
 
   function setStatus(msg, recording) {
@@ -686,8 +685,7 @@ const VoiceNav = (() => {
     const status = document.getElementById('voiceNavStatus');
     if (status) { status.textContent = msg; status.style.display = msg ? 'block' : 'none'; }
     if (btn) {
-      btn.style.background = recording ? 'var(--danger)' : 'var(--gold)';
-      btn.style.animation  = recording ? 'pulse 1s infinite' : '';
+      btn.classList.toggle('recording', !!recording);
     }
   }
 
@@ -745,7 +743,7 @@ const VoiceNav = (() => {
     rec.lang = 'gu-IN';
     rec.continuous = false;
     rec.interimResults = false;
-    rec.onstart = () => { active = true; setStatus('🎤 Listening… Say a command', true); };
+    rec.onstart = () => { active = true; setStatus('Listening… Say a command', true); };
     rec.onresult = (e) => {
       const transcript = e.results[0][0].transcript.toLowerCase().trim();
       setStatus(`Heard: "${transcript}"`, true);
@@ -796,3 +794,43 @@ if (document.readyState === 'loading') {
 } else {
   AdvProPWA.register();
 }
+
+
+// ── Theme (light by default, dark on request) ───────────────────
+// Saved choice wins; otherwise follow the OS. The class lives on <html>
+// so the fixed aurora background can read the theme tokens.
+function _themeLabel(isDark) {
+  return isDark ? '<i class="ic ic-sun"></i> <span class="label-text">Light</span>' : '<i class="ic ic-moon"></i> <span class="label-text">Dark</span>';
+}
+function applyTheme(mode) {
+  const isDark = mode === 'dark';
+  document.documentElement.classList.toggle('dark-theme', isDark);
+  if (document.body) document.body.classList.remove('light-theme', 'dark-theme');
+  const btn = document.getElementById('themeToggle');
+  if (btn) btn.innerHTML = _themeLabel(isDark);
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.content = isDark ? '#060a13' : '#eef3fc';
+}
+function toggleTheme() {
+  const next = document.documentElement.classList.contains('dark-theme') ? 'light' : 'dark';
+  try { localStorage.setItem('advpro_theme', next); } catch (_) {}
+  applyTheme(next);
+}
+(function initTheme() {
+  let saved = null;
+  try { saved = localStorage.getItem('advpro_theme'); } catch (_) {}
+  const mode = saved || (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  if (document.body) applyTheme(mode);
+  else document.addEventListener('DOMContentLoaded', () => applyTheme(mode));
+})();
+
+// ── Mobile dock: keep the active tab in step with showTab() ─────
+window.addEventListener('load', () => {
+  const dock = document.querySelector('.mobile-dock');
+  if (!dock || typeof window.showTab !== 'function') return;
+  const mark = (tab) => dock.querySelectorAll('[data-tab]').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  const original = window.showTab;
+  window.showTab = function (tab, ...rest) { const r = original.call(this, tab, ...rest); mark(tab); return r; };
+  const current = document.querySelector('.tab-content.active')?.id?.replace('tab-', '');
+  if (current) mark(current);
+});

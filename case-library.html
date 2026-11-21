@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Case Library — Advocate Pro</title>
-  <meta name="theme-color" content="#c9a227">
+  <meta name="theme-color" content="#eef3fc">
+  <script>try{var t=localStorage.getItem("advpro_theme");if(t==="dark"||(!t&&matchMedia("(prefers-color-scheme: dark)").matches))document.documentElement.classList.add("dark-theme")}catch(e){}</script>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/svg+xml" href="logo.svg">
   <link rel="apple-touch-icon" href="logo.svg">
   <link rel="stylesheet" href="shared.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+Gujarati:wght@400;500;600;700&display=swap" rel="stylesheet">
   <!-- SheetJS for Excel export/import -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
@@ -20,48 +20,44 @@
     .calendar-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; margin-top:14px; }
     .cal-day-name  { text-align:center; font-size:.7rem; font-weight:700; color:var(--text-muted); padding:5px 0; text-transform:uppercase; }
     .cal-day       { aspect-ratio:1; border-radius:6px; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:.8rem; cursor:pointer; transition:var(--transition); position:relative; border:1px solid transparent; }
-    .cal-day:hover        { background:rgba(201,162,39,.08); border-color:var(--border); }
-    .cal-day.today        { background:rgba(201,162,39,.18); border-color:var(--gold); color:var(--gold); font-weight:700; }
-    .cal-day.has-hearing::after { content:''; position:absolute; bottom:4px; width:5px; height:5px; border-radius:50%; background:var(--warning); }
+    .cal-day:hover        { background:rgba(var(--accent-rgb),.08); border-color:var(--border); }
+    .cal-day.today        { border-color:var(--accent); color:var(--accent); font-weight:600; }
+    .cal-day.has-hearing::after { content:''; position:absolute; bottom:5px; width:4px; height:4px; border-radius:50%; background:var(--accent); }
     .cal-day.other-month  { opacity:.25; pointer-events:none; }
-    .cal-day.selected     { background:var(--gold); color:#000; font-weight:700; }
-    .case-actions  { display:flex; gap:5px; }
+    .cal-day.selected     { background:var(--accent); color:#fff; font-weight:600; }
+    .case-actions  { display:flex; gap:2px; }
+    .case-actions .btn { padding:5px 6px; }
+    .badge, .case-tag { white-space:nowrap; }
     .vf-wrap       { display:flex; gap:8px; align-items:flex-start; }
     .vf-wrap .form-control { flex:1; }
     .fee-tag       { display:inline-flex; align-items:center; gap:4px; padding:2px 10px; border-radius:99px; font-size:.75rem; font-weight:600; }
-    .fee-agreed    { background:rgba(59,130,246,.12); color:var(--info);    border:1px solid rgba(59,130,246,.3); }
-    .fee-received  { background:rgba(16,185,129,.12); color:var(--success); border:1px solid rgba(16,185,129,.3); }
-    .fee-pending   { background:rgba(245,158,11,.12); color:var(--warning); border:1px solid rgba(245,158,11,.3); }
+    .fee-agreed    { background:var(--info-bg); color:var(--info); }
+    .fee-received  { background:var(--success-bg); color:var(--success); }
+    .fee-pending   { background:var(--warning-bg); color:var(--warning); }
     .hearing-item  { display:flex; gap:12px; align-items:flex-start; padding:11px; border-radius:var(--radius); margin-bottom:8px; background:var(--bg-secondary); border:1px solid transparent; transition:var(--transition); cursor:pointer; }
     .hearing-item:hover { border-color:var(--border-hover); }
-    .hearing-item.today-item { border-color:rgba(245,158,11,.3); background:rgba(245,158,11,.05); }
-    .hdate-badge   { min-width:50px; height:50px; border-radius:var(--radius); background:linear-gradient(135deg,var(--gold-dark),var(--gold)); display:flex; flex-direction:column; align-items:center; justify-content:center; color:#000; flex-shrink:0; }
-    .hdate-day     { font-size:1.25rem; font-weight:800; line-height:1; }
+    .hearing-item.today-item { border-color:rgba(var(--accent-rgb),.35); background:var(--accent-soft); }
+    .hdate-badge   { min-width:48px; height:52px; border-radius:var(--radius); background:var(--bg-card); border:1px solid var(--border-strong); border-top:4px solid var(--accent); display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--text-primary); flex-shrink:0; }
+    .hdate-day     { font-family:var(--font-serif); font-size:1.3rem; font-weight:600; line-height:1; }
     .hdate-mon     { font-size:.58rem; font-weight:700; text-transform:uppercase; letter-spacing:.04em; }
     .payment-row   { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:var(--radius); background:var(--bg-secondary); margin-bottom:7px; }
-    .mob-header    { display:none; align-items:center; justify-content:space-between; padding:12px 16px; background:var(--bg-sidebar); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:200; }
+    .mob-header    { display:none; align-items:center; justify-content:space-between; padding:10px 16px; background:var(--bg-sidebar); color:#f3efe6; border-bottom:1px solid var(--sidebar-border); position:sticky; top:0; z-index:200; }
     .sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:99; }
     .mic-status { font-size:.77rem; color:var(--text-muted); margin-top:5px; min-height:18px; transition:var(--transition); }
     .import-panel { background:var(--bg-secondary); border:1px solid var(--border); border-radius:var(--radius-lg); padding:16px; margin-top:12px; }
     
     /* Case Tags */
-    .case-tag { display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:99px; font-size:.7rem; font-weight:600; cursor:default; }
+    .case-tag { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:var(--radius-sm); font-size:.7rem; font-weight:600; cursor:default; }
     .case-tag-remove { cursor:pointer; opacity:.6; margin-left:2px; }
     .case-tag-remove:hover { opacity:1; }
-    .tag-urgent { background:rgba(239,68,68,.15); color:#ef4444; border:1px solid rgba(239,68,68,.3); }
-    .tag-high-priority { background:rgba(249,115,22,.15); color:#f97316; border:1px solid rgba(249,115,22,.3); }
-    .tag-senior-citizen { background:rgba(168,85,247,.15); color:#a855f7; border:1px solid rgba(168,85,247,.3); }
-    .tag-women { background:rgba(236,72,153,.15); color:#ec4899; border:1px solid rgba(236,72,153,.3); }
-    .tag-sc-st { background:rgba(59,130,246,.15); color:#3b82f6; border:1px solid rgba(59,130,246,.3); }
-    .tag-free-legal-aid { background:rgba(34,197,94,.15); color:#22c55e; border:1px solid rgba(34,197,94,.3); }
-    .tag-mediation { background:rgba(14,165,233,.15); color:#0ea5e9; border:1px solid rgba(14,165,233,.3); }
-    .tag-appeal { background:rgba(168,85,247,.15); color:#a855f7; border:1px solid rgba(168,85,247,.3); }
-    .tag-custom { background:rgba(201,162,39,.15); color:var(--gold); border:1px solid rgba(201,162,39,.3); }
+    .tag-urgent, .tag-high-priority { background:var(--accent-soft); color:var(--accent); border:1px solid rgba(var(--accent-rgb),.3); }
+    .tag-senior-citizen, .tag-women, .tag-sc-st, .tag-free-legal-aid, .tag-mediation, .tag-appeal { background:var(--info-bg); color:var(--info); border:1px solid transparent; }
+    .tag-custom { background:var(--bg-secondary); color:var(--text-secondary); border:1px solid var(--border-strong); }
     
     /* Tag filter in filter bar */
-    .tag-filter-chip { display:inline-flex; align-items:center; gap:4px; padding:4px 12px; border-radius:99px; font-size:.75rem; font-weight:600; cursor:pointer; border:1px solid var(--border); background:var(--bg-card); transition:var(--transition); }
+    .tag-filter-chip { display:inline-flex; align-items:center; gap:4px; padding:4px 11px; border-radius:var(--radius-sm); color:var(--text-secondary); font-size:.75rem; font-weight:600; cursor:pointer; border:1px solid var(--border); background:var(--bg-card); transition:var(--transition); }
     .tag-filter-chip:hover { border-color:var(--gold); }
-    .tag-filter-chip.active { background:var(--gold); color:#000; border-color:var(--gold); }
+    .tag-filter-chip.active { background:var(--ink); color:var(--paper); border-color:var(--ink); }
     
     @media(max-width:768px){ .mob-header{display:flex;} .sidebar-overlay.open{display:block;} }
     @media print {
@@ -82,29 +78,29 @@
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
       <a href="index.html" class="sidebar-logo">
-        <img src="logo.svg" alt="Advocate Pro" style="width:40px;height:40px;border-radius:8px;object-fit:contain;background:#fff;">
+        <img src="logo.svg" alt="" width="38" height="38">
         <div><div class="logo-text">Advocate Pro</div><div class="logo-sub">Case Library</div></div>
       </a>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Main</div>
-      <button class="nav-item active" id="nav-dashboard" onclick="showTab('dashboard')"><span class="nav-icon">📊</span>Dashboard</button>
-      <button class="nav-item" id="nav-cases"     onclick="showTab('cases')"><span class="nav-icon">📁</span>All Cases<span class="nav-badge" id="navCaseCount">0</span></button>
-      <button class="nav-item" id="nav-fees"      onclick="showTab('fees')"><span class="nav-icon">💰</span>Fees Tracker</button>
-      <button class="nav-item" id="nav-calendar"  onclick="showTab('calendar')"><span class="nav-icon">📅</span>Hearing Calendar</button>
+      <button class="nav-item active" id="nav-dashboard" onclick="showTab('dashboard')"><i class="ic ic-dashboard nav-icon"></i>Dashboard</button>
+      <button class="nav-item" id="nav-cases"     onclick="showTab('cases')"><i class="ic ic-folder nav-icon"></i>All Cases<span class="nav-badge" id="navCaseCount">0</span></button>
+      <button class="nav-item" id="nav-fees"      onclick="showTab('fees')"><i class="ic ic-rupee nav-icon"></i>Fees Tracker</button>
+      <button class="nav-item" id="nav-calendar"  onclick="showTab('calendar')"><i class="ic ic-calendar nav-icon"></i>Hearing Calendar</button>
       <div class="nav-section">Actions</div>
-      <button class="nav-item" onclick="openAddCaseModal()"><span class="nav-icon">➕</span>Add New Case</button>
-      <a href="documents.html" class="nav-item"><span class="nav-icon">📜</span>Legal Documents</a>
+      <button class="nav-item" onclick="openAddCaseModal()"><i class="ic ic-plus nav-icon"></i>Add New Case</button>
+      <a href="documents.html" class="nav-item"><i class="ic ic-doc nav-icon"></i>Legal Documents</a>
       <div class="nav-section">Data</div>
-      <button class="nav-item" onclick="exportCasesExcel()"><span class="nav-icon">📊</span>Export to Excel</button>
-      <button class="nav-item" onclick="document.getElementById('importXlsxFile').click()"><span class="nav-icon">📂</span>Import from Excel</button>
-      <button class="nav-item" onclick="exportBackup()"><span class="nav-icon">💾</span>Full JSON Backup</button>
-      <button class="nav-item" onclick="document.getElementById('importJsonFile').click()"><span class="nav-icon">📂</span>Restore JSON Backup</button>
-      <a href="index.html" class="nav-item"><span class="nav-icon">🏠</span>Home</a>
+      <button class="nav-item" onclick="exportCasesExcel()"><i class="ic ic-sheet nav-icon"></i>Export to Excel</button>
+      <button class="nav-item" onclick="document.getElementById('importXlsxFile').click()"><i class="ic ic-upload nav-icon"></i>Import from Excel</button>
+      <button class="nav-item" onclick="exportBackup()"><i class="ic ic-save nav-icon"></i>Full JSON Backup</button>
+      <button class="nav-item" onclick="document.getElementById('importJsonFile').click()"><i class="ic ic-upload nav-icon"></i>Restore JSON Backup</button>
+      <a href="index.html" class="nav-item"><i class="ic ic-home nav-icon"></i>Home</a>
     </nav>
     <div class="sidebar-footer">
-      <div style="font-size:.75rem; color:var(--text-muted); line-height:1.6;">🔒 All data stored locally<br>No internet needed after load</div>
-      <button class="btn btn-ghost btn-sm mt-2" id="themeToggle" onclick="toggleTheme()" style="width:100%;justify-content:center;margin-top:10px;"> Dark Mode</button>
+      <div style="font-size:.75rem; color:var(--text-muted); line-height:1.6;"><i class="ic ic-lock"></i> All data stored locally<br>No internet needed after load</div>
+      <button class="btn btn-ghost btn-sm" id="themeToggle" onclick="toggleTheme()" style="width:100%;margin-top:12px;"><i class="ic ic-moon"></i> Dark</button>
     </div>
   </aside>
 
@@ -114,8 +110,8 @@
 
   <!-- Mobile header -->
   <div class="mob-header">
-    <button class="hamburger" onclick="openSidebar()">☰</button>
-    <span style="font-weight:700; font-size:.95rem;">⚖️ Case Library</span>
+    <button class="hamburger" onclick="openSidebar()"><i class="ic ic-menu"></i></button>
+    <span style="font-weight:700; font-size:.95rem;"><i class="ic ic-scale"></i> Case Library</span>
     <button class="btn btn-primary btn-sm" onclick="openAddCaseModal()">+ Case</button>
   </div>
 
@@ -131,28 +127,28 @@
       <div class="page-header flex items-center justify-between flex-wrap gap-3">
         <div><h1 class="page-title">Dashboard</h1><p class="page-subtitle" id="dashDate">Loading…</p></div>
         <div class="flex gap-3 flex-wrap">
-          <button class="btn btn-secondary" onclick="exportCasesExcel()">📊 Export Excel</button>
-          <button class="btn btn-primary"   onclick="openAddCaseModal()">➕ Add Case</button>
+          <button class="btn btn-secondary" onclick="exportCasesExcel()"><i class="ic ic-sheet"></i> Export Excel</button>
+          <button class="btn btn-primary"   onclick="openAddCaseModal()"><i class="ic ic-plus"></i> Add Case</button>
         </div>
       </div>
       <div class="grid grid-4" id="dashStats"></div>
       <div class="mt-6">
-        <h3 class="text-lg font-bold mb-4">📊 Case Status Breakdown</h3>
+        <h3 class="text-lg font-bold mb-4"><i class="ic ic-sheet"></i> Case Status Breakdown</h3>
         <div id="statusWidget" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;"></div>
       </div>
       <div class="grid grid-2 mt-6" style="gap:20px;">
-        <div><h3 class="text-lg font-bold mb-4">📅 Today's Hearings</h3><div id="todayHearings"></div></div>
-        <div><h3 class="text-lg font-bold mb-4">🔔 Upcoming — Next 7 Days</h3><div id="upcomingHearings"></div></div>
+        <div><h3 class="text-lg font-bold mb-4"><i class="ic ic-calendar"></i> Today's Hearings</h3><div id="todayHearings"></div></div>
+        <div><h3 class="text-lg font-bold mb-4"><i class="ic ic-bell"></i> Upcoming — Next 7 Days</h3><div id="upcomingHearings"></div></div>
       </div>
       <div class="mt-6">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-bold">📊 Recent Activity</h3>
+          <h3 class="text-lg font-bold"><i class="ic ic-sheet"></i> Recent Activity</h3>
         </div>
         <div id="activityFeed" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;"></div>
       </div>
       <div class="mt-6">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-bold">🕐 Recently Added Cases</h3>
+          <h3 class="text-lg font-bold"><i class="ic ic-clock"></i> Recently Added Cases</h3>
           <button class="btn btn-ghost btn-sm" onclick="showTab('cases')">View all →</button>
         </div>
         <div class="table-wrap"><table>
@@ -167,17 +163,17 @@
       <div class="page-header flex items-center justify-between flex-wrap gap-3">
         <div><h1 class="page-title">All Cases</h1><p class="page-subtitle" id="casesSubtitle">Loading…</p></div>
         <div class="flex gap-3 flex-wrap">
-          <button class="btn btn-secondary" onclick="exportCasesExcel()">📊 Export Excel</button>
-          <button class="btn btn-secondary" onclick="document.getElementById('importXlsxFile').click()">📂 Import Excel</button>
-          <button class="btn btn-secondary" onclick="printCaseList()">🖨️ Print</button>
-          <button class="btn btn-primary"   onclick="openAddCaseModal()">➕ Add Case</button>
+          <button class="btn btn-secondary" onclick="exportCasesExcel()"><i class="ic ic-sheet"></i> Export Excel</button>
+          <button class="btn btn-secondary" onclick="document.getElementById('importXlsxFile').click()"><i class="ic ic-upload"></i> Import Excel</button>
+          <button class="btn btn-secondary" onclick="printCaseList()"><i class="ic ic-print"></i> Print</button>
+          <button class="btn btn-primary"   onclick="openAddCaseModal()"><i class="ic ic-plus"></i> Add Case</button>
         </div>
       </div>
 
       <!-- Filter Bar -->
       <div class="filter-bar">
         <div class="search-wrap" style="flex:1; min-width:200px; position:relative;">
-          <span class="search-icon" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-muted);pointer-events:none;">🔍</span>
+          <span class="search-icon" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-muted);pointer-events:none;"><i class="ic ic-search"></i></span>
           <input type="text" class="form-control" id="searchInput" placeholder="Search case no., client, judge, court, type…" oninput="filterCases()" style="padding-left:36px;">
         </div>
         <select class="form-control" id="filterStatus"  onchange="filterCases()" style="width:140px;">
@@ -188,14 +184,14 @@
         </select>
         <select class="form-control" id="filterTag" onchange="filterCases()" style="width:150px;">
           <option value="">All Tags</option>
-          <option value="Urgent">🔴 Urgent</option>
-          <option value="High Priority">🟠 High Priority</option>
-          <option value="Senior Citizen">👴 Senior Citizen</option>
-          <option value="Women">👩 Women</option>
-          <option value="SC/ST">🛡️ SC/ST</option>
-          <option value="Free Legal Aid">🆓 Free Legal Aid</option>
-          <option value="Mediation">🤝 Mediation</option>
-          <option value="Appeal">📜 Appeal</option>
+          <option value="Urgent">Urgent</option>
+          <option value="High Priority">High Priority</option>
+          <option value="Senior Citizen">Senior Citizen</option>
+          <option value="Women">Women</option>
+          <option value="SC/ST">SC/ST</option>
+          <option value="Free Legal Aid">Free Legal Aid</option>
+          <option value="Mediation">Mediation</option>
+          <option value="Appeal"><i class="ic ic-doc"></i> Appeal</option>
         </select>
         <input type="date" class="form-control" id="filterDate" onchange="filterCases()" style="width:160px;" title="Filter by next hearing date">
         <button class="btn btn-ghost btn-sm" onclick="clearFilters()">✕ Clear</button>
@@ -205,7 +201,7 @@
       <!-- Import info panel (shown after import) -->
       <div class="import-panel hidden" id="importPanel">
         <div class="flex items-center gap-3">
-          <span style="font-size:1.2rem;">📊</span>
+          <span style="font-size:1.2rem;"><i class="ic ic-sheet"></i></span>
           <div><div class="font-bold text-sm" id="importMsg"></div>
           <div class="text-xs text-muted mt-1">Imported cases are highlighted. Review and save.</div></div>
           <button class="btn btn-ghost btn-sm" style="margin-left:auto;" onclick="document.getElementById('importPanel').classList.add('hidden')">✕</button>
@@ -214,8 +210,8 @@
 
       <div class="table-wrap" id="casesTableWrap">
         <table><thead><tr>
-          <th>Case No.</th><th>Case Title</th><th>Court No.</th><th>Judge</th>
-          <th>Client</th><th>Type</th><th>Tags</th><th>Next Hearing</th><th>Status</th><th>Actions</th>
+          <th>Case No.</th><th>Parties &amp; Client</th><th>Court / Bench</th>
+          <th>Type</th><th>Next Hearing</th><th>Status</th><th></th>
         </tr></thead><tbody id="casesTbody"></tbody></table>
       </div>
     </div>
@@ -225,8 +221,8 @@
       <div class="page-header flex items-center justify-between flex-wrap gap-3">
         <div><h1 class="page-title">Fees Tracker</h1><p class="page-subtitle">Track agreed fees, received &amp; pending balance per case</p></div>
         <div class="flex gap-3">
-          <button class="btn btn-secondary" onclick="exportFeesExcel()">📊 Export Fees Excel</button>
-          <button class="btn btn-secondary" onclick="printFeesSummary()">🖨️ Print</button>
+          <button class="btn btn-secondary" onclick="exportFeesExcel()"><i class="ic ic-sheet"></i> Export Fees Excel</button>
+          <button class="btn btn-secondary" onclick="printFeesSummary()"><i class="ic ic-print"></i> Print</button>
         </div>
       </div>
       <div class="grid grid-3 mb-6" id="feesSummaryCards"></div>
@@ -244,17 +240,17 @@
           <button class="btn btn-secondary btn-sm" onclick="prevMonth()">◀</button>
           <button class="btn btn-secondary btn-sm" onclick="goToday()">Today</button>
           <button class="btn btn-secondary btn-sm" onclick="nextMonth()">▶</button>
-          <button class="btn btn-secondary btn-sm" onclick="printCalendar()">🖨️ Print</button>
+          <button class="btn btn-secondary btn-sm" onclick="printCalendar()"><i class="ic ic-print"></i> Print</button>
         </div>
       </div>
       <div class="grid grid-2" style="grid-template-columns:1fr 340px; gap:20px; align-items:start;">
         <div class="card" style="padding:18px;"><div class="calendar-grid" id="calendarGrid"></div></div>
         <div class="card" style="padding:18px;">
           <h3 class="font-bold mb-4" id="calSelectedDate">Select a date</h3>
-          <div id="calDayHearings"><div class="empty-state" style="padding:28px 0;"><div class="empty-icon">📅</div><div class="empty-title">Click a date to see hearings</div></div></div>
+          <div id="calDayHearings"><div class="empty-state" style="padding:28px 0;"><div class="empty-icon"><i class="ic ic-calendar"></i></div><div class="empty-title">Click a date to see hearings</div></div></div>
         </div>
       </div>
-      <div class="mt-6"><h3 class="text-lg font-bold mb-4">📋 All Hearings This Month</h3><div id="monthHearingsList"></div></div>
+      <div class="mt-6"><h3 class="text-lg font-bold mb-4"><i class="ic ic-copy"></i> All Hearings This Month</h3><div id="monthHearingsList"></div></div>
     </div>
 
   </main>
@@ -270,31 +266,32 @@
     <form id="caseForm" onsubmit="saveCase(event)">
       <input type="hidden" id="caseId">
       <div class="tab-bar" style="margin-bottom:18px;">
-        <button type="button" class="tab-item active" id="ftab-basic" onclick="switchFormTab('basic')">📋 Basic Info</button>
-        <button type="button" class="tab-item" id="ftab-court"        onclick="switchFormTab('court')">🏛️ Court Details</button>
-        <button type="button" class="tab-item" id="ftab-notes"        onclick="switchFormTab('notes')">📝 Notes &amp; Docs</button>
+        <button type="button" class="tab-item active" id="ftab-basic" onclick="switchFormTab('basic')"><i class="ic ic-copy"></i> Basic Info</button>
+        <button type="button" class="tab-item" id="ftab-court"        onclick="switchFormTab('court')"><i class="ic ic-court"></i> Court Details</button>
+        <button type="button" class="tab-item" id="ftab-notes"        onclick="switchFormTab('notes')"><i class="ic ic-note"></i> Notes &amp; Docs</button>
       </div>
 
       <!-- Basic -->
       <div id="ftab-basic-content">
         <div class="grid grid-2">
-          <div class="form-group"><label class="form-label">Case Number / CNR <span class="req">*</span></label><input type="text" class="form-control" id="f-caseNumber" placeholder="e.g. GJ010200123456" required></div>
+          <div class="form-group"><label class="form-label">Case Number <span class="req">*</span></label><input type="text" class="form-control" id="f-caseNumber" placeholder="e.g. RCS/123/2023" required></div>
+          <div class="form-group"><label class="form-label">CNR Number <span class="text-muted text-xs">(16 chars, for eCourts sync)</span></label><input type="text" class="form-control" id="f-cnr" placeholder="e.g. GJAH010012342023" maxlength="20" style="text-transform:uppercase;" oninput="validateCnrField()"><div class="text-xs mt-1" id="cnrHint"></div></div>
           <div class="form-group"><label class="form-label">Case Type <span class="req">*</span></label>
             <select class="form-control" id="f-caseType" required><option value="">Select…</option><option>Civil</option><option>Criminal</option><option>Family</option><option>Revenue</option><option>Labour</option><option>Motor Accident</option><option>Other</option></select>
           </div>
         </div>
         <div class="form-group"><label class="form-label">Case Title (Petitioner vs Respondent) <span class="req">*</span></label>
-          <div class="vf-wrap"><input type="text" class="form-control" id="f-caseTitle" placeholder="e.g. Rameshbhai Patel vs State of Gujarat" required><button type="button" class="voice-btn" data-voice-for="f-caseTitle" onclick="fieldVoice('f-caseTitle')" title="Voice input">🎤</button></div>
+          <div class="vf-wrap"><input type="text" class="form-control" id="f-caseTitle" placeholder="e.g. Rameshbhai Patel vs State of Gujarat" required><button type="button" class="voice-btn" data-voice-for="f-caseTitle" onclick="fieldVoice('f-caseTitle')" title="Voice input"><i class="ic ic-mic"></i></button></div>
         </div>
         <div class="grid grid-2">
           <div class="form-group"><label class="form-label">Client Name <span class="req">*</span></label>
-            <div class="vf-wrap"><input type="text" class="form-control" id="f-clientName" placeholder="Your client's name" required><button type="button" class="voice-btn" data-voice-for="f-clientName" onclick="fieldVoice('f-clientName')">🎤</button></div>
+            <div class="vf-wrap"><input type="text" class="form-control" id="f-clientName" placeholder="Your client's name" required><button type="button" class="voice-btn" data-voice-for="f-clientName" onclick="fieldVoice('f-clientName')"><i class="ic ic-mic"></i></button></div>
           </div>
           <div class="form-group"><label class="form-label">Client Phone</label><input type="tel" class="form-control" id="f-clientPhone" placeholder="Contact number"></div>
         </div>
         <div class="grid grid-2">
           <div class="form-group"><label class="form-label">Opposing Advocate</label>
-            <div class="vf-wrap"><input type="text" class="form-control" id="f-opposingAdvocate" placeholder="Opposing counsel"><button type="button" class="voice-btn" data-voice-for="f-opposingAdvocate" onclick="fieldVoice('f-opposingAdvocate')">🎤</button></div>
+            <div class="vf-wrap"><input type="text" class="form-control" id="f-opposingAdvocate" placeholder="Opposing counsel"><button type="button" class="voice-btn" data-voice-for="f-opposingAdvocate" onclick="fieldVoice('f-opposingAdvocate')"><i class="ic ic-mic"></i></button></div>
           </div>
           <div class="form-group"><label class="form-label">Status <span class="req">*</span></label>
             <select class="form-control" id="f-status" required><option>Pending</option><option>Adjourned</option><option>Disposed</option><option>Stayed</option></select>
@@ -307,19 +304,19 @@
         
         <!-- Tags Section -->
         <div class="form-group" style="margin-top:8px;">
-          <label class="form-label">🏷️ Case Tags</label>
+          <label class="form-label"><i class="ic ic-tag"></i> Case Tags</label>
           <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;" id="selectedTagsContainer"></div>
           <div style="display:flex;gap:8px;">
             <select class="form-control" id="tagPresetSelect" style="flex:1;" onchange="addPresetTag()">
               <option value="">+ Add preset tag…</option>
-              <option value="Urgent">🔴 Urgent</option>
-              <option value="High Priority">🟠 High Priority</option>
-              <option value="Senior Citizen">👴 Senior Citizen</option>
-              <option value="Women">👩 Women</option>
-              <option value="SC/ST">🛡️ SC/ST</option>
-              <option value="Free Legal Aid">🆓 Free Legal Aid</option>
-              <option value="Mediation">🤝 Mediation</option>
-              <option value="Appeal">📜 Appeal</option>
+              <option value="Urgent">Urgent</option>
+              <option value="High Priority">High Priority</option>
+              <option value="Senior Citizen">Senior Citizen</option>
+              <option value="Women">Women</option>
+              <option value="SC/ST">SC/ST</option>
+              <option value="Free Legal Aid">Free Legal Aid</option>
+              <option value="Mediation">Mediation</option>
+              <option value="Appeal"><i class="ic ic-doc"></i> Appeal</option>
             </select>
             <input type="text" class="form-control" id="customTagInput" placeholder="Or type custom tag…" style="flex:1;" onkeypress="if(event.key==='Enter'){event.preventDefault();addCustomTag();}">
             <button type="button" class="btn btn-secondary btn-sm" onclick="addCustomTag()">Add</button>
@@ -332,12 +329,12 @@
         <div class="grid grid-2">
           <div class="form-group"><label class="form-label">Court Number</label><input type="text" class="form-control" id="f-courtNo" placeholder="e.g. Court No. 5"></div>
           <div class="form-group"><label class="form-label">Court Name / Location</label>
-            <div class="vf-wrap"><input type="text" class="form-control" id="f-courtName" placeholder="e.g. Civil Court, Ahmedabad"><button type="button" class="voice-btn" data-voice-for="f-courtName" onclick="fieldVoice('f-courtName')">🎤</button></div>
+            <div class="vf-wrap"><input type="text" class="form-control" id="f-courtName" placeholder="e.g. Civil Court, Ahmedabad"><button type="button" class="voice-btn" data-voice-for="f-courtName" onclick="fieldVoice('f-courtName')"><i class="ic ic-mic"></i></button></div>
           </div>
         </div>
         <div class="grid grid-2">
           <div class="form-group"><label class="form-label">Judge Name</label>
-            <div class="vf-wrap"><input type="text" class="form-control" id="f-judgeName" placeholder="Hon. Justice / Shri…"><button type="button" class="voice-btn" data-voice-for="f-judgeName" onclick="fieldVoice('f-judgeName')">🎤</button></div>
+            <div class="vf-wrap"><input type="text" class="form-control" id="f-judgeName" placeholder="Hon. Justice / Shri…"><button type="button" class="voice-btn" data-voice-for="f-judgeName" onclick="fieldVoice('f-judgeName')"><i class="ic ic-mic"></i></button></div>
           </div>
           <div class="form-group"><label class="form-label">Hearing Type</label>
             <select class="form-control" id="f-hearingType"><option value="">Select…</option><option>Mention</option><option>Arguments</option><option>Evidence</option><option>Judgment</option><option>Interim Order</option><option>Bail</option><option>Other</option></select>
@@ -348,24 +345,24 @@
           <div class="form-group"><label class="form-label">Stamp Paper / Registration</label><input type="text" class="form-control" id="f-stampInfo" placeholder="Optional"></div>
         </div>
         <div class="form-group"><label class="form-label">Previous Order / Remark</label>
-          <div class="vf-wrap"><textarea class="form-control" id="f-prevOrder" rows="3" placeholder="Note the previous court order…"></textarea><button type="button" class="voice-btn" data-voice-for="f-prevOrder" onclick="fieldVoice('f-prevOrder')" style="align-self:flex-start;margin-top:4px;">🎤</button></div>
+          <div class="vf-wrap"><textarea class="form-control" id="f-prevOrder" rows="3" placeholder="Note the previous court order…"></textarea><button type="button" class="voice-btn" data-voice-for="f-prevOrder" onclick="fieldVoice('f-prevOrder')" style="align-self:flex-start;margin-top:4px;"><i class="ic ic-mic"></i></button></div>
         </div>
       </div>
 
       <!-- Notes -->
       <div id="ftab-notes-content" class="hidden">
         <div class="form-group"><label class="form-label">Case Notes (Gujarati / English)</label>
-          <div class="vf-wrap"><textarea class="form-control" id="f-notes" rows="5" placeholder="Strategy, notes, key points…"></textarea><button type="button" class="voice-btn" data-voice-for="f-notes" onclick="fieldVoice('f-notes')" style="align-self:flex-start;margin-top:4px;">🎤</button></div>
+          <div class="vf-wrap"><textarea class="form-control" id="f-notes" rows="5" placeholder="Strategy, notes, key points…"></textarea><button type="button" class="voice-btn" data-voice-for="f-notes" onclick="fieldVoice('f-notes')" style="align-self:flex-start;margin-top:4px;"><i class="ic ic-mic"></i></button></div>
         </div>
         <div class="form-group"><label class="form-label">Documents Needed</label>
-          <div class="vf-wrap"><textarea class="form-control" id="f-docsNeeded" rows="3" placeholder="List documents, evidence needed…"></textarea><button type="button" class="voice-btn" data-voice-for="f-docsNeeded" onclick="fieldVoice('f-docsNeeded')" style="align-self:flex-start;margin-top:4px;">🎤</button></div>
+          <div class="vf-wrap"><textarea class="form-control" id="f-docsNeeded" rows="3" placeholder="List documents, evidence needed…"></textarea><button type="button" class="voice-btn" data-voice-for="f-docsNeeded" onclick="fieldVoice('f-docsNeeded')" style="align-self:flex-start;margin-top:4px;"><i class="ic ic-mic"></i></button></div>
         </div>
         <div class="mic-status" id="caseMicStatus"></div>
       </div>
 
       <div class="modal-footer">
         <button type="button" class="btn btn-ghost" onclick="closeCaseModal()">Cancel</button>
-        <button type="submit" class="btn btn-primary">💾 Save Case</button>
+        <button type="submit" class="btn btn-primary"><i class="ic ic-save"></i> Save Case</button>
       </div>
     </form>
   </div>
@@ -381,7 +378,7 @@
     <input type="hidden" id="feesCaseId">
 
     <div class="card mb-4" style="padding:16px;">
-      <h4 class="font-bold mb-3 text-gold">💼 Agreed Fees</h4>
+      <h4 class="font-bold mb-3 text-gold"><i class="ic ic-briefcase"></i> Agreed Fees</h4>
       <div class="grid grid-2">
         <div class="form-group" style="margin:0;"><label class="form-label">Total Agreed Amount (₹)</label><input type="number" class="form-control" id="fi-agreed" placeholder="e.g. 50000" min="0"></div>
         <div class="form-group" style="margin:0;"><label class="form-label">Fee Type</label>
@@ -392,7 +389,7 @@
     </div>
 
     <div class="card mb-4" style="padding:16px;">
-      <h4 class="font-bold mb-3 text-success">➕ Record Payment Received</h4>
+      <h4 class="font-bold mb-3 text-success"><i class="ic ic-plus"></i> Record Payment Received</h4>
       <div class="grid grid-2">
         <div class="form-group" style="margin:0;"><label class="form-label">Amount (₹)</label><input type="number" class="form-control" id="fi-payAmount" placeholder="e.g. 10000" min="0"></div>
         <div class="form-group" style="margin:0;"><label class="form-label">Date Received</label><input type="date" class="form-control" id="fi-payDate"></div>
@@ -406,7 +403,7 @@
       <button class="btn btn-success btn-sm mt-4" onclick="addPayment()">+ Record Payment</button>
     </div>
 
-    <div><h4 class="font-bold mb-3">📋 Payment History</h4><div id="paymentsList"><div class="text-muted text-sm">No payments yet.</div></div></div>
+    <div><h4 class="font-bold mb-3"><i class="ic ic-copy"></i> Payment History</h4><div id="paymentsList"><div class="text-muted text-sm">No payments yet.</div></div></div>
 
     <div class="card mt-4" style="padding:16px;background:var(--bg-secondary);">
       <div class="flex justify-between mb-2"><span class="text-sm text-muted">Total Agreed</span><span class="font-bold" id="fsum-agreed">₹0</span></div>
@@ -415,7 +412,7 @@
       <div class="progress-bar"><div class="progress-fill" id="fsum-bar" style="width:0%"></div></div>
       <div class="text-xs text-muted text-center mt-2" id="fsum-pct">0% received</div>
     </div>
-    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeFeesModal()">Close</button><button class="btn btn-secondary" onclick="exportSingleCaseFees()">📊 Export Fees</button></div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeFeesModal()">Close</button><button class="btn btn-secondary" onclick="exportSingleCaseFees()"><i class="ic ic-sheet"></i> Export Fees</button></div>
   </div>
 </div>
 
@@ -426,18 +423,36 @@
     <div id="viewModalBody"></div>
     <div class="modal-footer">
       <button class="btn btn-ghost"     onclick="closeModal('viewModal')">Close</button>
-      <button class="btn btn-secondary" onclick="printCurrentCase()">🖨️ Print</button>
-      <button class="btn btn-secondary" id="viewEditBtn">✏️ Edit</button>
-      <button class="btn btn-primary"   id="viewFeesBtn">💰 Fees</button>
+      <button class="btn btn-secondary" onclick="printCurrentCase()"><i class="ic ic-print"></i> Print</button>
+      <button class="btn btn-secondary" id="viewEditBtn"><i class="ic ic-edit"></i> Edit</button>
+      <button class="btn btn-primary"   id="viewFeesBtn"><i class="ic ic-rupee"></i> Fees</button>
     </div>
   </div>
 </div>
+
+<div class="modal-overlay" id="syncModal">
+  <div class="modal">
+    <div class="modal-header"><h2 class="modal-title"><i class="ic ic-refresh"></i> Sync from eCourts</h2><button class="modal-close" onclick="closeModal('syncModal')">✕</button></div>
+    <div id="syncModalBody"></div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('syncModal')">Close</button></div>
+  </div>
+</div>
+
+<nav class="mobile-dock" aria-label="Sections">
+  <div class="mobile-dock-inner">
+    <button type="button" data-tab="dashboard" onclick="showTab('dashboard')"><i class="ic ic-dashboard"></i>Home</button>
+    <button type="button" data-tab="cases" onclick="showTab('cases')"><i class="ic ic-folder"></i>Cases</button>
+    <button type="button" data-tab="calendar" onclick="showTab('calendar')"><i class="ic ic-calendar"></i>Diary</button>
+    <button type="button" data-tab="fees" onclick="showTab('fees')"><i class="ic ic-rupee"></i>Fees</button>
+  </div>
+</nav>
 
 <div class="toast-container" id="toastContainer"></div>
 
 <!-- Scripts -->
 <script src="db.js"></script>
 <script src="shared.js"></script>
+<script src="sync.js"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════════
 //  ADVOCATE PRO — Case Library  (complete, reliable implementation)
@@ -511,7 +526,7 @@ function renderTagFilterChips() {
   if (!wrap) return;
   const active = document.getElementById('filterTag')?.value || '';
   wrap.innerHTML = TAG_PRESETS.map(tag => {
-    const emoji = { Urgent:'🔴', 'High Priority':'🟠', 'Senior Citizen':'👴', Women:'👩', 'SC/ST':'🛡️', 'Free Legal Aid':'🆓', Mediation:'🤝', Appeal:'📜' }[tag] || '🏷️';
+    const emoji = { Urgent:'', 'High Priority':'', 'Senior Citizen':'', Women:'', 'SC/ST':'', 'Free Legal Aid':'', Mediation:'', Appeal:'' }[tag] || '';
     return `<button type="button" class="tag-filter-chip${active===tag?' active':''}" onclick="filterByTagChip('${tag.replace(/'/g,"\\'")}')">${emoji} ${tag}</button>`;
   }).join('') + (active ? `<button type="button" class="tag-filter-chip" onclick="filterByTagChip('')" style="opacity:.7;">✕ Clear tag</button>` : '');
 }
@@ -621,11 +636,11 @@ async function loadDashboard() {
   for(const c of allCases){ const s=await getCaseFeeSummary(c.id); totalAgreed+=s.agreed; totalReceived+=s.received; }
 
   document.getElementById('dashStats').innerHTML = [
-    { icon:'📁', val:allCases.length,  lbl:'Total Cases',       bg:'rgba(201,162,39,.1)' },
-    { icon:'⏳', val:pending,           lbl:'Pending Cases',     bg:'rgba(245,158,11,.1)' },
-    { icon:'✅', val:disposed,          lbl:'Disposed',          bg:'rgba(16,185,129,.1)'  },
-    { icon:'📅', val:todayH.length,    lbl:"Today's Hearings",  bg:'rgba(239,68,68,.1)'   },
-  ].map(s=>`<div class="stat-card"><div class="stat-icon" style="background:${s.bg}">${s.icon}</div><div class="stat-value">${s.val}</div><div class="stat-label">${s.lbl}</div></div>`).join('');
+    { icon:'<i class="ic ic-folder"></i>', val:allCases.length,  lbl:'Total Cases',       bg:'rgba(var(--accent-rgb),.1)' },
+    { icon:'<i class="ic ic-clock"></i>', val:pending,           lbl:'Pending Cases',     bg:'rgba(245,158,11,.1)' },
+    { icon:'<i class="ic ic-check"></i>', val:disposed,          lbl:'Disposed',          bg:'rgba(16,185,129,.1)'  },
+    { icon:'<i class="ic ic-calendar"></i>', val:todayH.length,    lbl:"Today's Hearings",  bg:'rgba(239,68,68,.1)'   },
+  ].map(s=>`<div class="stat-card"><div class="stat-icon">${s.icon}</div><div class="stat-value">${s.val}</div><div class="stat-label">${s.lbl}</div></div>`).join('');
 
   // Status breakdown widget
   renderStatusWidget();
@@ -633,13 +648,13 @@ async function loadDashboard() {
   // Today's hearings
   const todayEl = document.getElementById('todayHearings');
   todayEl.innerHTML = todayH.length ? todayH.map(c=>hearingCard(c,true)).join('') :
-    '<div class="empty-state" style="padding:24px;"><div class="empty-icon">🎉</div><div class="empty-title">No hearings today</div></div>';
+    '<div class="empty-state" style="padding:24px;"><div class="empty-icon"><i class="ic ic-check"></i></div><div class="empty-title">No hearings today</div></div>';
 
   // Upcoming
   const upEl = document.getElementById('upcomingHearings');
   const s7   = [...next7].sort((a,b)=>a.nextHearing.localeCompare(b.nextHearing));
   upEl.innerHTML = s7.length ? s7.map(c=>hearingCard(c,false)).join('') :
-    '<div class="empty-state" style="padding:24px;"><div class="empty-icon">📭</div><div class="empty-title">No hearings next 7 days</div></div>';
+    '<div class="empty-state" style="padding:24px;"><div class="empty-icon"><i class="ic ic-inbox"></i></div><div class="empty-title">No hearings next 7 days</div></div>';
 
   // Recent cases
   const tbody = document.getElementById('recentCasesTbody');
@@ -669,7 +684,7 @@ async function renderActivityFeed() {
   for (const c of recentCases) {
     activities.push({
       type: 'case',
-      icon: '📁',
+      icon: '<i class="ic ic-folder"></i>',
       title: c.caseTitle || c.caseNumber,
       subtitle: `Case ${c.caseNumber} · ${c.clientName||'Unknown client'}`,
       time: c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-IN') : 'Recently',
@@ -685,7 +700,7 @@ async function renderActivityFeed() {
       const c = allCases.find(x => x.id === p.caseId);
       activities.push({
         type: 'payment',
-        icon: '💰',
+        icon: '<i class="ic ic-rupee"></i>',
         title: `${fmtINR(p.amount)} received`,
         subtitle: c ? `${c.caseNumber} · ${c.clientName||''}` : 'Payment',
         time: p.date ? fmt(p.date) : 'Recently',
@@ -705,7 +720,7 @@ async function renderActivityFeed() {
       if (due >= today && due <= weekLater) {
         activities.push({
           type: 'task',
-          icon: '📌',
+          icon: '<i class="ic ic-pin"></i>',
           title: t.text,
           subtitle: `${c.caseNumber} · Due ${fmt(t.dueDate)}`,
           time: 'Upcoming',
@@ -728,8 +743,8 @@ async function renderActivityFeed() {
   }
 
   feed.innerHTML = activities.slice(0,12).map(a => `
-    <div style="padding:14px;border-radius:10px;background:var(--bg-card);border:1px solid var(--border);display:flex;gap:12px;align-items:flex-start;">
-      <div style="width:36px;height:36px;border-radius:8px;background:${a.color}20;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">${a.icon}</div>
+    <div style="padding:14px;border-radius:var(--radius-lg);background:var(--bg-card);border:1px solid var(--border);display:flex;gap:12px;align-items:flex-start;box-shadow:var(--shadow);">
+      <div style="width:32px;height:32px;border-radius:var(--radius);background:var(--bg-secondary);color:var(--text-secondary);display:flex;align-items:center;justify-content:center;flex-shrink:0;">${a.icon}</div>
       <div style="flex:1;min-width:0;">
         <div class="font-bold text-sm" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${a.title}</div>
         <div class="text-xs text-muted mt-1">${a.subtitle}</div>
@@ -749,10 +764,10 @@ function renderStatusWidget() {
   }
   const statuses = ['Pending','Adjourned','Disposed','Stayed'];
   const colors = {
-    Pending: { bg:'rgba(245,158,11,.15)', bar:'#f59e0b', text:'#f59e0b' },
-    Adjourned: { bg:'rgba(59,130,246,.15)', bar:'#3b82f6', text:'#3b82f6' },
-    Disposed: { bg:'rgba(16,185,129,.15)', bar:'#10b981', text:'#10b981' },
-    Stayed: { bg:'rgba(139,92,246,.15)', bar:'#8b5cf6', text:'#8b5cf6' }
+    Pending:   'var(--warning)',
+    Adjourned: 'var(--info)',
+    Disposed:  'var(--success)',
+    Stayed:    'var(--danger)'
   };
   const counts = {};
   statuses.forEach(s => counts[s] = allCases.filter(c => c.status === s).length);
@@ -762,15 +777,15 @@ function renderStatusWidget() {
     const pct = total ? Math.round((count/total)*100) : 0;
     const c = colors[status];
     return `
-      <div style="padding:16px;border-radius:10px;background:${c.bg};border:1px solid ${c.bar}30;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-          <span style="font-size:.875rem;font-weight:600;color:${c.text};">${status}</span>
-          <span style="font-size:1.25rem;font-weight:700;color:${c.text};">${count}</span>
+      <div style="padding:16px 18px;border-radius:var(--radius-lg);background:var(--bg-card);border:1px solid var(--border);box-shadow:var(--shadow);">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;">
+          <span style="font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-secondary);">${status}</span>
+          <span style="font-family:var(--font-serif);font-size:1.5rem;font-weight:600;color:var(--text-primary);">${count}</span>
         </div>
-        <div style="height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;">
-          <div style="height:100%;width:${pct}%;background:${c.bar};border-radius:3px;transition:width .3s ease;"></div>
+        <div style="height:3px;background:var(--bg-secondary);border-radius:2px;overflow:hidden;">
+          <div style="height:100%;width:${pct}%;background:${c};transition:width .3s ease;"></div>
         </div>
-        <div style="font-size:.75rem;color:var(--text-muted);margin-top:6px;">${pct}% of total</div>
+        <div style="font-size:.72rem;color:var(--text-muted);margin-top:8px;">${pct}% of all cases</div>
       </div>
     `;
   }).join('');
@@ -783,8 +798,8 @@ function hearingCard(c, isToday) {
     <div class="hdate-badge"><div class="hdate-day">${d.getDate()}</div><div class="hdate-mon">${mon}</div></div>
     <div style="flex:1;min-width:0;">
       <div class="font-medium text-sm" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${c.caseTitle||c.caseNumber}</div>
-      <div class="text-xs text-muted mt-1">🏛️ ${c.courtNo||'—'} · ⚖️ ${c.judgeName||'—'}</div>
-      <div class="text-xs text-muted">👤 ${c.clientName||'—'} · <span class="badge badge-${(c.status||'').toLowerCase()}" style="font-size:.68rem;">${c.status}</span></div>
+      <div class="text-xs text-muted mt-1"><i class="ic ic-court"></i> ${c.courtNo||'—'} · ${c.judgeName||'—'}</div>
+      <div class="text-xs text-muted"><i class="ic ic-user"></i> ${c.clientName||'—'} · <span class="badge badge-${(c.status||'').toLowerCase()}" style="font-size:.68rem;">${c.status}</span></div>
     </div>
   </div>`;
 }
@@ -794,28 +809,25 @@ function renderCasesTable(cases) {
   document.getElementById('casesSubtitle').textContent = `${cases.length} case${cases.length!==1?'s':''} found`;
   const tbody = document.getElementById('casesTbody');
   if (!cases.length) {
-    tbody.innerHTML = `<tr><td colspan="10" class="text-center text-muted" style="padding:40px;">No cases match filter. <button class="btn btn-ghost btn-sm" onclick="clearFilters()">Clear</button></td></tr>`; return;
+    tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted" style="padding:40px;">No cases match filter. <button class="btn btn-ghost btn-sm" onclick="clearFilters()">Clear</button></td></tr>`; return;
   }
   tbody.innerHTML = cases.map(c=>{
-    const tagsHtml = (c.tags||[]).slice(0,3).map(t => `<span class="case-tag ${getTagClass(t)}" style="font-size:.65rem;padding:2px 6px;">${t}</span>`).join('');
+    const tagsHtml = (c.tags||[]).slice(0,3).map(t => `<span class="case-tag ${getTagClass(t)}" style="font-size:.64rem;padding:1px 6px;">${esc(t)}</span>`).join('');
     const moreTags = (c.tags||[]).length > 3 ? `<span class="text-xs text-muted">+${c.tags.length-3}</span>` : '';
     return `
     <tr>
-      <td class="font-medium text-gold" style="cursor:pointer;" onclick="viewCase(${c.id})">${c.caseNumber||'—'}</td>
-      <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${c.caseTitle||''}">${c.caseTitle||'—'}</td>
-      <td>${c.courtNo||'—'}</td>
-      <td>${c.judgeName||'—'}</td>
-      <td><span style="cursor:pointer;color:var(--gold);text-decoration:underline;" onclick="filterByClient('${(c.clientName||'').replace(/'/g,"\\'")}')" title="Show all cases for ${c.clientName||''}">${c.clientName||'—'}</span></td>
-      <td><span class="badge badge-${(c.caseType||'other').toLowerCase()}">${c.caseType||'—'}</span></td>
-      <td><div style="display:flex;flex-wrap:wrap;gap:3px;max-width:150px;">${tagsHtml}${moreTags}</div></td>
-      <td class="${hClass(c.nextHearing)} font-medium">${fmt(c.nextHearing)}</td>
+      <td style="white-space:nowrap;cursor:pointer;font-weight:600;" onclick="viewCase(${c.id})">${esc(c.caseNumber||'—')}</td>
+      <td style="max-width:260px;"><div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${esc(c.caseTitle||'')}">${esc(c.caseTitle||'—')}</div>${c.clientName?`<div class="text-xs" style="margin-top:2px;color:var(--text-muted);">for <span style="cursor:pointer;text-decoration:underline;color:var(--text-secondary);text-decoration-color:var(--border-hover);text-underline-offset:3px;" onclick="filterByClient('${(c.clientName||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;')}')" title="Show all cases for ${esc(c.clientName||'')}">${esc(c.clientName||'—')}</span></div>`:''}${tagsHtml||moreTags?`<div style="display:flex;flex-wrap:wrap;gap:3px;margin-top:4px;">${tagsHtml}${moreTags}</div>`:''}</td>
+      <td style="white-space:nowrap;">${esc(c.courtNo||'—')}<div class="text-xs text-muted" style="letter-spacing:0;">${esc(c.judgeName||'')}</div></td>
+      <td style="white-space:nowrap;color:var(--text-secondary);">${esc(c.caseType||'—')}</td>
+      <td class="${hClass(c.nextHearing)} font-medium" style="white-space:nowrap;">${fmt(c.nextHearing)}</td>
       <td><span class="badge badge-${(c.status||'').toLowerCase()}">${c.status||'—'}</span></td>
       <td><div class="case-actions">
-        <button class="btn btn-ghost btn-sm" onclick="viewCase(${c.id})" title="View">👁️</button>
-        <button class="btn btn-ghost btn-sm" onclick="editCase(${c.id})" title="Edit">✏️</button>
-        <button class="btn btn-ghost btn-sm" onclick="duplicateCase(${c.id})" title="Duplicate">📋</button>
-        <button class="btn btn-ghost btn-sm" onclick="openFeesModal(${c.id})" title="Fees">💰</button>
-        <button class="btn btn-danger btn-sm" onclick="deleteCase(${c.id})" title="Delete">🗑️</button>
+        <button class="btn btn-ghost btn-sm" onclick="viewCase(${c.id})" title="View"><i class="ic ic-eye"></i></button>
+        <button class="btn btn-ghost btn-sm" onclick="editCase(${c.id})" title="Edit"><i class="ic ic-edit"></i></button>
+        <button class="btn btn-ghost btn-sm" onclick="duplicateCase(${c.id})" title="Duplicate"><i class="ic ic-copy"></i></button>
+        <button class="btn btn-ghost btn-sm" onclick="openFeesModal(${c.id})" title="Fees"><i class="ic ic-rupee"></i></button>
+        <button class="btn btn-danger btn-sm" onclick="deleteCase(${c.id})" title="Delete"><i class="ic ic-trash"></i></button>
       </div></td>
     </tr>`;
   }).join('');
@@ -848,6 +860,17 @@ function filterByClient(name) {
 }
 
 // ── Add/Edit Modal ─────────────────────────────────────────────────
+const CASE_FORM_FIELDS = ['caseNumber','cnr','caseType','caseTitle','clientName','clientPhone','opposingAdvocate','status','filingDate','nextHearing','courtNo','courtName','judgeName','hearingType','prevHearing','stampInfo','prevOrder','notes','docsNeeded'];
+
+function validateCnrField() {
+  const el = document.getElementById('f-cnr'), hint = document.getElementById('cnrHint');
+  const v = CNR.normalize(el.value);
+  if (!v) { hint.textContent = ''; return; }
+  const ok = CNR.isValid(v);
+  hint.textContent = ok ? '✓ Valid CNR' : `${v.length}/16 — format: 4 letters + 12 digits`;
+  hint.style.color = ok ? 'var(--success, #22c55e)' : 'var(--danger, #ef4444)';
+}
+
 function openAddCaseModal() {
   document.getElementById('caseModalTitle').textContent = 'Add New Case';
   document.getElementById('caseForm').reset();
@@ -855,6 +878,7 @@ function openAddCaseModal() {
   document.getElementById('f-filingDate').value = new Date().toISOString().slice(0,10);
   currentCaseTags = []; // Reset tags
   renderSelectedTags();
+  validateCnrField();
   switchFormTab('basic');
   document.getElementById('caseModal').classList.add('active');
 }
@@ -873,11 +897,12 @@ async function editCase(id) {
   const c = await dbGet(STORES.CASES, id);
   if (!c) return;
   document.getElementById('caseModalTitle').textContent = 'Edit Case';
-  const fields = ['caseNumber','caseType','caseTitle','clientName','clientPhone','opposingAdvocate','status','filingDate','nextHearing','courtNo','courtName','judgeName','hearingType','prevHearing','stampInfo','prevOrder','notes','docsNeeded'];
+  const fields = CASE_FORM_FIELDS;
   fields.forEach(f => { const el=document.getElementById('f-'+f); if(el) el.value=c[f]||''; });
   document.getElementById('caseId').value = id;
   currentCaseTags = c.tags || []; // Load tags
   renderSelectedTags();
+  validateCnrField();
   switchFormTab('basic');
   document.getElementById('caseModal').classList.add('active');
 }
@@ -886,9 +911,11 @@ async function duplicateCase(id) {
   const c = await dbGet(STORES.CASES, id);
   if (!c) return;
   document.getElementById('caseModalTitle').textContent = 'Duplicate Case — edit & save as new';
-  const fields = ['caseType','caseTitle','clientName','clientPhone','opposingAdvocate','status','filingDate','nextHearing','courtNo','courtName','judgeName','hearingType','prevHearing','stampInfo','prevOrder','notes','docsNeeded'];
+  const fields = CASE_FORM_FIELDS.filter(f => f !== 'caseNumber' && f !== 'cnr');
   fields.forEach(f => { const el=document.getElementById('f-'+f); if(el) el.value=c[f]||''; });
   document.getElementById('f-caseNumber').value = ''; // clear so user enters new number
+  document.getElementById('f-cnr').value = '';
+  validateCnrField();
   document.getElementById('caseId').value = '';
   currentCaseTags = c.tags || []; // Copy tags
   renderSelectedTags();
@@ -899,12 +926,24 @@ async function duplicateCase(id) {
 async function saveCase(e) {
   e.preventDefault();
   const id = document.getElementById('caseId').value;
-  const fields = ['caseNumber','caseType','caseTitle','clientName','clientPhone','opposingAdvocate','status','filingDate','nextHearing','courtNo','courtName','judgeName','hearingType','prevHearing','stampInfo','prevOrder','notes','docsNeeded'];
+  const fields = CASE_FORM_FIELDS;
   const data = {};
   fields.forEach(f => { const el=document.getElementById('f-'+f); if(el) data[f]=el.value.trim(); });
   data.tags = [...currentCaseTags]; // Save tags
+  if (data.cnr) {
+    data.cnr = CNR.normalize(data.cnr);
+    if (!CNR.isValid(data.cnr)) { showToast('CNR must be 16 characters, e.g. GJAH010012342023','error'); switchFormTab('basic'); return; }
+  }
   try {
-    if (id) { await dbPut(STORES.CASES, {...data, id:parseInt(id)}); showToast('Case updated!','success'); }
+    if (id) {
+      // Merge into the stored record so fields not on the form (tasks, hearings,
+      // createdAt, sync metadata) survive the edit.
+      const existing = await dbGet(STORES.CASES, parseInt(id));
+      if (!existing) throw new Error('Case no longer exists');
+      const hearings = mergeHearingHistory(existing, data);
+      await dbPut(STORES.CASES, { ...existing, ...data, hearings, id: existing.id });
+      showToast('Case updated!','success');
+    }
     else     { await dbAdd(STORES.CASES, data);                     showToast('Case added!','success'); }
     closeCaseModal();
     await loadAllCases();
@@ -936,30 +975,31 @@ async function viewCase(id) {
   document.getElementById('viewModalTitle').textContent = (c.caseNumber||'Case') + (c.caseTitle ? ' — '+c.caseTitle.substring(0,40) : '');
   document.getElementById('viewModalBody').innerHTML = `
     <div class="grid grid-2 mb-4">
-      <div><div class="text-xs text-muted">CASE NUMBER</div><div class="font-bold text-xl text-gold mt-1">${c.caseNumber||'—'}</div></div>
+      <div><div class="text-xs text-muted">CASE NUMBER</div><div class="font-bold text-xl text-gold mt-1">${esc(c.caseNumber||'—')}</div>${c.cnr?`<div class="text-xs text-muted mt-1">CNR ${esc(c.cnr)}${c.sync?.lastSyncedAt?` · synced ${new Date(c.sync.lastSyncedAt).toLocaleDateString('en-IN')}`:''}</div>`:''}</div>
       <div><div class="text-xs text-muted">STATUS</div><div class="mt-2"><span class="badge badge-${(c.status||'').toLowerCase()}">${c.status||'—'}</span> <span class="badge badge-${(c.caseType||'other').toLowerCase()}">${c.caseType||'—'}</span></div></div>
     </div>
-    <div class="card mb-4" style="padding:14px;"><div class="text-xs text-muted mb-2">⚖️ CASE TITLE</div><div style="font-size:1rem;font-weight:500;">${c.caseTitle||'—'}</div></div>
+    <div class="card mb-4" style="padding:14px;"><div class="text-xs text-muted mb-2"><i class="ic ic-scale"></i> CASE TITLE</div><div style="font-size:1rem;font-weight:500;">${c.caseTitle||'—'}</div></div>
     <div class="grid grid-2 mb-4">
-      <div class="card" style="padding:14px;"><div class="text-xs text-muted mb-2">👤 CLIENT</div><div class="font-bold">${c.clientName||'—'}</div><div class="text-sm text-muted">${c.clientPhone||''}</div></div>
-      <div class="card" style="padding:14px;"><div class="text-xs text-muted mb-2">👨‍⚖️ OPPOSING ADVOCATE</div><div class="font-bold">${c.opposingAdvocate||'—'}</div></div>
-      <div class="card" style="padding:14px;"><div class="text-xs text-muted mb-2">🏛️ COURT</div><div class="font-bold">${c.courtNo||'—'}</div><div class="text-sm text-muted">${c.courtName||''}</div></div>
-      <div class="card" style="padding:14px;"><div class="text-xs text-muted mb-2">⚖️ JUDGE</div><div class="font-bold">${c.judgeName||'—'}</div></div>
+      <div class="card" style="padding:14px;"><div class="text-xs text-muted mb-2"><i class="ic ic-user"></i> CLIENT</div><div class="font-bold">${c.clientName||'—'}</div><div class="text-sm text-muted">${c.clientPhone||''}</div></div>
+      <div class="card" style="padding:14px;"><div class="text-xs text-muted mb-2"><i class="ic ic-user"></i> OPPOSING ADVOCATE</div><div class="font-bold">${c.opposingAdvocate||'—'}</div></div>
+      <div class="card" style="padding:14px;"><div class="text-xs text-muted mb-2"><i class="ic ic-court"></i> COURT</div><div class="font-bold">${c.courtNo||'—'}</div><div class="text-sm text-muted">${c.courtName||''}</div></div>
+      <div class="card" style="padding:14px;"><div class="text-xs text-muted mb-2"><i class="ic ic-scale"></i> JUDGE</div><div class="font-bold">${c.judgeName||'—'}</div></div>
     </div>
     <div class="grid grid-2 mb-4">
       <div><div class="text-xs text-muted">NEXT HEARING</div><div class="font-bold text-lg ${hClass(c.nextHearing)} mt-1">${fmt(c.nextHearing)}</div><div class="text-sm text-muted">${c.hearingType||''}</div></div>
       <div><div class="text-xs text-muted">FILED ON</div><div class="font-bold mt-1">${fmt(c.filingDate)}</div></div>
     </div>
-    ${c.prevOrder?`<div class="card mb-4" style="padding:14px;"><div class="text-xs text-muted mb-2">📜 PREVIOUS ORDER</div><div style="white-space:pre-wrap;font-size:.875rem;">${c.prevOrder}</div></div>`:''}
-    <div class="card mb-4" style="padding:14px;background:rgba(201,162,39,.04);">
-      <div class="text-xs text-muted mb-3">💰 FEES SUMMARY</div>
+    ${renderHearingHistory(c)}
+    ${c.prevOrder?`<div class="card mb-4" style="padding:14px;"><div class="text-xs text-muted mb-2"><i class="ic ic-doc"></i> PREVIOUS ORDER</div><div style="white-space:pre-wrap;font-size:.875rem;">${c.prevOrder}</div></div>`:''}
+    <div class="card mb-4" style="padding:14px;background:rgba(var(--accent-rgb),.04);">
+      <div class="text-xs text-muted mb-3"><i class="ic ic-rupee"></i> FEES SUMMARY</div>
       <div class="flex gap-3 flex-wrap">
         <span class="fee-tag fee-agreed">Agreed: ${fmtINR(fs.agreed)}</span>
         <span class="fee-tag fee-received">Received: ${fmtINR(fs.received)}</span>
         <span class="fee-tag fee-pending">Pending: ${fmtINR(fs.pending)}</span>
       </div>
     </div>
-    ${c.notes?`<div class="card mb-4" style="padding:14px;"><div class="text-xs text-muted mb-2">📝 NOTES</div><div style="white-space:pre-wrap;font-size:.875rem;">${c.notes}</div></div>`:''}
+    ${c.notes?`<div class="card mb-4" style="padding:14px;"><div class="text-xs text-muted mb-2"><i class="ic ic-note"></i> NOTES</div><div style="white-space:pre-wrap;font-size:.875rem;">${c.notes}</div></div>`:''}
     <div class="card mb-4" style="padding:14px;">
       <div class="flex items-center justify-between mb-3">
         <div class="text-xs text-muted"> TASKS &amp; REMINDERS</div>
@@ -969,18 +1009,101 @@ async function viewCase(id) {
     </div>
     <div class="card mb-4" style="padding:14px;" id="caseDocsSection">
       <div class="flex items-center justify-between mb-3">
-        <div class="text-xs text-muted">📄 LINKED DOCUMENTS</div>
+        <div class="text-xs text-muted"><i class="ic ic-doc"></i> LINKED DOCUMENTS</div>
         <a href="documents.html" class="btn btn-secondary btn-sm" style="text-decoration:none;">+ Create Document</a>
       </div>
       <div id="caseDocsList-${id}">Loading documents…</div>
     </div>
-    ${c.docsNeeded?`<div class="card" style="padding:14px;"><div class="text-xs text-muted mb-2">📂 DOCUMENTS NEEDED</div><div style="white-space:pre-wrap;font-size:.875rem;">${c.docsNeeded}</div></div>`:''}`;
+    ${c.docsNeeded?`<div class="card" style="padding:14px;"><div class="text-xs text-muted mb-2"><i class="ic ic-upload"></i> DOCUMENTS NEEDED</div><div style="white-space:pre-wrap;font-size:.875rem;">${c.docsNeeded}</div></div>`:''}`;
   document.getElementById('viewEditBtn').onclick = () => { closeModal('viewModal'); editCase(id); };
   document.getElementById('viewFeesBtn').onclick = () => { closeModal('viewModal'); openFeesModal(id); };
   document.getElementById('viewModal').classList.add('active');
   
   // Load documents linked to this case
   loadCaseDocuments(id);
+}
+
+function esc(v) {
+  return String(v ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+
+function renderHearingHistory(c) {
+  const hs = [...(c.hearings || [])].sort((a,b) => (b.date||'').localeCompare(a.date||''));
+  const syncBtn = c.cnr
+    ? `<button class="btn btn-secondary btn-sm" onclick="openSyncModal(${c.id})"><i class="ic ic-refresh"></i> Sync from eCourts</button>`
+    : `<span class="text-xs text-muted">Add a CNR to enable sync</span>`;
+  const rows = hs.length ? hs.map(h => `
+      <tr><td>${fmt(h.date)}</td><td>${esc(h.purpose||'—')}</td><td>${esc(h.judge||'—')}</td>
+      <td style="white-space:pre-wrap;">${esc(h.outcome||'')}</td><td class="text-xs text-muted">${h.source==='sync'?'eCourts':'manual'}</td></tr>`).join('')
+    : `<tr><td colspan="5" class="text-muted text-sm text-center" style="padding:12px;">No past hearings recorded yet. They are added when you change the next hearing date.</td></tr>`;
+  return `<div class="card mb-4" style="padding:14px;">
+    <div class="flex items-center justify-between mb-3"><div class="text-xs text-muted"><i class="ic ic-calendar"></i> HEARING HISTORY (${hs.length})</div>${syncBtn}</div>
+    <div class="table-wrap"><table><thead><tr><th>Date</th><th>Purpose</th><th>Judge</th><th>Outcome</th><th>Source</th></tr></thead><tbody>${rows}</tbody></table></div>
+  </div>`;
+}
+
+// ── eCourts sync (review-before-apply) ───────────────────────────────
+let _syncCtx = null;
+async function openSyncModal(caseId) {
+  const c = await dbGet(STORES.CASES, caseId);
+  if (!c?.cnr) return;
+  _syncCtx = { caseId, remote: null };
+  const backend = SyncProviders.backend;
+  document.getElementById('syncModalBody').innerHTML = `
+    <div class="text-sm mb-3">CNR <b>${esc(c.cnr)}</b></div>
+    ${backend.isConfigured()
+      ? `<button class="btn btn-primary btn-sm mb-3" onclick="runSync('backend')">Fetch from sync server</button>`
+      : `<div class="text-xs text-muted mb-3">No sync server configured. Paste case data below, or set a server URL in sync settings.</div>`}
+    <details ${backend.isConfigured()?'':'open'}><summary class="text-sm" style="cursor:pointer;">Paste case JSON</summary>
+      <textarea id="syncPaste" class="form-control mt-2" rows="6" placeholder='{"cnr":"${esc(c.cnr)}","nextHearing":"2026-12-12", ...}'></textarea>
+      <button class="btn btn-secondary btn-sm mt-2" onclick="runSync('paste')">Compare</button>
+    </details>
+    <details class="mt-3"><summary class="text-sm" style="cursor:pointer;">Sync server settings</summary>
+      <input id="syncEndpoint" class="form-control mt-2" placeholder="https://your-sync-server.example/api" value="${esc(SyncSettings.get().endpoint||'')}">
+      <input id="syncToken" class="form-control mt-2" type="password" placeholder="Access token (optional)" value="${esc(SyncSettings.get().token||'')}">
+      <button class="btn btn-ghost btn-sm mt-2" onclick="saveSyncSettings(${caseId})">Save settings</button>
+    </details>
+    <div id="syncDiff" class="mt-4"></div>`;
+  document.getElementById('syncModal').classList.add('active');
+}
+
+function saveSyncSettings(caseId) {
+  SyncSettings.set({ endpoint: document.getElementById('syncEndpoint').value.trim(), token: document.getElementById('syncToken').value.trim() });
+  showToast('Sync settings saved','success');
+  openSyncModal(caseId);
+}
+
+async function runSync(providerId) {
+  const c = await dbGet(STORES.CASES, _syncCtx.caseId);
+  const out = document.getElementById('syncDiff');
+  out.innerHTML = '<div class="text-sm text-muted">Fetching…</div>';
+  try {
+    const remote = providerId === 'paste'
+      ? await SyncProviders.paste.fetchCase(c.cnr, document.getElementById('syncPaste').value)
+      : await SyncProviders.backend.fetchCase(c.cnr);
+    _syncCtx.remote = remote;
+    const changes = diffCase(c, remote);
+    if (!changes.length) { out.innerHTML = '<div class="text-sm">✓ Already up to date.</div>'; return; }
+    out.innerHTML = `<div class="text-xs text-muted mb-2">REVIEW CHANGES — untick anything you don't want applied</div>
+      ${changes.map(ch => `<label class="flex gap-2 items-start mb-2 text-sm">
+        <input type="checkbox" class="sync-accept" value="${ch.field}" checked>
+        <span><b>${esc(ch.label)}</b>: ${Array.isArray(ch.to)
+          ? esc(ch.to.map(x => [x.date, x.purpose || x.title].filter(Boolean).join(' – ')).join('; '))
+          : `${esc(ch.from || '—')} → <b>${esc(ch.to)}</b>`}</span></label>`).join('')}
+      <button class="btn btn-primary btn-sm mt-2" onclick="applySync()">Apply selected</button>`;
+  } catch (err) {
+    out.innerHTML = `<div class="text-sm" style="color:var(--danger,#ef4444);">${esc(err.message)}</div>`;
+  }
+}
+
+async function applySync() {
+  const accepted = [...document.querySelectorAll('.sync-accept:checked')].map(x => x.value);
+  const c = await dbGet(STORES.CASES, _syncCtx.caseId);
+  await dbPut(STORES.CASES, applySyncChanges(c, _syncCtx.remote, accepted));
+  closeModal('syncModal');
+  showToast(`Applied ${accepted.length} change${accepted.length===1?'':'s'}`,'success');
+  allCases = await dbGetAll(STORES.CASES);
+  viewCase(_syncCtx.caseId);
 }
 
 async function loadCaseDocuments(caseId) {
@@ -1005,7 +1128,7 @@ async function loadCaseDocuments(caseId) {
           <div class="text-xs text-muted mt-1">${doc.templateName || 'Custom'} · ${new Date(doc.createdAt).toLocaleDateString('en-IN')}</div>
         </div>
         <button class="btn btn-ghost btn-sm" onclick="viewCaseDoc(${doc.id})" title="View">️</button>
-        <button class="btn btn-secondary btn-sm" onclick="downloadCaseDoc(${doc.id})" title="Download Word">📥</button>
+        <button class="btn btn-secondary btn-sm" onclick="downloadCaseDoc(${doc.id})" title="Download Word"><i class="ic ic-download"></i></button>
       </div>
     `).join('');
   } catch(e) {
@@ -1055,32 +1178,32 @@ async function printCurrentCase() {
       * { box-sizing:border-box; margin:0; padding:0; }
       body { font-family:'Noto Sans Gujarati','Times New Roman',serif; font-size:10pt; color:#111; padding:30pt; line-height:1.5; }
       .brief { max-width:650pt; margin:0 auto; }
-      .header { text-align:center; border-bottom:3pt solid #c9a227; padding-bottom:12pt; margin-bottom:20pt; }
-      .header h1 { font-size:14pt; color:#c9a227; letter-spacing:2pt; margin-bottom:4pt; }
+      .header { text-align:center; border-bottom:3pt solid #7a2331; padding-bottom:12pt; margin-bottom:20pt; }
+      .header h1 { font-size:14pt; color:#7a2331; letter-spacing:2pt; margin-bottom:4pt; }
       .header h2 { font-size:11pt; color:#333; font-weight:normal; }
       .header .case-num { font-size:16pt; font-weight:bold; margin-top:8pt; }
       .section { margin-bottom:18pt; }
-      .section-title { font-size:11pt; font-weight:bold; color:#c9a227; border-bottom:1pt solid #ddd; padding-bottom:4pt; margin-bottom:10pt; text-transform:uppercase; letter-spacing:1pt; }
+      .section-title { font-size:11pt; font-weight:bold; color:#7a2331; border-bottom:1pt solid #ddd; padding-bottom:4pt; margin-bottom:10pt; text-transform:uppercase; letter-spacing:1pt; }
       .row { display:flex; padding:4pt 0; }
       .label { width:140pt; color:#666; font-size:9pt; }
       .value { flex:1; font-weight:500; }
       .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:10pt; }
-      .card { background:#f9f9f9; padding:10pt; border-radius:4pt; border-left:3pt solid #c9a227; }
-      .fee-summary { background:#fffbe6; padding:12pt; border-radius:6pt; border:1pt solid #c9a227; }
+      .card { background:#f9f9f9; padding:10pt; border-radius:4pt; border-left:3pt solid #7a2331; }
+      .fee-summary { background:#fffbe6; padding:12pt; border-radius:6pt; border:1pt solid #7a2331; }
       .fee-row { display:flex; justify-content:space-between; padding:4pt 0; }
-      .fee-row.total { border-top:1pt solid #c9a227; margin-top:6pt; padding-top:8pt; font-weight:bold; font-size:11pt; }
+      .fee-row.total { border-top:1pt solid #7a2331; margin-top:6pt; padding-top:8pt; font-weight:bold; font-size:11pt; }
       .task-list { list-style:none; }
       .task-item { padding:6pt 0; border-bottom:1pt dotted #ddd; }
       .task-item:last-child { border:none; }
       .task-done { text-decoration:line-through; color:#999; }
-      .task-due { color:#c9a227; font-size:9pt; }
+      .task-due { color:#7a2331; font-size:9pt; }
       .notes { background:#f9f9f9; padding:12pt; border-radius:4pt; white-space:pre-wrap; font-size:9pt; }
       .footer { text-align:center; margin-top:30pt; font-size:8pt; color:#999; border-top:1pt solid #ddd; padding-top:10pt; }
       @media print { @page { size:A4; margin:1.5cm; } body { padding:0; } }
     </style></head><body>
     <div class="brief">
       <div class="header">
-        <h1>⚖️ CASE BRIEF</h1>
+        <h1><i class="ic ic-scale"></i> CASE BRIEF</h1>
         <h2>${c.caseTitle||'—'}</h2>
         <div class="case-num">${c.caseNumber||'—'}</div>
       </div>
@@ -1261,7 +1384,7 @@ async function importFromExcel(e) {
 
     // Map column headers to DB fields
     const fieldMap = {
-      'Case Number':'caseNumber','Case No.':'caseNumber','CNR':'caseNumber',
+      'Case Number':'caseNumber','Case No.':'caseNumber','CNR':'cnr','CNR Number':'cnr',
       'Case Title':'caseTitle','Title':'caseTitle',
       'Case Type':'caseType','Type':'caseType',
       'Client Name':'clientName','Client':'clientName',
@@ -1364,8 +1487,8 @@ async function refreshFeesModal(caseId) {
         <div class="font-medium">${fmtINR(p.amount)}</div>
         <div class="text-xs text-muted">${fmt(p.date)} · ${p.mode||'Cash'}${p.remark?' · '+p.remark:''}</div>
       </div>
-      <button class="btn btn-ghost btn-sm" onclick="printReceipt(${p.id})" title="Print Receipt">🧾</button>
-      <button class="btn btn-danger btn-sm" onclick="deletePayment(${p.id})">🗑️</button>
+      <button class="btn btn-ghost btn-sm" onclick="printReceipt(${p.id})" title="Print Receipt"><i class="ic ic-receipt"></i></button>
+      <button class="btn btn-danger btn-sm" onclick="deletePayment(${p.id})"><i class="ic ic-trash"></i></button>
     </div>`).join('');
 }
 
@@ -1412,15 +1535,15 @@ async function printReceipt(payId) {
       * { box-sizing:border-box; margin:0; padding:0; }
       body { font-family:'Noto Sans Gujarati','Times New Roman',serif; font-size:11pt; color:#111; padding:40pt; }
       .receipt { max-width:500pt; margin:0 auto; border:2pt solid #333; padding:30pt; }
-      .header { text-align:center; border-bottom:2pt solid #c9a227; padding-bottom:12pt; margin-bottom:20pt; }
-      .header h1 { font-size:16pt; color:#c9a227; letter-spacing:2pt; }
+      .header { text-align:center; border-bottom:2pt solid #7a2331; padding-bottom:12pt; margin-bottom:20pt; }
+      .header h1 { font-size:16pt; color:#7a2331; letter-spacing:2pt; }
       .header p { font-size:9pt; color:#666; margin-top:4pt; }
       .row { display:flex; justify-content:space-between; padding:6pt 0; border-bottom:1pt dotted #ccc; }
       .row .label { color:#666; font-size:10pt; }
       .row .value { font-weight:bold; text-align:right; }
       .total { background:#f9f9f9; padding:12pt; margin-top:16pt; border-radius:4pt; }
       .total .row { border:none; }
-      .total .value { font-size:14pt; color:#c9a227; }
+      .total .value { font-size:14pt; color:#7a2331; }
       .footer { text-align:center; margin-top:30pt; font-size:8pt; color:#999; border-top:1pt solid #ccc; padding-top:10pt; }
       .sign { margin-top:40pt; display:flex; justify-content:space-between; }
       .sign div { text-align:center; width:45%; }
@@ -1429,7 +1552,7 @@ async function printReceipt(payId) {
     </style></head><body>
     <div class="receipt">
       <div class="header">
-        <h1>⚖️ ADVOCATE PRO</h1>
+        <h1><i class="ic ic-scale"></i> ADVOCATE PRO</h1>
         <p>Fee Receipt / ફી રસીદ</p>
         <p style="margin-top:8pt;font-size:10pt;">Receipt No: RCP-${String(payId).padStart(5,'0')}</p>
       </div>
@@ -1477,9 +1600,9 @@ async function loadFeesTab() {
   const rows=[];
   for(const c of allCases){ const fs=await getCaseFeeSummary(c.id); tA+=fs.agreed; tR+=fs.received; tP+=fs.pending; rows.push({c,fs}); }
   document.getElementById('feesSummaryCards').innerHTML=`
-    <div class="stat-card"><div class="stat-icon" style="background:rgba(59,130,246,.1)">💼</div><div class="stat-value">${fmtINR(tA)}</div><div class="stat-label">Total Agreed</div></div>
-    <div class="stat-card"><div class="stat-icon" style="background:rgba(16,185,129,.1)">✅</div><div class="stat-value text-success">${fmtINR(tR)}</div><div class="stat-label">Total Received</div></div>
-    <div class="stat-card"><div class="stat-icon" style="background:rgba(245,158,11,.1)">⏳</div><div class="stat-value text-warning">${fmtINR(tP)}</div><div class="stat-label">Total Pending</div></div>`;
+    <div class="stat-card"><div class="stat-icon" style="background:rgba(59,130,246,.1)"><i class="ic ic-briefcase"></i></div><div class="stat-value">${fmtINR(tA)}</div><div class="stat-label">Total Agreed</div></div>
+    <div class="stat-card"><div class="stat-icon" style="background:rgba(16,185,129,.1)"><i class="ic ic-check"></i></div><div class="stat-value text-success">${fmtINR(tR)}</div><div class="stat-label">Total Received</div></div>
+    <div class="stat-card"><div class="stat-icon" style="background:rgba(245,158,11,.1)"><i class="ic ic-clock"></i></div><div class="stat-value text-warning">${fmtINR(tP)}</div><div class="stat-label">Total Pending</div></div>`;
   const tbody=document.getElementById('feesTbody');
   if(!rows.length){ tbody.innerHTML='<tr><td colspan="8" class="text-center text-muted" style="padding:32px;">No cases. Add cases first.</td></tr>'; return; }
   tbody.innerHTML=rows.map(({c,fs})=>{ const pct=fs.agreed>0?Math.min(100,Math.round(fs.received/fs.agreed*100)):0; return `
@@ -1491,7 +1614,7 @@ async function loadFeesTab() {
       <td class="text-success font-medium">${fmtINR(fs.received)}</td>
       <td class="${fs.pending>0?'text-warning':''} font-medium">${fmtINR(fs.pending)}</td>
       <td><div style="display:flex;align-items:center;gap:8px;"><div class="progress-bar" style="flex:1;height:6px;"><div class="progress-fill" style="width:${pct}%"></div></div><span class="text-xs text-muted">${pct}%</span></div></td>
-      <td><button class="btn btn-primary btn-sm" onclick="openFeesModal(${c.id})">💰 Manage</button></td>
+      <td><button class="btn btn-secondary btn-sm" onclick="openFeesModal(${c.id})"><i class="ic ic-rupee"></i> Manage</button></td>
     </tr>`; }).join('');
 }
 
@@ -1518,9 +1641,9 @@ function renderCalendar() {
   const ms=`${calYear}-${String(calMonth+1).padStart(2,'0')}`;
   const mCases=allCases.filter(c=>c.nextHearing&&c.nextHearing.startsWith(ms)).sort((a,b)=>a.nextHearing.localeCompare(b.nextHearing));
   const ml=document.getElementById('monthHearingsList');
-  if(!mCases.length){ ml.innerHTML='<div class="empty-state" style="padding:28px;"><div class="empty-icon">📭</div><div class="empty-title">No hearings this month</div></div>'; return; }
+  if(!mCases.length){ ml.innerHTML='<div class="empty-state" style="padding:28px;"><div class="empty-icon"><i class="ic ic-inbox"></i></div><div class="empty-title">No hearings this month</div></div>'; return; }
   ml.innerHTML=`<div class="table-wrap"><table><thead><tr><th>Date</th><th>Case No.</th><th>Title</th><th>Court</th><th>Judge</th><th>Client</th><th>Status</th></tr></thead><tbody>
-    ${mCases.map(c=>`<tr onclick="viewCase(${c.id})" style="cursor:pointer;"><td class="${hClass(c.nextHearing)} font-medium">${fmt(c.nextHearing)}</td><td class="text-gold">${c.caseNumber||'—'}</td><td>${c.caseTitle||'—'}</td><td>${c.courtNo||'—'}</td><td>${c.judgeName||'—'}</td><td>${c.clientName||'—'}</td><td><span class="badge badge-${(c.status||'').toLowerCase()}">${c.status||'—'}</span></td></tr>`).join('')}
+    ${mCases.map(c=>`<tr onclick="viewCase(${c.id})" style="cursor:pointer;"><td class="${hClass(c.nextHearing)} font-medium" style="white-space:nowrap;">${fmt(c.nextHearing)}</td><td style="white-space:nowrap;font-weight:600;">${esc(c.caseNumber||'—')}</td><td>${esc(c.caseTitle||'—')}</td><td style="white-space:nowrap;">${esc(c.courtNo||'—')}</td><td>${esc(c.judgeName||'—')}</td><td>${esc(c.clientName||'—')}</td><td><span class="badge badge-${(c.status||'').toLowerCase()}">${c.status||'—'}</span></td></tr>`).join('')}
   </tbody></table></div>`;
 }
 
@@ -1535,12 +1658,12 @@ function selectCalDate(ds) {
     <div class="hearing-item" onclick="viewCase(${c.id})">
       <div style="flex:1;min-width:0;">
         <div class="font-medium text-sm">${c.caseTitle||c.caseNumber}</div>
-        <div class="text-xs text-muted mt-1">🏛️ ${c.courtNo||'—'} · ⚖️ ${c.judgeName||'—'}</div>
-        <div class="text-xs text-muted">👤 ${c.clientName||'—'}</div>
+        <div class="text-xs text-muted mt-1"><i class="ic ic-court"></i> ${c.courtNo||'—'} · ${c.judgeName||'—'}</div>
+        <div class="text-xs text-muted"><i class="ic ic-user"></i> ${c.clientName||'—'}</div>
       </div>
       <span class="badge badge-${(c.status||'').toLowerCase()}">${c.status}</span>
     </div>`).join('') :
-    '<div class="empty-state" style="padding:20px 0;"><div class="empty-icon">📭</div><div class="empty-title">No hearings</div></div>';
+    '<div class="empty-state" style="padding:20px 0;"><div class="empty-icon"><i class="ic ic-inbox"></i></div><div class="empty-title">No hearings</div></div>';
 }
 
 function prevMonth(){ calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCalendar(); }
@@ -1553,19 +1676,6 @@ document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click
 // ── Init ──────────────────────────────────────────────────────────
 loadAllCases();
 
-// ─ Theme Toggle ──────────────────────────────────────────────────
-function toggleTheme() {
-  document.body.classList.toggle('light-theme');
-  const isLight = document.body.classList.contains('light-theme');
-  localStorage.setItem('advpro_theme', isLight ? 'light' : 'dark');
-  document.getElementById('themeToggle').textContent = isLight ? '️ Light Mode' : '🌙 Dark Mode';
-}
-// Apply saved theme on load
-if (localStorage.getItem('advpro_theme') === 'light') {
-  document.body.classList.add('light-theme');
-  const btn = document.getElementById('themeToggle');
-  if (btn) btn.textContent = '☀️ Light Mode';
-}
 
 // Legacy voice nav aliases (shared.js VoiceNav)
 function toggleVoiceNav() { VoiceNav.toggle(); }

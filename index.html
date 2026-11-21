@@ -2,410 +2,306 @@
 <html lang="gu">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Advocate Pro — Legal Management Platform</title>
-  <meta name="theme-color" content="#c9a227">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Advocate Pro — Case register &amp; drafting for advocates</title>
+  <meta name="theme-color" content="#eef3fc">
+  <script>try{var t=localStorage.getItem("advpro_theme");if(t==="dark"||(!t&&matchMedia("(prefers-color-scheme: dark)").matches))document.documentElement.classList.add("dark-theme")}catch(e){}</script>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/svg+xml" href="logo.svg">
   <link rel="apple-touch-icon" href="logo.svg">
-  <meta name="description" content="Professional legal management platform for Gujarati advocates. Manage cases, fees, and legal documents with voice support.">
-  <link rel="stylesheet" href="shared.css">
+  <meta name="description" content="Case register, hearing diary, fees ledger and Gujarati legal drafting for advocates. Works offline; data stays on your device.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+Gujarati:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
   <style>
-    /* ── Landing-Page Specific ── */
-    body { overflow-x: hidden; }
+    .wrap { width: min(calc(100% - 2.5rem), 76rem); margin-inline: auto; }
+
+    /* Floating glass header */
+    .top { position: sticky; top: .9rem; z-index: 50; width: min(calc(100% - 2rem), 78rem); margin: .9rem auto 0;
+      border: 1px solid var(--glass-edge); border-radius: 999px; background: color-mix(in srgb, var(--background) 64%, transparent);
+      box-shadow: 0 1px 0 var(--hairline) inset, 0 18px 40px -34px rgba(0,0,0,.8);
+      -webkit-backdrop-filter: blur(20px) saturate(1.2); backdrop-filter: blur(20px) saturate(1.2); }
+    .top-inner { display: flex; align-items: center; justify-content: space-between; gap: .5rem; height: 4rem; padding: 0 .5rem 0 .75rem; }
+    .brand { display: inline-flex; align-items: center; gap: .65rem; }
+    .brand img { width: 34px; height: 34px; border-radius: 10px; }
+    .brand-name { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; letter-spacing: -.04em; white-space: nowrap; }
+    .brand-name span { color: var(--muted); font-weight: 400; }
+    .top-links { display: flex; align-items: center; gap: .15rem; }
+    .top-link { display: inline-flex; align-items: center; min-height: 2.75rem; padding: 0 .85rem; border-radius: 999px; color: var(--muted); font-size: .84rem; font-weight: 500; transition: var(--transition); }
+    .top-link:hover { color: var(--ink); background: color-mix(in srgb, var(--surface) 42%, transparent); }
+    .top-actions { display: flex; align-items: center; gap: .4rem; }
+    .icon-btn { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: 999px; border: 1px solid var(--glass-edge); background: color-mix(in srgb, var(--surface) 30%, transparent); color: var(--ink); cursor: pointer; }
+    .icon-btn:hover { border-color: color-mix(in srgb, var(--accent) 40%, var(--glass-edge)); }
+    .icon-btn .label-text { display: none; }
 
     /* Hero */
-    .hero {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      overflow: hidden;
-    }
-    .hero-bg {
-      position: absolute; inset: 0; pointer-events: none; z-index: 0;
-      background:
-        radial-gradient(ellipse 80% 60% at 50% -10%, rgba(201,162,39,.18) 0%, transparent 65%),
-        radial-gradient(ellipse 50% 40% at 90% 80%, rgba(124,58,237,.12) 0%, transparent 60%),
-        radial-gradient(ellipse 40% 30% at 10% 90%, rgba(201,162,39,.08) 0%, transparent 60%);
-    }
-    .hero-grid {
-      position: absolute; inset: 0; pointer-events: none; z-index: 0;
-      background-image:
-        linear-gradient(rgba(201,162,39,.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(201,162,39,.04) 1px, transparent 1px);
-      background-size: 60px 60px;
-    }
+    .hero { padding: clamp(3.5rem, 7vw, 6rem) 0 clamp(2.5rem, 5vw, 4rem); text-align: center; }
+    .hero h1 { margin: 1.4rem auto 0; max-width: 15ch; font-size: clamp(2.7rem, 7vw, 5.6rem); font-weight: 600; letter-spacing: -.062em; line-height: .96; text-wrap: balance; }
+    .hero .sub { max-width: 58ch; margin: 1.3rem auto 0; color: var(--muted); font-size: clamp(.98rem, 1.34vw, 1.1rem); line-height: 1.7; }
+    .hero .sub-gu { margin: .4rem auto 0; color: var(--faint); font-size: .95rem; }
+    .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: .75rem; margin-top: 2rem; }
+    .proof { display: flex; flex-wrap: wrap; justify-content: center; gap: .5rem 1.3rem; margin-top: 1.4rem; color: var(--muted); font-size: .76rem; }
+    .proof span { display: inline-flex; align-items: center; gap: .4rem; }
+    .proof .ic { color: var(--accent); }
 
-    /* Nav */
-    .nav {
-      position: relative; z-index: 10;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 20px 48px;
-      border-bottom: 1px solid var(--border);
-      background: rgba(7,9,15,.7);
-      backdrop-filter: blur(12px);
-    }
-    .nav-logo { display: flex; align-items: center; gap: 12px; }
-    .nav-logo-icon {
-      width: 42px; height: 42px;
-      background: linear-gradient(135deg, var(--gold-light), var(--gold-dark));
-      border-radius: 10px; display: flex; align-items: center; justify-content: center;
-      font-size: 1.3rem; font-weight: 800;
-    }
-    .nav-logo-name { font-size: 1.2rem; font-weight: 800; letter-spacing: -.02em; }
-    .nav-logo-tag  { font-size: .65rem; color: var(--gold); font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
-    .nav-links { display: flex; gap: 8px; }
-    .nav-btn-outline {
-      padding: 9px 20px; border: 1px solid var(--border); border-radius: var(--radius);
-      font-size: .85rem; font-weight: 600; cursor: pointer; color: var(--text-secondary);
-      background: transparent; font-family: inherit; transition: var(--transition);
-      text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
-    }
-    .nav-btn-outline:hover { border-color: var(--gold); color: var(--text-primary); }
+    /* Console: today's board */
+    .console-wrap { position: relative; }
+    .console-wrap::before { content: ""; position: absolute; inset: 8% 10% -6%; z-index: -1; border-radius: 50%; background: radial-gradient(60% 62% at 50% 40%, var(--accent-glow), transparent 72%); filter: blur(38px); opacity: .75; }
+    .console { overflow: hidden; border-radius: 1.5rem; }
+    .console-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .6rem; min-height: 3.1rem; padding: 0 1.1rem; border-bottom: 1px solid var(--glass-edge); }
+    .console-brand { display: inline-flex; align-items: center; gap: .55rem; font-size: .82rem; font-weight: 600; }
+    .console-brand i.ic { color: var(--accent); }
+    .console-body { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.6fr); gap: 0; }
+    .ledger { padding: 1.2rem 1.3rem; border-right: 1px solid var(--glass-edge); display: grid; gap: 1rem; align-content: start; }
+    .ledger-row .label { display: block; }
+    .ledger-row strong { display: block; margin-top: .3rem; font-family: var(--font-display); font-size: 2rem; font-weight: 600; letter-spacing: -.05em; line-height: 1; }
+    .ledger-row strong.accent { background: linear-gradient(100deg, var(--text-a), var(--text-b)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .board { padding: .4rem .3rem .6rem; min-width: 0; }
+    .board table td.num { font-family: var(--font-mono); font-size: .76rem; white-space: nowrap; color: var(--ink); }
+    .board table td.court { color: var(--muted); white-space: nowrap; }
+    .board tbody tr { cursor: pointer; }
+    .board-empty { padding: 2.4rem 1rem; text-align: center; color: var(--muted); font-size: .9rem; }
+    .board-empty a { color: var(--accent); font-weight: 600; }
 
-    /* Light theme nav fix */
-    body.light-theme .nav {
-      background: rgba(248,250,252,.9);
-      border-bottom-color: rgba(201,162,39,0.2);
-    }
-    body.light-theme .nav-btn-outline {
-      color: #1e293b;
-      border-color: rgba(201,162,39,0.3);
-    }
-    body.light-theme .nav-btn-outline:hover {
-      border-color: var(--gold);
-      color: var(--gold);
-    }
+    /* Sections */
+    .section { padding: clamp(4rem, 8vw, 6.5rem) 0 0; }
+    .section-head { max-width: 44rem; }
+    .section-head h2 { margin-top: .9rem; font-size: clamp(1.9rem, 4vw, 3.1rem); letter-spacing: -.055em; line-height: 1.02; }
+    .section-head p { margin-top: .9rem; color: var(--muted); line-height: 1.7; }
+    .bento { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: .85rem; margin-top: 2.4rem; }
+    .cell { padding: clamp(1.1rem, 2vw, 1.6rem); display: flex; flex-direction: column; }
+    .span-3 { grid-column: span 3; } .span-2 { grid-column: span 2; } .span-6 { grid-column: span 6; }
+    .tile { display: grid; place-items: center; width: 2.4rem; height: 2.4rem; border-radius: .75rem; background: var(--accent-soft); color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 26%, var(--glass-edge)); }
+    .cell h3 { margin-top: 1.1rem; font-size: 1.25rem; letter-spacing: -.035em; }
+    .cell p { margin-top: .5rem; color: var(--muted); font-size: .86rem; line-height: 1.65; max-width: 44ch; }
+    .cell ul { list-style: none; margin: 1.1rem 0 1.3rem; display: grid; gap: .55rem; flex: 1; }
+    .cell li { display: flex; gap: .55rem; align-items: center; font-size: .84rem; color: var(--ink-soft); }
+    .cell li .ic { color: var(--accent); }
+    .cell .go { display: inline-flex; align-items: center; gap: .4rem; font-size: .86rem; font-weight: 600; color: var(--ink); text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: .3rem; }
+    .cell:hover .go { text-decoration-color: var(--accent); color: var(--accent); }
+    .forms { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: 1.1rem; }
+    .chip { display: inline-flex; align-items: baseline; gap: .45rem; min-height: 2.1rem; padding: .35rem .8rem; border: 1px solid var(--glass-edge); border-radius: 999px; background: color-mix(in srgb, var(--surface) 34%, transparent); font-size: .84rem; transition: var(--transition); }
+    .chip small { color: var(--faint); font-family: var(--font-mono); font-size: .62rem; }
+    .chip:hover { border-color: color-mix(in srgb, var(--accent) 40%, var(--glass-edge)); color: var(--accent); }
 
-    /* Hero Content */
-    .hero-content {
-      position: relative; z-index: 1;
-      flex: 1; display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      padding: 64px 24px 48px; text-align: center;
-    }
-    .hero-eyebrow {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: rgba(201,162,39,.1); border: 1px solid rgba(201,162,39,.3);
-      padding: 6px 16px; border-radius: 99px;
-      font-size: .78rem; font-weight: 600; color: var(--gold);
-      letter-spacing: .05em; text-transform: uppercase;
-      margin-bottom: 24px; animation: fadeInUp .5s ease;
-    }
-    .hero-title {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(2.4rem, 6vw, 4.2rem);
-      font-weight: 800; line-height: 1.15;
-      letter-spacing: -.02em;
-      animation: fadeInUp .55s .1s ease both;
-    }
-    .hero-title .accent { color: var(--gold); }
-    .hero-subtitle {
-      font-size: clamp(.95rem, 2vw, 1.15rem);
-      color: var(--text-secondary); max-width: 600px;
-      margin: 20px auto 0; line-height: 1.7;
-      animation: fadeInUp .55s .2s ease both;
-    }
-    .hero-subtitle .gu { font-family: 'Noto Sans Gujarati', sans-serif; font-size: 1rem; }
-    .hero-cta {
-      margin-top: 40px; display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;
-      animation: fadeInUp .55s .3s ease both;
-    }
+    .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 2.4rem; border-top: 1px solid color-mix(in srgb, var(--line) 70%, transparent); }
+    .step { padding: 1.4rem 1.6rem 0 0; }
+    .step + .step { padding-left: 1.6rem; border-left: 1px solid color-mix(in srgb, var(--line) 60%, transparent); }
+    .step .n { color: var(--accent); font-family: var(--font-mono); font-size: .7rem; }
+    .step h3 { margin-top: 1.3rem; font-size: 1.15rem; letter-spacing: -.03em; }
+    .step p { margin-top: .5rem; color: var(--muted); font-size: .85rem; line-height: 1.65; max-width: 32ch; }
 
-    /* Main Cards */
-    .main-cards {
-      position: relative; z-index: 1;
-      display: grid; grid-template-columns: repeat(2, 1fr);
-      gap: 28px; max-width: 960px; margin: 0 auto;
-      padding: 0 24px 80px;
-      animation: fadeInUp .6s .4s ease both;
-    }
-    @media(max-width:680px){ .main-cards{ grid-template-columns:1fr; } }
+    .foot { margin-top: clamp(4rem, 8vw, 6rem); border-top: 1px solid color-mix(in srgb, var(--line) 60%, transparent); }
+    .foot-inner { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; padding: 1.4rem 0 2.2rem; color: var(--muted); font-size: .82rem; }
+    .foot-inner .ic { color: var(--accent); }
 
-    .main-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 24px; padding: 40px 36px;
-      text-align: left; cursor: pointer;
-      transition: all .3s ease;
-      text-decoration: none; color: inherit;
-      position: relative; overflow: hidden;
-      display: flex; flex-direction: column;
+    /* Phone dock */
+    .landing-dock { display: none; }
+    @media (max-width: 900px) {
+      .console-body { grid-template-columns: 1fr; }
+      .ledger { grid-template-columns: repeat(2, minmax(0, 1fr)); border-right: 0; border-bottom: 1px solid var(--glass-edge); }
+      .bento { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .span-3, .span-2 { grid-column: span 1; } .span-6 { grid-column: span 2; }
+      .steps { grid-template-columns: 1fr; border-top: 0; }
+      .step, .step + .step { padding: 1.3rem 0; border-left: 0; border-top: 1px solid color-mix(in srgb, var(--line) 65%, transparent); }
     }
-    .main-card::before {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(201,162,39,.06) 0%, transparent 60%);
-      opacity: 0; transition: var(--transition);
+    @media (max-width: 640px) {
+      .wrap { width: calc(100% - 2rem); }
+      .top { width: calc(100% - 1rem); }
+      .top-links { display: none; }
+      .hero { padding-top: 2.5rem; }
+      .actions > * { width: 100%; }
+      .bento { grid-template-columns: 1fr; }
+      .span-3, .span-2, .span-6 { grid-column: span 1; }
+      .board .hide-sm { display: none; }
+      .landing-dock { display: block; position: fixed; inset: auto 0 0 0; z-index: 40; padding: .75rem .75rem max(.75rem, env(safe-area-inset-bottom)); border-top: 1px solid var(--glass-edge); background: color-mix(in srgb, var(--background) 86%, transparent); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
+      .landing-dock .row { display: flex; gap: .5rem; max-width: 28rem; margin: 0 auto; }
+      .landing-dock .btn { flex: 1; min-height: 3rem; }
+      body { padding-bottom: 6rem; }
+      #voiceNavBtn { bottom: 96px !important; }
     }
-    .main-card:hover { transform: translateY(-6px); border-color: var(--gold); box-shadow: var(--shadow-gold), 0 20px 60px rgba(0,0,0,.5); }
-    .main-card:hover::before { opacity: 1; }
-    .main-card.documents:hover { border-color: var(--purple-light); box-shadow: 0 0 30px rgba(124,58,237,.2), 0 20px 60px rgba(0,0,0,.5); }
-
-    .card-icon-wrap {
-      width: 68px; height: 68px; border-radius: 18px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 2rem; margin-bottom: 24px;
-      position: relative; z-index: 1;
-    }
-    .icon-gold { background: linear-gradient(135deg, rgba(201,162,39,.2), rgba(201,162,39,.05)); border: 1px solid rgba(201,162,39,.3); }
-    .icon-purple { background: linear-gradient(135deg, rgba(124,58,237,.2), rgba(124,58,237,.05)); border: 1px solid rgba(124,58,237,.3); }
-
-    .card-title {
-      font-size: 1.5rem; font-weight: 800; margin-bottom: 10px;
-      position: relative; z-index: 1;
-    }
-    .card-desc {
-      color: var(--text-secondary); font-size: .9rem; line-height: 1.65;
-      margin-bottom: 24px; position: relative; z-index: 1; flex: 1;
-    }
-    .card-features {
-      list-style: none; display: flex; flex-direction: column; gap: 8px;
-      margin-bottom: 28px; position: relative; z-index: 1;
-    }
-    .card-features li {
-      display: flex; align-items: center; gap: 10px;
-      font-size: .83rem; color: var(--text-secondary);
-    }
-    .card-features .fi { color: var(--gold); font-size: .85rem; }
-    .main-card.documents .card-features .fi { color: var(--purple-light); }
-    .card-action {
-      display: inline-flex; align-items: center; gap: 8px;
-      font-size: .9rem; font-weight: 700; color: var(--gold);
-      position: relative; z-index: 1;
-    }
-    .main-card.documents .card-action { color: var(--purple-light); }
-    .card-arrow { transition: transform .2s ease; }
-    .main-card:hover .card-arrow { transform: translateX(5px); }
-
-    .card-badge {
-      position: absolute; top: 20px; right: 20px;
-      background: rgba(201,162,39,.15); border: 1px solid rgba(201,162,39,.3);
-      color: var(--gold); font-size: .7rem; font-weight: 700;
-      padding: 4px 10px; border-radius: 99px; letter-spacing: .05em;
-    }
-    .main-card.documents .card-badge {
-      background: rgba(124,58,237,.15); border-color: rgba(124,58,237,.3); color: var(--purple-light);
-    }
-
-    /* Stats Strip */
-    .stats-strip {
-      position: relative; z-index: 1;
-      display: flex; justify-content: center; gap: 48px;
-      padding: 0 24px 56px; flex-wrap: wrap;
-      animation: fadeInUp .6s .35s ease both;
-    }
-    .strip-stat { text-align: center; }
-    .strip-val { font-size: 2rem; font-weight: 900; color: var(--gold); line-height: 1; }
-    .strip-lbl { font-size: .78rem; color: var(--text-muted); margin-top: 4px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; }
-
-    /* Feature Row */
-    .features-row {
-      background: var(--bg-secondary);
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      padding: 20px 48px;
-      display: flex; align-items: center; justify-content: center;
-      gap: 36px; flex-wrap: wrap;
-    }
-    .feat-pill {
-      display: flex; align-items: center; gap: 8px;
-      font-size: .82rem; color: var(--text-secondary); font-weight: 500;
-    }
-    .feat-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
-
-    /* Footer */
-    .landing-footer {
-      text-align: center; padding: 24px;
-      font-size: .78rem; color: var(--text-muted);
-      border-top: 1px solid var(--border);
-    }
-
-    /* Live stats section */
-    .live-strip {
-      position: relative; z-index: 1;
-      background: rgba(201,162,39,.05); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
-      padding: 14px 48px;
-      display: flex; align-items: center; justify-content: center; gap: 32px; flex-wrap: wrap;
-      animation: fadeInUp .6s .5s ease both;
-    }
-    .live-item { display: flex; align-items: center; gap: 8px; font-size: .83rem; }
-    .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); animation: pulseGold 2s infinite; }
-    @keyframes pulseGold { 0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,.5)}60%{box-shadow:0 0 0 6px rgba(16,185,129,0)} }
   </style>
 </head>
 <body>
 
-<div class="hero">
-  <div class="hero-bg"></div>
-  <div class="hero-grid"></div>
+<header class="top">
+  <div class="top-inner">
+    <a href="index.html" class="brand"><img src="logo.svg" alt=""><span class="brand-name">Advocate<span>Pro</span></span></a>
+    <nav class="top-links" aria-label="Primary">
+      <a class="top-link" href="case-library.html">Case register</a>
+      <a class="top-link" href="case-library.html#calendar">Hearing diary</a>
+      <a class="top-link" href="documents.html">Drafting</a>
+    </nav>
+    <div class="top-actions">
+      <button class="icon-btn" id="themeToggle" onclick="toggleTheme()" title="Switch theme" aria-label="Switch theme"><i class="ic ic-moon"></i></button>
+      <a href="case-library.html" class="btn btn-primary">Open register <i class="ic ic-arrow"></i></a>
+    </div>
+  </div>
+</header>
 
-  <!-- Navbar -->
-  <nav class="nav">
-    <div class="nav-logo">
-      <img src="logo.svg" alt="Advocate Pro" style="width:42px;height:42px;border-radius:10px;object-fit:contain;background:#fff;">
-      <div>
-        <div class="nav-logo-name">Advocate Pro</div>
-        <div class="nav-logo-tag">Legal Management Platform</div>
+<main>
+  <section class="hero wrap">
+    <span class="pill"><span class="pill-mark"></span>For Gujarat’s advocates · works offline</span>
+    <h1>Every case, every date. <span class="gradient-text">Always in order.</span></h1>
+    <p class="sub">Your case register, hearing diary, fees ledger and Gujarati drafting desk — kept on your own device, ready before the court opens.</p>
+    <p class="sub-gu gujarati">ગુજરાતી વકીલ માટે કેસ, તારીખો, ફી અને કાનૂની દસ્તાવેજ — એક જ જગ્યાએ.</p>
+    <div class="actions">
+      <a href="case-library.html" class="btn btn-primary btn-lg"><i class="ic ic-folder"></i> Open case register</a>
+      <a href="documents.html" class="btn btn-secondary btn-lg"><i class="ic ic-edit"></i> Draft a document</a>
+    </div>
+    <div class="proof">
+      <span><i class="ic ic-check"></i> Data stays on this device</span>
+      <span><i class="ic ic-check"></i> Works without internet</span>
+      <span><i class="ic ic-check"></i> Gujarati voice input</span>
+    </div>
+  </section>
+
+  <section class="wrap console-wrap">
+    <div class="console glass">
+      <div class="console-bar">
+        <span class="console-brand"><i class="ic ic-calendar"></i> Today’s board</span>
+        <span class="label" id="dateline">—</span>
+      </div>
+      <div class="console-body">
+        <div class="ledger" aria-live="polite">
+          <div class="ledger-row"><span class="label">Listed today</span><strong class="accent" id="liveToday">—</strong></div>
+          <div class="ledger-row"><span class="label">Cases on file</span><strong id="liveCases">—</strong></div>
+          <div class="ledger-row"><span class="label">Fees outstanding</span><strong id="livePending">—</strong></div>
+          <div class="ledger-row"><span class="label">Drafts saved</span><strong id="liveDocs">—</strong></div>
+        </div>
+        <div class="board">
+          <table>
+            <thead><tr><th>Court</th><th>Case no.</th><th>Parties</th><th class="hide-sm">Purpose</th></tr></thead>
+            <tbody id="boardBody"><tr><td colspan="4" class="board-empty">Loading…</td></tr></tbody>
+          </table>
+        </div>
       </div>
     </div>
-    <div class="nav-links">
-      <a href="case-library.html" class="nav-btn-outline">📁 Case Library</a>
-      <a href="documents.html" class="nav-btn-outline">📜 Documents</a>
+  </section>
+
+  <section class="section wrap">
+    <div class="section-head">
+      <span class="kicker">Two desks</span>
+      <h2>The register and the drafting table, side by side.</h2>
+      <p>Track every matter from filing to disposal, then draft the vakalatnama, plaint or notice for it without retyping a single particular.</p>
     </div>
-  </nav>
-
-  <!-- Live status bar -->
-  <div class="live-strip" id="liveStrip">
-    <div class="live-item"><div class="live-dot"></div><span id="liveToday">Loading…</span></div>
-    <div class="live-item">📁 <span id="liveCases">—</span> Total Cases</div>
-    <div class="live-item">💰 <span id="livePending">—</span> Fees Pending</div>
-    <div class="live-item">📜 <span id="liveDocs">—</span> Saved Documents</div>
-  </div>
-
-  <!-- Hero Content -->
-  <div class="hero-content">
-    <div class="hero-eyebrow">⚖️ &nbsp; ગુજરાતી વકીલ માટે સંપૂર્ણ કાનૂની વ્યવસ્થાપન</div>
-    <h1 class="hero-title">
-      Your Complete<br>
-      <span class="accent">Legal Command</span> Centre
-    </h1>
-    <p class="hero-subtitle">
-      Manage all your cases, hearing dates, court details, and fees — in one place.<br>
-      <span class="gu">અથવા ગુજરાતી ભાષામાં કાનૂની દસ્તાવેજ તૈયાર કરો — ઝડપથી, સચોટ રીતે.</span>
-    </p>
-    <div class="hero-cta">
-      <a href="case-library.html" class="btn btn-primary btn-lg">📁 Open Case Library</a>
-      <a href="documents.html"   class="btn btn-secondary btn-lg">📜 Create Legal Document</a>
+    <div class="bento">
+      <a href="case-library.html" class="card cell span-3">
+        <span class="tile"><i class="ic ic-folder"></i></span>
+        <h3>Case register</h3>
+        <p>Every matter in one register — court, bench, parties, client and the next date — searchable in seconds.</p>
+        <ul>
+          <li><i class="ic ic-court"></i> Court, judge and CNR for each matter</li>
+          <li><i class="ic ic-calendar"></i> Hearing diary with past-date history</li>
+          <li><i class="ic ic-rupee"></i> Fees agreed, received and outstanding</li>
+          <li><i class="ic ic-refresh"></i> eCourts sync with review before apply</li>
+        </ul>
+        <span class="go">Open the register <i class="ic ic-arrow"></i></span>
+      </a>
+      <a href="documents.html" class="card cell span-3">
+        <span class="tile"><i class="ic ic-doc"></i></span>
+        <h3>Drafting desk</h3>
+        <p>Gujarati pleadings, deeds and notices from court-format templates. Fill the particulars, preview, export to Word.</p>
+        <ul>
+          <li><i class="ic ic-book"></i> 13 built-in formats — CPC, BNSS 2023</li>
+          <li><i class="ic ic-upload"></i> Upload your own drafts with placeholders</li>
+          <li><i class="ic ic-mic"></i> Dictate particulars in Gujarati</li>
+          <li><i class="ic ic-download"></i> Export to Word, ready to print</li>
+        </ul>
+        <span class="go">Open the drafting desk <i class="ic ic-arrow"></i></span>
+      </a>
+      <div class="card cell span-6">
+        <span class="kicker">Index of forms</span>
+        <div class="forms">
+          <a class="chip gujarati" href="documents.html">વકાલતનામું <small>Vakalatnama</small></a>
+          <a class="chip gujarati" href="documents.html">પ્લેઇન્ટ <small>Plaint</small></a>
+          <a class="chip gujarati" href="documents.html">લિખિત જવાબ <small>Written statement</small></a>
+          <a class="chip gujarati" href="documents.html">જામીન અરજી <small>Bail</small></a>
+          <a class="chip gujarati" href="documents.html">ફોજદારી ફરિયાદ <small>Complaint</small></a>
+          <a class="chip gujarati" href="documents.html">કાનૂની નોટિસ <small>Legal notice</small></a>
+          <a class="chip gujarati" href="documents.html">હલફનામું <small>Affidavit</small></a>
+          <a class="chip gujarati" href="documents.html">મુખત્યારનામું <small>Power of attorney</small></a>
+          <a class="chip gujarati" href="documents.html">ભાડા કરાર <small>Rent</small></a>
+          <a class="chip gujarati" href="documents.html">વેચાણ ખત <small>Sale deed</small></a>
+          <a class="chip gujarati" href="documents.html">ભાગીદારી કરાર <small>Partnership</small></a>
+          <a class="chip gujarati" href="documents.html">ફરગતી <small>Release</small></a>
+          <a class="chip gujarati" href="documents.html">વસિયતનામું <small>Will</small></a>
+        </div>
+      </div>
     </div>
+  </section>
+
+  <section class="section wrap">
+    <div class="section-head">
+      <span class="kicker">How it works</span>
+      <h2>Set up once. Ready every morning.</h2>
+    </div>
+    <div class="steps">
+      <div class="step"><span class="n">01</span><h3>Add your matters</h3><p>Enter cases by hand, import your Excel register, or paste CNR numbers.</p></div>
+      <div class="step"><span class="n">02</span><h3>Keep dates current</h3><p>Each new date files the last hearing into the case history automatically.</p></div>
+      <div class="step"><span class="n">03</span><h3>Walk in prepared</h3><p>Today’s board, reminders the evening before, and a printable case brief.</p></div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-inner">
+    <span><i class="ic ic-lock"></i> Records are stored on this device only. Nothing is sent to a server.</span>
+    <span class="label">Advocate Pro</span>
   </div>
-
-  <!-- Stats -->
-  <div class="stats-strip">
-    <div class="strip-stat"><div class="strip-val">100%</div><div class="strip-lbl">Offline — No Server</div></div>
-    <div class="strip-stat"><div class="strip-val">🔒</div><div class="strip-lbl">Data Stays on Device</div></div>
-    <div class="strip-stat"><div class="strip-val">7+</div><div class="strip-lbl">Built-in Legal Templates</div></div>
-    <div class="strip-stat"><div class="strip-val">🎤</div><div class="strip-lbl">Voice Input — Gujarati</div></div>
-  </div>
-</div>
-
-<!-- Main Cards -->
-<section style="background:var(--bg-secondary); padding:60px 24px;">
-  <div style="text-align:center; margin-bottom:40px;">
-    <h2 style="font-size:1.8rem; font-weight:800;">Choose Your Workspace</h2>
-    <p style="color:var(--text-secondary); margin-top:8px; font-size:.95rem;">Two powerful tools built for Gujarat's legal professionals</p>
-  </div>
-  <div class="main-cards">
-
-    <!-- Case Library Card -->
-    <a href="case-library.html" class="main-card">
-      <div class="card-badge">Case Management</div>
-      <div class="card-icon-wrap icon-gold">📁</div>
-      <div class="card-title">Case Library</div>
-      <p class="card-desc">
-        Your personal digital case register. Track every case — hearing dates, court numbers, judges, clients — all searchable and filterable in seconds.
-      </p>
-      <ul class="card-features">
-        <li><span class="fi">✦</span> Register cases with court no., judge &amp; client details</li>
-        <li><span class="fi">✦</span> Filter by date, court, judge, status — any combination</li>
-        <li><span class="fi">✦</span> Track agreed fees, received payments &amp; balance pending</li>
-        <li><span class="fi">✦</span> Hearing calendar with upcoming date view</li>
-        <li><span class="fi">✦</span> Voice-dictate case notes in Gujarati</li>
-      </ul>
-      <div class="card-action">Open Case Library <span class="card-arrow">→</span></div>
-    </a>
-
-    <!-- Legal Documents Card -->
-    <a href="documents.html" class="main-card documents">
-      <div class="card-badge">Document Drafting</div>
-      <div class="card-icon-wrap icon-purple">📜</div>
-      <div class="card-title">Legal Documents</div>
-      <p class="card-desc">
-        Draft Gujarati legal documents in minutes. Use built-in templates or upload your own draft — the system fills in all the blanks and exports a formatted Word file.
-      </p>
-      <ul class="card-features">
-        <li><span class="fi">✦</span> 7 built-in Gujarati legal document templates</li>
-        <li><span class="fi">✦</span> Upload your own draft with placeholders</li>
-        <li><span class="fi">✦</span> Smart form fills all required fields automatically</li>
-        <li><span class="fi">✦</span> Export to Word (.doc) with correct Gujarati font</li>
-        <li><span class="fi">✦</span> Voice input for each field — speak, don't type</li>
-      </ul>
-      <div class="card-action">Open Document Studio <span class="card-arrow">→</span></div>
-    </a>
-
-  </div>
-</section>
-
-<!-- Feature Pill Row -->
-<div class="features-row">
-  <div class="feat-pill"><span class="dot"></span>ભાડા કરાર</div>
-  <div class="feat-pill"><span class="dot"></span>વેચાણ ખત</div>
-  <div class="feat-pill"><span class="dot"></span>મુખ્ત્યારનામું</div>
-  <div class="feat-pill"><span class="dot"></span>ભાગીદારી કરાર</div>
-  <div class="feat-pill"><span class="dot"></span>હળફ-નામું</div>
-  <div class="feat-pill"><span class="dot"></span>ફારગતી</div>
-  <div class="feat-pill"><span class="dot"></span>Legal Notice</div>
-  <div class="feat-pill"><span class="dot"></span>Custom Upload</div>
-</div>
-
-<footer class="landing-footer">
-  <p>⚖️ <strong>Advocate Pro</strong> — Designed for Gujarat's Legal Professionals &nbsp;|&nbsp; All data stored locally on your device &nbsp;|&nbsp; No internet required after first load</p>
-  <button class="btn btn-ghost btn-sm mt-2" id="themeToggle" onclick="toggleTheme()" style="margin-top:12px;"> Dark Mode</button>
 </footer>
 
-<!-- Toast Container -->
+<div class="landing-dock">
+  <div class="row">
+    <a href="documents.html" class="btn btn-secondary"><i class="ic ic-edit"></i> Draft</a>
+    <a href="case-library.html" class="btn btn-primary">Open register <i class="ic ic-arrow"></i></a>
+  </div>
+</div>
+
 <div class="toast-container" id="toastContainer"></div>
 
 <script src="db.js"></script>
 <script src="shared.js"></script>
 <script>
-  // ── Live dashboard stats on landing ──────────────────────────
-  async function loadLiveStats() {
+  function escHtml(v) {
+    return String(v ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  }
+
+  document.getElementById('dateline').textContent =
+    new Date().toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+
+  async function loadChambers() {
+    const board = document.getElementById('boardBody');
     try {
       const cases = await dbGetAll(STORES.CASES);
       const docs  = await dbGetAll(STORES.DOCUMENTS);
+      const today = new Date().toISOString().slice(0, 10);
+      const listed = cases
+        .filter(c => c.nextHearing === today && c.status !== 'Disposed')
+        .sort((a, b) => (a.courtNo || '').localeCompare(b.courtNo || '', undefined, { numeric: true }));
 
-      const today = new Date().toISOString().slice(0,10);
-      const todayHearings = cases.filter(c => c.nextHearing === today);
+      let pending = 0;
+      for (const c of cases) pending += (await getCaseFeeSummary(c.id)).pending;
 
-      // Sum pending fees
-      let totalPending = 0;
-      for (const c of cases) {
-        const summary = await getCaseFeeSummary(c.id);
-        totalPending += summary.pending;
-      }
-
-      document.getElementById('liveToday').textContent =
-        todayHearings.length
-          ? `📅 ${todayHearings.length} hearing${todayHearings.length>1?'s':''} today`
-          : '📅 No hearings today';
+      document.getElementById('liveToday').textContent   = listed.length;
       document.getElementById('liveCases').textContent   = cases.length;
-      document.getElementById('livePending').textContent = totalPending > 0
-        ? `₹${totalPending.toLocaleString('en-IN')}`
-        : '₹0';
+      document.getElementById('livePending').textContent = '₹' + pending.toLocaleString('en-IN');
       document.getElementById('liveDocs').textContent    = docs.length;
-    } catch(e) {
-      document.getElementById('liveToday').textContent = '📅 Ready to use';
+
+      board.innerHTML = listed.length
+        ? listed.map(c => `
+            <tr onclick="location.href='case-library.html#case-${c.id}'">
+              <td class="court">${escHtml(c.courtNo || '—')}</td>
+              <td class="num">${escHtml(c.caseNumber || '—')}</td>
+              <td>${escHtml(c.caseTitle || '—')}</td>
+              <td class="hide-sm">${escHtml(c.hearingType || '—')}</td>
+            </tr>`).join('')
+        : `<tr><td colspan="4" class="board-empty">No matters listed for today. <a href="case-library.html">Add a case</a></td></tr>`;
+    } catch (e) {
+      board.innerHTML = '<tr><td colspan="4" class="board-empty">Your register is empty. <a href="case-library.html">Add your first case</a></td></tr>';
     }
   }
-
-  loadLiveStats();
-
-  // ── Theme Toggle ────────────────────────────────────────────────
-  function toggleTheme() {
-    document.body.classList.toggle('light-theme');
-    const isLight = document.body.classList.contains('light-theme');
-    localStorage.setItem('advpro_theme', isLight ? 'light' : 'dark');
-    document.getElementById('themeToggle').textContent = isLight ? '☀️ Light Mode' : '🌙 Dark Mode';
-  }
-  if (localStorage.getItem('advpro_theme') === 'light') {
-    document.body.classList.add('light-theme');
-    const btn = document.getElementById('themeToggle');
-    if (btn) btn.textContent = '☀️ Light Mode';
-  }
+  loadChambers();
 </script>
 </body>
 </html>

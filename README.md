@@ -47,14 +47,14 @@ A professional, offline-first legal management platform for Gujarati advocates. 
 - 📱 **Installable** — Add to home screen on mobile/desktop
 - 🔔 **Push Notifications** — Hearing reminders via browser notifications
 - 🌐 **Offline Support** — Service worker caches all assets
-- 🌓 **Dark/Light Theme** — Toggle with persistence
+- 🌓 **Light / Dark themes** — Follows the system setting; toggle persists
 
 ## 🛠️ Tech Stack
 
 - **Frontend**: Pure HTML/CSS/JavaScript (no frameworks)
 - **Database**: IndexedDB (5 stores: cases, fees, payments, templates, documents)
 - **PWA**: Service Worker + Web App Manifest
-- **Fonts**: Noto Sans Gujarati, Inter, Playfair Display
+- **Fonts**: Sora (headings), Public Sans (interface), JetBrains Mono (labels), Noto Sans / Serif Gujarati
 - **Voice**: Web Speech API (gu-IN locale)
 - **Export**: SheetJS (Excel), custom DOCX generator
 
